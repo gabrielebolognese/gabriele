@@ -1,0 +1,81 @@
+---
+const { title, description, image, slug, date } = Astro.props;
+---
+<a href={`/articles/${slug}`} class="article-card">
+    <div class="article-card-img">
+        <img src={image} alt={title} loading="lazy" />
+    </div>
+    <div class="article-card-body">
+        <time class="article-card-date">{date}</time>
+        <h3 class="article-card-title">{title}</h3>
+        <p class="article-card-desc">{description}</p>
+        <span class="article-card-read">Read →</span>
+    </div>
+</a>
+
+<style>
+    .article-card {
+        background: var(--white);
+        display: block;
+        text-decoration: none;
+        color: var(--black);
+        transition: background 0.2s;
+    }
+    .article-card:hover { background: var(--gray-soft); }
+
+    .article-card-img img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        display: block;
+        filter: grayscale(15%);
+        transition: filter 0.4s;
+    }
+    .article-card:hover .article-card-img img { filter: grayscale(0%); }
+
+    .article-card-body {
+        padding: 24px 28px 32px;
+        border-top: 1px solid var(--gray-line);
+    }
+
+    .article-card-date {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .article-card-title {
+        font-family: var(--font-display);
+        font-size: 18px;
+        font-weight: 400;
+        color: var(--black);
+        margin-bottom: 10px;
+        line-height: 1.3;
+        text-decoration: none;
+    }
+
+    .article-card-desc {
+        font-size: 12.5px;
+        color: var(--gray-dark);
+        line-height: 1.8;
+        margin-bottom: 20px;
+    }
+
+    .article-card-read {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gray-dark);
+        border-bottom: 1px solid var(--gray-line);
+        padding-bottom: 2px;
+        transition: border-color 0.2s, color 0.2s;
+    }
+
+    .article-card:hover .article-card-read {
+        color: var(--black);
+        border-color: var(--black);
+    }
+</style>

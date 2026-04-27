@@ -1,0 +1,33 @@
+---
+import Layout from './Layout.astro';
+const { title, description, image, date } = Astro.props;
+---
+<Layout title={`${title} — Gabriele Bolognese`} description={description} image={image}>
+
+    <nav class="nav" aria-label="Site navigation">
+        <a href="/" class="nav-name">Gabriele Bolognese</a>
+        <ul class="nav-links">
+            <li><a href="/#about">About</a></li>
+            <li><a href="/#projects">Projects</a></li>
+            <li><a href="/#articles">Articles</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <article class="section article-body">
+            <img src={image} alt={title} class="article-cover-img" />
+            <time class="article-date">{date}</time>
+            <h1 class="article-h1">{title}</h1>
+            <slot />
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>© 2026 Gabriele Bolognese</span>
+            <span class="dot">·</span>
+            <a href="https://flashfx.app" target="_blank">flashfx.app</a>
+        </div>
+    </footer>
+
+</Layout>

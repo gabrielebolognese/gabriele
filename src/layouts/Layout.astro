@@ -1,0 +1,40 @@
+---
+const { title, description, image } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{title ?? "Gabriele Bolognese | Founder of FlashFX, Video Editor & Developer"}</title>
+  <meta name="description" content={description ?? "Gabriele Bolognese is a 17-year-old Italian founder, developer, and creator of FlashFX."} />
+  <meta name="author" content="Gabriele Bolognese"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://gabrielebolognese.blog/"/>
+  <meta property="og:type" content="profile"/>
+  <meta property="og:title" content={title ?? "Gabriele Bolognese | Founder of FlashFX"}/>
+  <meta property="og:image" content={image ?? "https://gabrielebolognese.blog/assets/portrait.png"}/>
+  <meta property="og:url" content="https://gabrielebolognese.blog/"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:creator" content="@flashfxeditor"/>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Gabriele Bolognese",
+    "url": "https://gabrielebolognese.blog",
+    "jobTitle": "Founder & Developer",
+    "worksFor": { "@type": "Organization", "name": "FlashFX", "url": "https://flashfx.app" },
+    "sameAs": [
+      "https://linkedin.com/in/gabriele-bolognese",
+      "https://github.com/TheRealgabryy",
+      "https://flashfx.app"
+    ]
+  })} />
+
+  <link rel="stylesheet" href="/Style.css"/>
+</head>
+<body>
+  <slot />
+</body>
+</html>

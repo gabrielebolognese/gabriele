@@ -1,3 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {getCollection} from 'astro:content';
+import Card from '../components/Card.astro';
+
+const articles = await getCollection('articles');
+const sorted = articles.sort((a, b) =>
+    new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,6 +143,7 @@
         <li><a href="#story">Story</a></li>
         <li><a href="#timeline">Timeline</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="#articles">Articles</a></li>
     </ul>
 </nav>
 
@@ -1353,6 +1365,26 @@
         </div>
     </section>
 
+    <div class="rule"></div>
+
+    <div class="rule"></div>
+
+    <section class="section" id="articles" aria-labelledby="articles-heading">
+        <h2 id="articles-heading" class="section-label">Articles</h2>
+        <p class="section-intro">Thoughts on building, motion design, and the founder life.</p>
+        <div class="articles-grid">
+            {sorted.map(article => (
+                    <Card
+                            title={article.data.title}
+                            description={article.data.description}
+                            image={article.data.image}
+                            slug={article.id}
+                            date={article.data.date}
+                    />
+            ))}
+        </div>
+    </section>
+
     <!-- ─── 6. NEXT STEPS ─── -->
     <section class="section section-next" id="contact" aria-labelledby="next-heading">
         <h2 id="next-heading" class="section-label">What's Next</h2>
@@ -1412,3 +1444,4 @@
 
 </body>
 </html>
+

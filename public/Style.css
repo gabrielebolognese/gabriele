@@ -52,6 +52,106 @@ body {
     letter-spacing: 0.01em;
 }
 
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--gray-line);
+    border: 1px solid var(--gray-line);
+    margin-top: 48px;
+}
+
+.article-card {
+    background: var(--white);
+    display: block;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.article-card:hover { background: var(--gray-soft); }
+
+.article-card-img img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+}
+
+.article-card-body {
+    padding: 24px 28px;
+}
+
+.article-card-date {
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    color: var(--gray-mid);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.article-card-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    margin-bottom: 10px;
+    color: var(--black);
+}
+
+.article-card-desc {
+    font-size: var(--text-sm);
+    color: var(--gray-dark);
+    line-height: 1.75;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 860px) {
+    .articles-grid { grid-template-columns: 1fr; }
+}
+
+.article-cover-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: 1px solid var(--gray-line);
+    margin-bottom: 40px;
+}
+
+.article-date {
+    font-size: var(--text-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    display: block;
+    margin-bottom: 16px;
+}
+
+.article-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 48px;
+    color: var(--black);
+}
+
+.article-body p {
+    font-size: var(--text-base);
+    color: var(--gray-dark);
+    line-height: 1.9;
+    max-width: 640px;
+    margin-bottom: 20px;
+}
+
+.article-body h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    margin: 48px 0 16px;
+    color: var(--black);
+}
+
 /* ─── LAYOUT HELPERS ─── */
 .section {
     max-width: var(--content-max);
