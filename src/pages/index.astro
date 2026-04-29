@@ -207,6 +207,34 @@ const sorted = articles.sort((a, b) =>
 
     <div class="rule"></div>
 
+
+    <section class="section cd-section" id="countdown" aria-labelledby="countdown-heading">
+        <span class="cd-label">Countdown</span>
+        <div class="cd-display">
+            <div class="cd-unit">
+                <span class="cd-num" id="cd-days">--</span>
+                <span class="cd-unit-label">Days</span>
+            </div>
+            <span class="cd-sep">.</span>
+            <div class="cd-unit">
+                <span class="cd-num" id="cd-hours">--</span>
+                <span class="cd-unit-label">Hours</span>
+            </div>
+            <span class="cd-sep">.</span>
+            <div class="cd-unit">
+                <span class="cd-num" id="cd-mins">--</span>
+                <span class="cd-unit-label">Minutes</span>
+            </div>
+            <span class="cd-sep">.</span>
+            <div class="cd-unit">
+                <span class="cd-num" id="cd-secs">--</span>
+                <span class="cd-unit-label">Seconds</span>
+            </div>
+        </div>
+        <span class="cd-deadline">July 29, 2026</span>
+    </section>
+
+    <div class="rule"></div>
     <!-- ─── 3. PROJECTS ─── -->
     <section class="section section-projects" id="projects" aria-labelledby="projects-heading">
         <h2 id="projects-heading" class="section-label">Projects</h2>
@@ -1439,6 +1467,25 @@ const sorted = articles.sort((a, b) =>
 
         initCarousel('flashfx-track',  'flashfx-prev',  'flashfx-next',  'flashfx-current');
         initCarousel('fxeditor-track', 'fxeditor-prev', 'fxeditor-next', 'fxeditor-current');
+    })();
+
+    (function () {
+        const END = new Date('2026-07-29T00:00:00');
+        function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
+        function tick() {
+            const diff = END - new Date();
+            if (diff <= 0) return;
+            const days    = Math.floor(diff / 86400000);
+            const hours   = Math.floor((diff % 86400000) / 3600000);
+            const minutes = Math.floor((diff % 3600000)  / 60000);
+            const seconds = Math.floor((diff % 60000)    / 1000);
+            document.getElementById('cd-days').textContent  = String(days);
+            document.getElementById('cd-hours').textContent = pad(hours);
+            document.getElementById('cd-mins').textContent  = pad(minutes);
+            document.getElementById('cd-secs').textContent  = pad(seconds);
+        }
+        tick();
+        setInterval(tick, 1000);
     })();
 </script>
 
