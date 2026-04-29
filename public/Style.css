@@ -1198,7 +1198,7 @@ a { color: var(--black); text-decoration: underline; text-underline-offset: 3px;
 
 .cd-goal {
     margin-top: 16px;
-    font-size: var(--text-2xl);
+    font-size: var(--text-4xl);
     letter-spacing: 0.08em;
     color: var(--gray-mid);
     font-family: var(--font-body);
