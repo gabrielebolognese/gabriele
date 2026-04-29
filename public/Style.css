@@ -1195,3 +1195,23 @@ a { color: var(--black); text-decoration: underline; text-underline-offset: 3px;
     color: var(--gray-mid);
     font-weight: 200;
 }
+
+.cd-goal {
+    margin-top: 16px;
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    color: var(--gray-mid);
+    font-family: var(--font-body);
+}
+
+.cd-goal-link {
+    color: var(--black) !important;
+    border-bottom: 1px solid var(--gray-line);
+    padding-bottom: 1px;
+    text-decoration: none !important;
+    transition: border-color 0.2s;
+}
+
+.cd-goal-link:hover {
+    border-color: var(--black);
+}
