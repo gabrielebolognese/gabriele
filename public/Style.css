@@ -1201,7 +1201,7 @@ a { color: var(--black); text-decoration: underline; text-underline-offset: 3px;
     font-size: var(--text-4xl);
     letter-spacing: 0.08em;
     color: var(--black);
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
 }
 
 
