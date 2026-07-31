@@ -1,0 +1,4 @@
+# story.html became a real Astro page at /about. 301 preserves any equity the
+# old URL had picked up while it was sitting in the sitemap.
+/story.html    /about    301!
+/story         /about    301!
