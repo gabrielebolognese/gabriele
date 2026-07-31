@@ -1,24 +1,90 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import Layout from './Layout.astro';
-const { title, description, image, date } = Astro.props;
+import { articleSchema } from '../data/schema';
+import { PERSON, absoluteUrl } from '../data/identity';
+import portrait from '../assets/portrait.png';
+
+interface Props {
+  title: string;
+  description: string;
+  image: ImageMetadata;
+  imageAlt?: string;
+  date: Date;
+  updated?: Date;
+  wordCount?: number;
+}
+
+const { title, description, image, imageAlt, date, updated, wordCount } = Astro.props;
+
+const dateLabel = date.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const schema = articleSchema({
+  title,
+  description,
+  path: Astro.url.pathname,
+  imageUrl: absoluteUrl(image.src, Astro.site),
+  published: date,
+  modified: updated,
+  wordCount,
+  portraitUrl: absoluteUrl(portrait.src, Astro.site),
+});
 ---
-<Layout title={`${title} — Gabriele Bolognese`} description={description} image={image}>
+<Layout
+    title={`${title} — ${PERSON.name}`}
+    description={description}
+    image={image}
+    imageAlt={imageAlt ?? title}
+    type="article"
+    publishedTime={date}
+    modifiedTime={updated}
+    schema={schema}
+>
 
     <nav class="nav" aria-label="Site navigation">
         <a href="/" class="nav-name">Gabriele Bolognese</a>
         <ul class="nav-links">
-            <li><a href="/#about">About</a></li>
+            <li><a href="/about">About</a></li>
             <li><a href="/#projects">Projects</a></li>
-            <li><a href="/#articles">Articles</a></li>
+            <li><a href="/articles">Articles</a></li>
+            <li><a href="/#contact">Contact</a></li>
         </ul>
     </nav>
 
-    <main>
+    <main id="main">
         <article class="section article-body">
-            <img src={image} alt={title} class="article-cover-img" />
-            <time class="article-date">{date}</time>
+            {/* Breadcrumb — matches the BreadcrumbList in the JSON-LD, and gives
+                the post a way back into the archive instead of being a dead end. */}
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <ol>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/articles">Articles</a></li>
+                    <li aria-current="page">{title}</li>
+                </ol>
+            </nav>
+
+            <Image
+                src={image}
+                alt={imageAlt ?? `Cover image for “${title}”`}
+                class="article-cover-img"
+                widths={[640, 960, 1440]}
+                sizes="(max-width: 860px) 100vw, 900px"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+            />
+            <time class="article-date" datetime={date.toISOString()}>{dateLabel}</time>
             <h1 class="article-h1">{title}</h1>
             <slot />
+
+            <p class="article-back">
+                <a href="/articles">&#8592; All articles</a>
+            </p>
         </article>
     </main>
 
@@ -26,8 +92,54 @@ const { title, description, image, date } = Astro.props;
         <div class="footer-inner">
             <span>© 2026 Gabriele Bolognese</span>
             <span class="dot">·</span>
-            <a href="https://flashfx.app" target="_blank">flashfx.app</a>
+            <a href="/about">About</a>
+            <span class="dot">·</span>
+            <a href="https://flashfx.app" target="_blank" rel="noopener noreferrer">flashfx.app</a>
         </div>
     </footer>
 
 </Layout>
+
+<style>
+    .breadcrumb {
+        margin-bottom: 32px;
+    }
+
+    .breadcrumb ol {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .breadcrumb li + li::before {
+        content: '/';
+        margin-right: 10px;
+        color: var(--gray-line);
+    }
+
+    .breadcrumb a { color: var(--gray-dark); }
+    .breadcrumb a:hover { color: var(--black); }
+
+    .breadcrumb li[aria-current] {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 40ch;
+    }
+
+    .article-back {
+        margin-top: 64px;
+        padding-top: 32px;
+        border-top: 1px solid var(--gray-line);
+        font-size: var(--text-xs);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+</style>
