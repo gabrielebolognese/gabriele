@@ -2,152 +2,58 @@
 import Layout from '../layouts/Layout.astro';
 import {getCollection} from 'astro:content';
 import Card from '../components/Card.astro';
+import Faq from '../components/Faq.astro';
+import { Image } from 'astro:assets';
+import img1 from '../assets/1.png';
+import img2 from '../assets/2.png';
+import img3 from '../assets/3.png';
+import img33 from '../assets/33.png';
+import img44 from '../assets/44.png';
+import img5 from '../assets/5.png';
+import img55 from '../assets/55.png';
+import img66 from '../assets/66.png';
+import img7 from '../assets/7.png';
+import img77 from '../assets/77.png';
+import img8 from '../assets/8.png';
+import img88 from '../assets/88.png';
+import img99 from '../assets/99.png';
+import imgportrait from '../assets/portrait.png';
+import {HOMEPAGE_FAQ} from '../data/faq';
+import {homepageSchema} from '../data/schema';
+import {PERSON, ORGANIZATION, absoluteUrl} from '../data/identity';
 
-const articles = await getCollection('articles');
-const sorted = articles.sort((a, b) =>
-    new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
+const articles = await getCollection('articles', ({ data }) => !data.draft);
+const sorted = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
+const schema = homepageSchema({
+    portraitUrl: absoluteUrl(imgportrait.src, Astro.site),
+    softwareImage: absoluteUrl(img1.src, Astro.site),
+    faq: HOMEPAGE_FAQ,
+});
+
+const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Video Editor`;
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-    <!-- PRIMARY SEO -->
-    <title>Gabriele Bolognese | Founder of FlashFX, Video Editor & Developer</title>
-
-    <meta name="description"
-          content="Gabriele Bolognese is a 17-year-old Italian founder, developer, and creator of FlashFX — a browser-based motion graphics and video editing platform with 15,000+ users."/>
-
-    <meta name="author" content="Gabriele Bolognese"/>
-    <meta name="robots" content="index, follow"/>
-
-    <link rel="canonical" href="https://gabrielebolognese.blog/"/>
-
-    <!-- OPEN GRAPH -->
-    <meta property="og:type" content="profile"/>
-    <meta property="og:title" content="Gabriele Bolognese | Founder of FlashFX"/>
-    <meta property="og:description"
-          content="Founder of FlashFX, a browser-based motion graphics and video editing platform. Developer, math competitor, and solo technical builder."/>
-    <meta property="og:url" content="https://gabrielebolognese.blog/"/>
-    <meta property="og:image" content="https://gabrielebolognese.blog/assets/portrait.png"/>
-    <meta property="og:image:alt" content="Gabriele Bolognese, founder of FlashFX"/>
-    <meta property="og:site_name" content="Gabriele Bolognese"/>
-    <meta property="og:locale" content="en_US"/>
-
-    <!-- TWITTER / X -->
-    <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:site" content="@flashfxeditor"/>
-    <meta name="twitter:creator" content="@flashfxeditor"/>
-    <meta name="twitter:title" content="Gabriele Bolognese | Founder of FlashFX"/>
-    <meta name="twitter:description"
-          content="17-year-old founder of FlashFX, a browser-based motion graphics platform with 15,000+ users. Developer and solo builder."/>
-    <meta name="twitter:image" content="https://gabrielebolognese.blog/assets/og-image.png"/>
-
-    <!-- SCHEMA.ORG — PERSON -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "name": "Gabriele Bolognese",
-            "url": "https://gabrielebolognese.blog",
-            "image": "https://gabrielebolognese.blog/assets/portrait.png",
-            "jobTitle": "Founder & Developer",
-            "description": "Gabriele Bolognese is a 17-year-old Italian founder and developer, creator of FlashFX, a browser-based motion graphics and video editing platform with over 15,000 users.",
-            "nationality": "Italian",
-            "worksFor": {
-                "@type": "Organization",
-                "name": "FlashFX",
-                "url": "https://flashfx.app"
-            },
-            "founder": {
-                "@type": "Organization",
-                "name": "FlashFX",
-                "url": "https://flashfx.app"
-            },
-            "sameAs": [
-                "https://linkedin.com/in/gabriele-bolognese",
-                "https://github.com/TheRealgabryy",
-                "https://twitter.com/flashfxeditor",
-                "https://flashfx.app"
-            ]
-        }
-    </script>
-
-    <!-- SCHEMA.ORG — SOFTWARE APPLICATION -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "name": "FlashFX",
-            "url": "https://flashfx.app",
-            "applicationCategory": "MultimediaApplication",
-            "operatingSystem": "Web Browser",
-            "description": "FlashFX is a browser-based motion graphics and video editing platform, offering alternatives to After Effects and Premiere Pro.",
-            "author": {
-                "@type": "Person",
-                "name": "Gabriele Bolognese",
-                "url": "https://gabrielebolognese.blog"
-            },
-            "dateCreated": "2024-01-01",
-            "dateModified": "2026-02-01"
-        }
-    </script>
-
-    <!-- SCHEMA.ORG — FAQ -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": "Who is Gabriele Bolognese?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Gabriele Bolognese is an Italian founder and developer, known as the creator of FlashFX, a browser-based motion graphics and video editing platform."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "What is FlashFX?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "FlashFX is a browser-based motion graphics and video editing platform created by Gabriele Bolognese as an alternative to traditional software like After Effects and Premiere Pro."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Who founded FlashFX?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "FlashFX was founded by Gabriele Bolognese, an Italian developer and entrepreneur."
-                    }
-                }
-            ]
-        }
-    </script>
-
-    <link rel="stylesheet" href="Style.css"/>
-</head>
-<body>
+<Layout
+        title={title}
+        description={PERSON.description}
+        type="profile"
+        schema={schema}
+>
 
 <!-- ─── NAV ─── -->
 <nav class="nav" aria-label="Site navigation">
     <span class="nav-name">Gabriele Bolognese</span>
     <ul class="nav-links">
-        <li><a href="#about">About</a></li>
+        <li><a href="/about">About</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#story">Story</a></li>
         <li><a href="#timeline">Timeline</a></li>
+        <li><a href="/articles">Articles</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li><a href="#articles">Articles</a></li>
     </ul>
 </nav>
 
-<main>
+<main id="main">
 
     <!-- ─── 1. HERO ─── -->
     <section class="hero" aria-label="Introduction">
@@ -183,23 +89,34 @@ const sorted = articles.sort((a, b) =>
                     Outside of building, I compete in Italian mathematics nationals at the champion level, national
                     coding competitions, and train in gymnastics and sprinting.
                 </p>
+                {/* These must stay identical to SAME_AS in src/data/identity.ts —
+                    a visible link corroborating each sameAs claim is what makes
+                    the claim worth anything. */}
                 <div class="intro-links">
-                    <a href="https://linkedin.com/in/gabriele-bolognese" target="_blank" rel="noopener"
+                    <a href="https://www.linkedin.com/in/gabriele-bolognese/" target="_blank" rel="noopener noreferrer me"
                        class="link-pill">LinkedIn</a>
-                    <a href="https://github.com/TheRealgabryy" target="_blank" rel="noopener"
+                    <a href="https://github.com/gabrielebolognese" target="_blank" rel="noopener noreferrer me"
                        class="link-pill">GitHub</a>
-                    <a href="https://twitter.com/flashfxeditor" target="_blank" rel="noopener" class="link-pill">X /
-                        Twitter</a>
+                    <a href="https://x.com/FlashFXeditor" target="_blank" rel="noopener noreferrer me"
+                       class="link-pill">X / Twitter</a>
+                    <a href="https://www.youtube.com/@gabriele.bolognese" target="_blank" rel="noopener noreferrer me"
+                       class="link-pill">YouTube</a>
+                    <a href="https://www.instagram.com/logs.of.gabry/" target="_blank" rel="noopener noreferrer me"
+                       class="link-pill">Instagram</a>
                 </div>
             </div>
             <div class="intro-image-wrap">
-                <img
-                        src="assets/portrait.png"
+                {/* The LCP element. Eager + high priority so it is not queued
+                    behind the stylesheet; the original shipped as a 1.19 MB PNG. */}
+                <Image
+                        src={imgportrait}
                         alt="Gabriele Bolognese, founder of FlashFX, photographed in northern Italy"
                         class="intro-image"
-                        width="1024"
-                        height="1024"
+                        widths={[420, 640, 1024]}
+                        sizes="(max-width: 860px) 100vw, 420px"
                         loading="eager"
+                        fetchpriority="high"
+                        decoding="async"
                 />
             </div>
         </div>
@@ -208,8 +125,9 @@ const sorted = articles.sort((a, b) =>
     <div class="rule"></div>
 
 
-    <section class="section cd-section" id="countdown" aria-labelledby="countdown-heading">
-        <span class="cd-label">Countdown</span>
+    <section class="section cd-section" id="countdown" aria-labelledby="countdown-heading"
+             data-deadline="2026-12-31T23:59:59">
+        <h2 class="cd-label" id="countdown-heading">Countdown</h2>
         <div class="cd-display">
             <div class="cd-unit">
                 <span class="cd-num" id="cd-days">--</span>
@@ -231,8 +149,8 @@ const sorted = articles.sort((a, b) =>
                 <span class="cd-unit-label">Seconds</span>
             </div>
         </div>
-        <span class="cd-deadline">July 29, 2026</span>
-        <p class="cd-goal">To get 100k followers on <a href="https://www.instagram.com/logs.of.gabry/" target="_blank" rel="noopener" class="cd-goal-link">Instagram</a></p>
+        <time class="cd-deadline" datetime="2026-12-31">December 31, 2026</time>
+        <p class="cd-goal">To get 100k followers on <a href="https://www.instagram.com/logs.of.gabry/" target="_blank" rel="noopener noreferrer" class="cd-goal-link">Instagram</a></p>
     </section>
 
     <div class="rule"></div>
@@ -273,22 +191,16 @@ const sorted = articles.sort((a, b) =>
                 </p>
                 <div class="carousel" aria-label="FlashFX screenshot gallery">
                     <div class="carousel-track" id="flashfx-track">
-                        <img src="assets/1.png" alt="FlashFX Animator interface — timeline and canvas view"
-                             class="carousel-img" loading="lazy"/>
-                        <img src="assets/2.png" alt="FlashFX motion graphics editor with keyframe controls"
-                             class="carousel-img" loading="lazy"/>
-                        <img src="assets/3.png" alt="FlashFX Animator — layer panel and effects toolbar"
-                             class="carousel-img" loading="lazy"/>
-                        <img src="assets/5.png" alt="FlashFX 3D object integration in browser" class="carousel-img"
-                             loading="lazy"/>
-                        <img src="assets/7.png" alt="FlashFX AI features and smart animation tools" class="carousel-img"
-                             loading="lazy"/>
-                        <img src="assets/8.png" alt="FlashFX dashboard and project management view" class="carousel-img"
-                             loading="lazy"/>
+                        <Image src={img1} alt="FlashFX Animator interface — timeline and canvas view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img2} alt="FlashFX motion graphics editor with keyframe controls" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img3} alt="FlashFX Animator — layer panel and effects toolbar" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img5} alt="FlashFX 3D object integration in browser" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img7} alt="FlashFX AI features and smart animation tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img8} alt="FlashFX dashboard and project management view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                     </div>
                     <div class="carousel-controls">
                         <button class="carousel-btn" id="flashfx-prev" aria-label="Previous screenshot">&#8592;</button>
-                        <span class="carousel-counter"><span id="flashfx-current">1</span> / 8</span>
+                        <span class="carousel-counter"><span id="flashfx-current">1</span> / 6</span>
                         <button class="carousel-btn" id="flashfx-next" aria-label="Next screenshot">&#8594;</button>
                     </div>
                 </div>
@@ -321,17 +233,14 @@ const sorted = articles.sort((a, b) =>
                 </p>
                 <div class="carousel" aria-label="FlashFX Editor screenshot gallery">
                     <div class="carousel-track" id="fxeditor-track">
-                        <img src="assets/77.png" alt="FlashFX Editor timeline and multi-track view" class="carousel-img"
-                             loading="lazy"/>
-                        <img src="assets/88.png" alt="FlashFX Editor 3D compositing interface" class="carousel-img"
-                             loading="lazy"/>
-                        <img src="assets/99.png" alt="FlashFX Editor color grading tools" class="carousel-img"
-                             loading="lazy"/>
+                        <Image src={img77} alt="FlashFX Editor timeline and multi-track view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img88} alt="FlashFX Editor 3D compositing interface" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img99} alt="FlashFX Editor color grading tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                     </div>
                     <div class="carousel-controls">
                         <button class="carousel-btn" id="fxeditor-prev" aria-label="Previous screenshot">&#8592;
                         </button>
-                        <span class="carousel-counter"><span id="fxeditor-current">1</span> / 5</span>
+                        <span class="carousel-counter"><span id="fxeditor-current">1</span> / 3</span>
                         <button class="carousel-btn" id="fxeditor-next" aria-label="Next screenshot">&#8594;</button>
                     </div>
                 </div>
@@ -362,11 +271,11 @@ const sorted = articles.sort((a, b) =>
                     without a degree.
                 </p>
                 <div class="carousel" aria-label="MLed screenshot gallery">
-                    <img src="assets/55.png" alt="MLed interface" class="carousel-img" loading="lazy"/>
+                    <Image src={img55} alt="MLed app interface" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                 </div>
             </article>
 
-            <article class="project-card project-side" aria-label="Contenter project">
+            <article class="project-card project-side" aria-label="FlashFX Documentation project">
                 <header class="project-header">
                     <div class="project-logo-placeholder" aria-hidden="true">CT</div>
                     <div>
@@ -389,15 +298,15 @@ const sorted = articles.sort((a, b) =>
                     a full multi-platform distribution pipeline — adapted for tone, format, and audience
                     per channel, with zero manual reformatting.
                 </p>
-                <div class="carousel" aria-label="Contenter screenshot gallery">
-                    <img src="assets/33.png" alt="Contenter interface" class="carousel-img" loading="lazy"/>
+                <div class="carousel" aria-label="FlashFX Documentation screenshot gallery">
+                    <Image src={img33} alt="FlashFX documentation site" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                 </div>
             </article>
 
             <!-- ── Row 3 ── -->
-            <article class="project-card project-side" aria-label="Vision AI Demo project">
+            <article class="project-card project-side" aria-label="FlashFX Roadmap project">
                 <header class="project-header">
-                    <div class="project-logo-placeholder" aria-hidden="true">VA</div>
+                    <div class="project-logo-placeholder" aria-hidden="true">FR</div>
                     <div>
                         <h3 class="project-name">FlashFX Roadmap</h3>
                         <span class="project-status status-concept">Live, complete</span>
@@ -418,12 +327,12 @@ const sorted = articles.sort((a, b) =>
                     with Claude in January 2024. Never shipped. Its landing page and the lessons from its
                     collapse became the direct foundation for FlashFX.
                 </p>
-                <div class="carousel" aria-label="Contenter screenshot gallery">
-                    <img src="assets/44.png" alt="Contenter interface" class="carousel-img" loading="lazy"/>
+                <div class="carousel" aria-label="FlashFX Roadmap screenshot gallery">
+                    <Image src={img44} alt="FlashFX Roadmap page" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                 </div>
             </article>
 
-            <article class="project-card project-side" aria-label="Personal Site project">
+            <article class="project-card project-side" aria-label="Video editing portfolio project">
                 <header class="project-header">
                     <div class="project-logo-placeholder" aria-hidden="true">GB</div>
                     <div>
@@ -446,8 +355,8 @@ const sorted = articles.sort((a, b) =>
                     carousels, and a timeline of milestones. Designed and coded from scratch as both a
                     portfolio and a proof of craft.
                 </p>
-                <div class="carousel" aria-label="Contenter screenshot gallery">
-                    <img src="assets/66.png" alt="Contenter interface" class="carousel-img" loading="lazy"/>
+                <div class="carousel" aria-label="Video editing portfolio screenshot gallery">
+                    <Image src={img66} alt="Video editing portfolio site" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                 </div>
             </article>
 
@@ -518,7 +427,7 @@ const sorted = articles.sort((a, b) =>
                         I couldn't sleep. I'd lost everything I'd spent over a year building, video by video. I had some
                         clips saved and created a second channel reposting them, but it got 5 views per video. So I quit
                         entirely. That copy channel still exists if you're curious, just don't expect any quality lol:
-                        <a href="https://www.youtube.com/@playmoj_/videos" target="_blank">https://www.youtube.com/@playmoj_/videos</a>
+                        <a href="https://www.youtube.com/@playmoj_/videos" target="_blank" rel="noopener noreferrer nofollow">https://www.youtube.com/@playmoj_/videos</a>
 
                         That hurt more than I expected a YouTube channel to hurt. But it wasn't the end.
                     </p>
@@ -557,7 +466,7 @@ const sorted = articles.sort((a, b) =>
                     </p>
                     <blockquote class="chapter-pull">
                         The channel was Emerals, my first ever client: <a href="https://youtube.com/@emeralsrp"
-                                                                          target="_blank">https://youtube.com/@emeralsrp</a>
+                                                                          target="_blank" rel="noopener noreferrer nofollow">https://youtube.com/@emeralsrp</a>
                     </blockquote>
                     <p class="chapter-body">
                         Then high school started, and everything got harder. The workload quadrupled overnight and the
@@ -696,7 +605,7 @@ const sorted = articles.sort((a, b) =>
                         I had just enough credits left to scrape together a landing page using the few video clips I'd
                         recorded before the crash. It's still up if you want to see what could have been:
                         <a href="https://vision-ai-home.netlify.app"
-                           target="_blank">https://vision-ai-home.netlify.app</a>
+                           target="_blank" rel="noopener noreferrer nofollow">https://vision-ai-home.netlify.app</a>
 
                         This one hit like a truck. Much harder than losing the YouTube channel. That was just time. This
                         was debt, something I had never experienced before. It was around March 2024, and my grades
@@ -752,15 +661,15 @@ const sorted = articles.sort((a, b) =>
                     </p>
                     <p class="chapter-body">
                         I started building the editor, which you can still see here:
-                        <a href="https://create-video-editor-ur5p.bolt.host" target="_blank">https://create-video-editor-ur5p.bolt.host</a>.
+                        <a href="https://create-video-editor-ur5p.bolt.host" target="_blank" rel="noopener noreferrer nofollow">https://create-video-editor-ur5p.bolt.host</a>.
                         Then
                         I got excited and started building a blueprint generator:
-                        <a href="https://endearing-jelly-e95215.netlify.app" target="_blank">https://endearing-jelly-e95215.netlify.app</a>.
+                        <a href="https://endearing-jelly-e95215.netlify.app" target="_blank" rel="noopener noreferrer nofollow">https://endearing-jelly-e95215.netlify.app</a>.
                         Then
                         another AI video editing tool. Then I went back and tried to remake Vision AI:
-                        <a href="https://symphonious-maamoul-085d5a.netlify.app" target="_blank">https://symphonious-maamoul-085d5a.netlify.app</a>.
+                        <a href="https://symphonious-maamoul-085d5a.netlify.app" target="_blank" rel="noopener noreferrer nofollow">https://symphonious-maamoul-085d5a.netlify.app</a>.
                         Then yet another AI video editor project:
-                        <a href="https://ai-video-editor-app-i877.bolt.host" target="_blank">https://ai-video-editor-app-i877.bolt.host</a>.
+                        <a href="https://ai-video-editor-app-i877.bolt.host" target="_blank" rel="noopener noreferrer nofollow">https://ai-video-editor-app-i877.bolt.host</a>.
 
                         5 separate tools. All vibe coded. All half finished. All disconnected from each other. None of
                         them good.
@@ -803,9 +712,9 @@ const sorted = articles.sort((a, b) =>
                         effects, like After Effects. Simple.
 
                         The very first prototype is still up if you want to see where it all started:
-                        <a href="https://tubular-profiterole-10ec69.netlify.app" target="_blank">https://tubular-profiterole-10ec69.netlify.app</a>.
+                        <a href="https://tubular-profiterole-10ec69.netlify.app" target="_blank" rel="noopener noreferrer nofollow">https://tubular-profiterole-10ec69.netlify.app</a>.
                         Then go look at what FlashFX is today:
-                        <a href="https://editor.flashfx.app" target="_blank">https://editor.flashfx.app</a>. The
+                        <a href="https://editor.flashfx.app" target="_blank" rel="noopener noreferrer">https://editor.flashfx.app</a>. The
                         distance between those 2 things
                         gives me actual nostalgia.
                     </p>
@@ -912,7 +821,7 @@ const sorted = articles.sort((a, b) =>
                         come of it.
 
                         You can still find the hackathon build here:
-                        <a href="https://flashfx-project-fina-yfbd.bolt.host" target="_blank">https://flashfx-project-fina-yfbd.bolt.host</a>.
+                        <a href="https://flashfx-project-fina-yfbd.bolt.host" target="_blank" rel="noopener noreferrer nofollow">https://flashfx-project-fina-yfbd.bolt.host</a>.
                         Probably the single most important artifact in FlashFX history.
 
                         And it was also here, somewhere between the last-minute bug fixes and hitting that submit
@@ -946,10 +855,10 @@ const sorted = articles.sort((a, b) =>
                     <h3 class="chapter-title">FlashFX</h3>
                     <p class="chapter-body">
                         This time, i made flashfx starting from that old project for thumbnail generation
-                        (<a href="https://tubular-profiterole-10ec69.netlify.app" target="_blank">https://tubular-profiterole-10ec69.netlify.app</a>)
+                        (<a href="https://tubular-profiterole-10ec69.netlify.app" target="_blank" rel="noopener noreferrer nofollow">https://tubular-profiterole-10ec69.netlify.app</a>)
                         started learning how it worked, and started making my own updated version. i was also getting a
                         few side gigs, that allowed me to do more tests with ai for the actual ai video editor, one of
-                        them is still up at <a href="https://create-thumbnail-des-n8ht.bolt.host" target="_blank">https://create-thumbnail-des-n8ht.bolt.host</a>
+                        them is still up at <a href="https://create-thumbnail-des-n8ht.bolt.host" target="_blank" rel="noopener noreferrer nofollow">https://create-thumbnail-des-n8ht.bolt.host</a>
                     </p>
                     <p class="chapter-body">
                         when i had a working prototype on my own, i started using ai again to make a better frontend,
@@ -957,10 +866,10 @@ const sorted = articles.sort((a, b) =>
                         many more.
 
                         i started making different versions (with the help of bolt) like:
-                        <br>- Very first demo: <a href="https://loquacious-fenglisu-cfa1be.netlify.app" target="_blank">https://loquacious-fenglisu-cfa1be.netlify.app</a>
+                        <br>- Very first demo: <a href="https://loquacious-fenglisu-cfa1be.netlify.app" target="_blank" rel="noopener noreferrer nofollow">https://loquacious-fenglisu-cfa1be.netlify.app</a>
                         <br>- first actual working prototype: <a href="https://flashfx-duplicated-1d4a.bolt.host"
-                                                                 target="_blank">https://flashfx-duplicated-1d4a.bolt.host</a>
-                        <br>- FlashFX with 3d: <a href="https://flashfx-duplicated-6a36.bolt.host" target="_blank">https://flashfx-duplicated-6a36.bolt.host</a>
+                                                                 target="_blank" rel="noopener noreferrer nofollow">https://flashfx-duplicated-1d4a.bolt.host</a>
+                        <br>- FlashFX with 3d: <a href="https://flashfx-duplicated-6a36.bolt.host" target="_blank" rel="noopener noreferrer nofollow">https://flashfx-duplicated-6a36.bolt.host</a>
                     </p>
                     <p class="chapter-body">
                         other tests have minor improvements.
@@ -993,7 +902,7 @@ const sorted = articles.sort((a, b) =>
                         works.
                     </p>
                     <p class="chapter-body">
-                        all this to have: <a href="https://flashfx.app" target="_blank">https://flashfx.app</a>
+                        all this to have: <a href="https://flashfx.app" target="_blank" rel="noopener noreferrer">https://flashfx.app</a>
                     </p>
                 </div>
             </article>
@@ -1288,115 +1197,6 @@ const sorted = articles.sort((a, b) =>
 
     <div class="rule"></div>
 
-    <div class="rule"></div>
-
-    <section class="story-section">
-
-        <!-- Chapter Header -->
-        <div class="chapter-header">
-            <span class="chapter-numeral">2026</span>
-            <div class="chapter-meta">
-                <time class="chapter-period" datetime="2024">2024 – 2026</time>
-                <h2 class="chapter-title">The Story of FlashFX</h2>
-            </div>
-        </div>
-
-        <div class="entry-list">
-
-            <!-- Entry 01 -->
-            <div class="entry">
-                <div class="entry-text-col">
-                    <span class="entry-index">01 — Origins and First Attempts</span>
-                    <p class="entry-body">
-                        On January 3, 2024, Gabriele began building a browser-based video editor called Vision AI Demo,
-                        designed to be free, lightweight, and operable on low-specification hardware. The project was
-                        developed using bolt.new. A file restructuring request issued to the AI assistant caused
-                        cascading import failures across the codebase, rendering the project unrecoverable.
-                    </p>
-                    <p class="entry-body">
-                        A second development cycle in mid-2024 produced five separate browser-based tools — among them
-                        a video editor, a blueprint generator, and multiple AI editing experiments. None reached a
-                        functional state.
-                    </p>
-                </div>
-                <div class="entry-image-col">
-                    <div class="entry-image-frame">
-                        <img src="assets/1010.png" alt="" loading="lazy">
-                    </div>
-                    <p class="image-caption">2024 — Vision AI Demo</p>
-                </div>
-            </div>
-
-            <!-- Entry 02 -->
-            <div class="entry">
-                <div class="entry-text-col">
-                    <span class="entry-index">02 — Conceptual Reorientation</span>
-                    <p class="entry-body">
-                        In late December 2024, a conceptual reassessment led Gabriele to reframe the product category
-                        from traditional timeline-based video editing to motion design. Over the following months, he
-                        taught himself TypeScript and React through independent study, building small utility
-                        applications to consolidate practical skills.
-                    </p>
-                </div>
-                <div class="entry-image-col">
-                    <div class="entry-image-frame">
-                        <img src="assets/1111.png" alt="" loading="lazy">
-                    </div>
-                    <p class="image-caption">Late 2024 — The pivot moment</p>
-                </div>
-            </div>
-
-            <!-- Pull Quote -->
-            <div class="entry-pull">
-                <blockquote class="pull-quote">
-                    I finally understood where the line was: I could build it.
-                    But I could not rely on AI to build it for me.
-                </blockquote>
-            </div>
-
-            <!-- Entry 03 -->
-            <div class="entry">
-                <div class="entry-text-col">
-                    <span class="entry-index">03 — Bolt Hackathon & Company Formation</span>
-                    <p class="entry-body">
-                        Gabriele entered Bolt's global hackathon, with prizes exceeding one million dollars. He
-                        assembled a three-person team including a peer and an experienced TypeScript developer met
-                        through the hackathon's Discord community. The team rebuilt FlashFX from scratch within the
-                        bolt.new environment, submitting on June 30, 2025.
-                    </p>
-                    <p class="entry-body">
-                        The entry did not place; the first-prize winner was a competing AI video editor. Despite this
-                        result, the concept attracted strong interest from other participants, providing external
-                        validation of market demand. The team formally registered as a company under the name FlashFX.
-                    </p>
-                </div>
-                <div class="entry-image-col">
-                    <div class="entry-image-frame">
-                        <img src="assets/111.png" alt="" loading="lazy">
-                    </div>
-                    <p class="image-caption">June 30, 2025 — Submission day</p>
-                </div>
-            </div>
-
-            <!-- Entry 04 (wide, closing) -->
-            <div class="entry-wide">
-                <span class="entry-wide-label">04 — Current Status</span>
-                <div class="entry-wide-body">
-                    <p class="entry-body">
-                        In January 2026, Aziz — who managed a Discord community of over 1,200 members — joined as
-                        co-founder. A marketing manager, Camille Luciano, was subsequently hired to oversee social
-                        media and community development. FlashFX V1, the first fully functional release, launched in
-                        early 2026.
-                    </p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <div class="rule"></div>
-
-    <div class="rule"></div>
 
     <section class="section" id="articles" aria-labelledby="articles-heading">
         <h2 id="articles-heading" class="section-label">Articles</h2>
@@ -1407,11 +1207,15 @@ const sorted = articles.sort((a, b) =>
                             title={article.data.title}
                             description={article.data.description}
                             image={article.data.image}
+                            imageAlt={article.data.imageAlt}
                             slug={article.id}
                             date={article.data.date}
                     />
             ))}
         </div>
+        <p class="articles-more">
+            <a href="/articles">All articles &#8594;</a>
+        </p>
     </section>
 
     <!-- ─── 6. NEXT STEPS ─── -->
@@ -1429,6 +1233,17 @@ const sorted = articles.sort((a, b) =>
         </p>
     </section>
 
+    <div class="rule"></div>
+
+    <!-- ─── 7. FAQ ───
+         Rendered from the same data that feeds the FAQPage JSON-LD, so the
+         structured data always describes visible content. -->
+    <Faq
+            entries={HOMEPAGE_FAQ}
+            heading="Frequently asked"
+            intro="The questions people search for most often."
+    />
+
 </main>
 
 <!-- ─── FOOTER ─── -->
@@ -1438,58 +1253,15 @@ const sorted = articles.sort((a, b) =>
         <span class="dot">·</span>
         <span>Rovigo, Italy</span>
         <span class="dot">·</span>
-        <a href="https://flashfx.app" target="_blank" rel="noopener">flashfx.app</a>
+        <a href="/about">About</a>
+        <span class="dot">·</span>
+        <a href="/articles">Articles</a>
+        <span class="dot">·</span>
+        <a href="https://flashfx.app" target="_blank" rel="noopener noreferrer">flashfx.app</a>
     </div>
 </footer>
 
-<!-- Carousel JS — strictly necessary -->
-<script>
-    (function () {
-        function initCarousel(trackId, prevId, nextId, currentId) {
-            var track = document.getElementById(trackId);
-            var counter = document.getElementById(currentId);
-            var imgs = track.querySelectorAll('.carousel-img');
-            var total = imgs.length;
-            var current = 0;
+<!-- Carousels, countdown, nav and scroll reveals all live in /public/motion.js -->
 
-            function show(index) {
-                current = (index + total) % total;
-                track.style.transform = 'translateX(-' + (current * 100) + '%)';
-                counter.textContent = current + 1;
-            }
-
-            document.getElementById(prevId).addEventListener('click', function () {
-                show(current - 1);
-            });
-            document.getElementById(nextId).addEventListener('click', function () {
-                show(current + 1);
-            });
-        }
-
-        initCarousel('flashfx-track',  'flashfx-prev',  'flashfx-next',  'flashfx-current');
-        initCarousel('fxeditor-track', 'fxeditor-prev', 'fxeditor-next', 'fxeditor-current');
-    })();
-
-    (function () {
-        const END = new Date('2026-07-29T00:00:00');
-        function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
-        function tick() {
-            const diff = END - new Date();
-            if (diff <= 0) return;
-            const days    = Math.floor(diff / 86400000);
-            const hours   = Math.floor((diff % 86400000) / 3600000);
-            const minutes = Math.floor((diff % 3600000)  / 60000);
-            const seconds = Math.floor((diff % 60000)    / 1000);
-            document.getElementById('cd-days').textContent  = String(days);
-            document.getElementById('cd-hours').textContent = pad(hours);
-            document.getElementById('cd-mins').textContent  = pad(minutes);
-            document.getElementById('cd-secs').textContent  = pad(seconds);
-        }
-        tick();
-        setInterval(tick, 1000);
-    })();
-</script>
-
-</body>
-</html>
+</Layout>
 

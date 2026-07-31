@@ -1,0 +1,100 @@
+---
+/* Netlify served its generic branded fallback before this existed, which was a
+   dead end for anyone landing on a decayed or mistyped URL. */
+import Layout from '../layouts/Layout.astro';
+---
+<Layout
+    title="Page not found — Gabriele Bolognese"
+    description="That page does not exist. Head back to the homepage, the biography, or the articles."
+    noindex={true}
+>
+
+<nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-name">Gabriele Bolognese</a>
+    <ul class="nav-links">
+        <li><a href="/about">About</a></li>
+        <li><a href="/#projects">Projects</a></li>
+        <li><a href="/articles">Articles</a></li>
+        <li><a href="/#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<main id="main">
+    <section class="section notfound">
+        <p class="notfound-code">404</p>
+        <h1 class="notfound-h1">This page doesn't exist.</h1>
+        <p class="notfound-body">
+            The link may be out of date, or the page may have moved. Everything below still works.
+        </p>
+        <ul class="notfound-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">Who is Gabriele Bolognese?</a></li>
+            <li><a href="/articles">Articles</a></li>
+            <li><a href="/#projects">Projects</a></li>
+        </ul>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <span>© 2026 Gabriele Bolognese</span>
+        <span class="dot">·</span>
+        <a href="https://flashfx.app" target="_blank" rel="noopener noreferrer">flashfx.app</a>
+    </div>
+</footer>
+
+</Layout>
+
+<style>
+    .notfound {
+        max-width: 620px;
+        margin: 0 auto;
+        text-align: center;
+        padding-top: 120px;
+        padding-bottom: 120px;
+    }
+
+    .notfound-code {
+        font-family: var(--font-display);
+        font-size: clamp(72px, 14vw, 140px);
+        font-weight: 200;
+        line-height: 1;
+        color: var(--gray-line);
+        margin-bottom: 24px;
+    }
+
+    .notfound-h1 {
+        font-family: var(--font-display);
+        font-size: var(--text-2xl);
+        font-weight: 300;
+        margin-bottom: 16px;
+    }
+
+    .notfound-body {
+        font-size: var(--text-sm);
+        line-height: 1.9;
+        color: var(--gray-dark);
+        margin-bottom: 40px;
+    }
+
+    .notfound-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px 28px;
+        font-size: var(--text-xs);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .notfound-links a {
+        color: var(--gray-dark);
+        border-bottom: 1px solid var(--gray-line);
+        padding-bottom: 3px;
+    }
+
+    .notfound-links a:hover { color: var(--black); border-color: var(--black); }
+</style>
