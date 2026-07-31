@@ -1,4 +1,49 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gabrielebolognese.blog/sitemap.xml
+# Answer engines / AI crawlers — explicit opt-in.
+# These already crawl under the wildcard above; naming them is the clear signal
+# for a site whose whole purpose is answering "who is Gabriele Bolognese".
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+Sitemap: https://gabrielebolognese.blog/sitemap-index.xml
