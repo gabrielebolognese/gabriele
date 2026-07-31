@@ -20,7 +20,7 @@ import img99 from '../assets/99.png';
 import imgportrait from '../assets/portrait.png';
 import {HOMEPAGE_FAQ} from '../data/faq';
 import {homepageSchema} from '../data/schema';
-import {PERSON, ORGANIZATION, absoluteUrl} from '../data/identity';
+import {PERSON, ORGANIZATION, FACTS, absoluteUrl} from '../data/identity';
 
 const articles = await getCollection('articles', ({ data }) => !data.draft);
 const sorted = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -79,9 +79,10 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 <h2 id="about-heading" class="section-label">About</h2>
                 <p>
                     I am Gabriele Bolognese, a founder and software developer based in the Venice–Treviso area of
-                    northern Italy. At 17, I lead FlashFX, a browser-native motion graphics and video editing platform.
+                    northern Italy. At 17, I lead FlashFX, a browser-native motion graphics and video editing platform,
                     handling everything from product architecture to community growth. FlashFX has grown to over
-                    15,200 users entirely through organic traction, without spending a single dollar on advertising.
+                    {FACTS.usersLabel} users entirely through organic traction, without spending a single dollar on
+                    advertising.
                 </p>
                 <p>
                     My work sits at the intersection of creative creation, web development, and applied machine
@@ -185,9 +186,9 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     FlashFX is a browser-native creative suite. The <strong>Animator</strong> is an After Effects-like
                     tool with a layer system, compositing, and effects presets. Built from scratch over two years and
                     four
-                    complete rebuilds, ~300,000 lines of code, 15k+ organic users, 3,600 Discord members, and 2,000
-                    waitlist sign-ups. Photoshop became Canva. Premiere became CapCut. Now After Effects becomes
-                    FlashFX.
+                    complete rebuilds, ~300,000 lines of code, {FACTS.usersShort} organic users,
+                    {FACTS.discordLabel} Discord members, and 2,000 waitlist sign-ups. Photoshop became Canva.
+                    Premiere became CapCut. Now After Effects becomes FlashFX.
                 </p>
                 <div class="carousel" aria-label="FlashFX screenshot gallery">
                     <div class="carousel-track" id="flashfx-track">
@@ -1152,8 +1153,8 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
 
             <li class="timeline-item">
                 <div class="timeline-body">
-                    <h3 class="timeline-headline">FlashFX Reaches 15,000 Users, LinkedIn Launched, Turned 17</h3>
-                    <p class="timeline-desc">FlashFX crossed 15,000 users entirely through organic growth. LinkedIn was
+                    <h3 class="timeline-headline">FlashFX Reaches 5,000 Users, LinkedIn Launched, Turned 17</h3>
+                    <p class="timeline-desc">FlashFX crossed 5,000 users entirely through organic growth. LinkedIn was
                         launched as a founder visibility channel and quickly became the fastest-growing social platform
                         for the project. Also the month of turning 17.</p>
                 </div>
@@ -1186,8 +1187,8 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 <div class="timeline-body">
                     <h3 class="timeline-headline">Y Combinator Interview Invitation, Summer 2026 Batch</h3>
                     <p class="timeline-desc">FlashFX received an interview invitation for Y Combinator's Summer 2026
-                        batch. The culmination of two years of building, failing, rebuilding, and growing to over 15,000
-                        organic users, all before turning 18.</p>
+                        batch. The culmination of two years of building, failing, rebuilding, and growing to over
+                        {FACTS.usersLabel} organic users, all before turning 18.</p>
                 </div>
                 <time class="timeline-date" datetime="2026-04">April 2026</time>
             </li>

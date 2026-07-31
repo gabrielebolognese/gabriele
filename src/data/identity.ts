@@ -33,7 +33,7 @@ export const PERSON = {
 
   /** Longer form, used for JSON-LD where there is no length pressure. */
   longDescription:
-    'Gabriele Bolognese is an Italian founder and self-taught developer, and the creator of FlashFX, a browser-based motion graphics and video editing platform used by more than 15,000 people. He built it solo across four complete rebuilds.',
+    'Gabriele Bolognese is an Italian founder and self-taught developer, and the creator of FlashFX, a browser-based motion graphics and video editing platform used by more than 8,000 people. He built it solo across four complete rebuilds.',
 
   // TODO: confirm. story.html says born 2008; the homepage hardcodes "17-year-old",
   // which goes stale on its own. Giving schema a birthDate lets the age be derived
@@ -100,9 +100,9 @@ export const ORGANIZATION = {
    Anything you cannot confirm is live should be DELETED, not left in.
    ------------------------------------------------------------------------- */
 export const SAME_AS: string[] = [
-  // TODO: confirm this exact spelling against your address bar. You said the
-  // profile is live but did not send the URL, so this is LinkedIn's canonical
-  // form (www + trailing slash). Three variants existed in the old markup.
+  // Confirmed exact, 2026-07-31. Three variants existed in the old markup;
+  // this is the one that matches the address bar. Do not "tidy" the www or the
+  // trailing slash — sameAs matching is string-exact.
   'https://www.linkedin.com/in/gabriele-bolognese/',
 
   'https://github.com/gabrielebolognese',
@@ -133,16 +133,20 @@ export const SUBJECT_OF: Array<{ name: string; url: string; publisher?: string }
 ];
 
 /* ── Verified facts ──────────────────────────────────────────────────────────
-   These numbers appeared in three different forms across meta, schema and body
-   copy (15,200 / 15,000+ / 15k+ users; 3,600 / 3,400 Discord members).
-   Inconsistent self-reported figures read as unreliability. One value each.
+   These previously appeared in three different forms across meta, schema and
+   body copy (15,200 / 15,000+ / 15k+ users; 3,600 / 3,400 Discord members).
+   Inconsistent self-reported figures read as unreliability, and the user counts
+   were overstated. Confirmed 2026-07-31: 8,000 users, 3,400 Discord members.
+   Anything quoting these must read from here, not hardcode a number.
    ------------------------------------------------------------------------- */
 export const FACTS = {
-  // TODO: confirm the true numbers.
-  users: 15200,
-  usersLabel: '15,200',
-  discordMembers: 3600,
-  discordLabel: '3,600',
+  users: 8000,
+  /** For prose: "more than {usersLabel} people". */
+  usersLabel: '8,000',
+  /** For compact contexts like project cards. */
+  usersShort: '8k+',
+  discordMembers: 3400,
+  discordLabel: '3,400',
 } as const;
 
 /** Absolute URL helper — every canonical/OG URL on the site goes through this.
