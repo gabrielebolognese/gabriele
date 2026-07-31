@@ -1,0 +1,64 @@
+---
+/* Renders the same entries that feed the FAQPage JSON-LD, so the structured
+   data always describes content that is actually on the page. */
+import type { FaqEntry } from '../data/schema';
+
+interface Props {
+  entries: FaqEntry[];
+  heading?: string;
+  intro?: string;
+}
+
+const { entries, heading = 'Frequently asked', intro } = Astro.props;
+---
+<section class="section section-faq" id="faq" aria-labelledby="faq-heading">
+  <h2 id="faq-heading" class="section-label">{heading}</h2>
+  {intro && <p class="section-intro">{intro}</p>}
+
+  <dl class="faq-list">
+    {entries.map((entry) => (
+      <div class="faq-item">
+        <dt class="faq-question">{entry.question}</dt>
+        <dd class="faq-answer">{entry.answer}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  /* Owns every FAQ style; only the .section/.section-label primitives come
+     from public/Style.css. */
+  .faq-list {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .faq-item {
+    padding: 32px 0;
+    border-top: 1px solid var(--gray-line);
+  }
+
+  .faq-item:last-child {
+    border-bottom: 1px solid var(--gray-line);
+  }
+
+  .faq-question {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--black);
+    margin-bottom: 12px;
+  }
+
+  .faq-answer {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.9;
+    color: var(--gray-dark);
+  }
+
+  @media (max-width: 520px) {
+    .faq-item { padding: 24px 0; }
+  }
+</style>

@@ -1,40 +1,80 @@
 ---
-const { title, description, image } = Astro.props;
+/* The shared document shell. Every page — including the homepage, which used
+   to hand-duplicate all of this — renders through here, so canonical, OG and
+   JSON-LD have exactly one implementation. */
+import type { ImageMetadata } from 'astro';
+import SEO from '../components/SEO.astro';
+import { PERSON } from '../data/identity';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: ImageMetadata | string;
+  imageAlt?: string;
+  type?: 'website' | 'profile' | 'article';
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  noindex?: boolean;
+  schema?: unknown;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description = PERSON.description,
+  image,
+  imageAlt,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  noindex,
+  schema,
+  bodyClass,
+} = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{title ?? "Gabriele Bolognese | Founder of FlashFX, Video Editor & Developer"}</title>
-  <meta name="description" content={description ?? "Gabriele Bolognese is a 17-year-old Italian founder, developer, and creator of FlashFX."} />
-  <meta name="author" content="Gabriele Bolognese"/>
-  <meta name="robots" content="index, follow"/>
-  <link rel="canonical" href="https://gabrielebolognese.blog/"/>
-  <meta property="og:type" content="profile"/>
-  <meta property="og:title" content={title ?? "Gabriele Bolognese | Founder of FlashFX"}/>
-  <meta property="og:image" content={image ?? "https://gabrielebolognese.blog/assets/portrait.png"}/>
-  <meta property="og:url" content="https://gabrielebolognese.blog/"/>
-  <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:creator" content="@flashfxeditor"/>
+  <SEO
+    title={title}
+    description={description}
+    image={image}
+    imageAlt={imageAlt}
+    type={type}
+    publishedTime={publishedTime}
+    modifiedTime={modifiedTime}
+    noindex={noindex}
+    schema={schema}
+  />
 
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Gabriele Bolognese",
-    "url": "https://gabrielebolognese.blog",
-    "jobTitle": "Founder & Developer",
-    "worksFor": { "@type": "Organization", "name": "FlashFX", "url": "https://flashfx.app" },
-    "sameAs": [
-      "https://linkedin.com/in/gabriele-bolognese",
-      "https://github.com/TheRealgabryy",
-      "https://flashfx.app"
-    ]
-  })} />
+  <link rel="stylesheet" href="/Style.css" />
 
-  <link rel="stylesheet" href="/Style.css"/>
+  <!-- Marks the document as scripted before first paint, so the reveal
+       animations in Style.css only ever hide content when JS can show it. -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <script is:inline defer src="/motion.js"></script>
 </head>
-<body>
+<body class={bodyClass}>
+  <a href="#main" class="skip-link">Skip to content</a>
   <slot />
 </body>
 </html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 300;
+    padding: 12px 20px;
+    background: var(--black);
+    color: var(--white);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .skip-link:focus {
+    left: 0;
+  }
+</style>
