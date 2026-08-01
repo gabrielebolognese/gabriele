@@ -1,34 +1,77 @@
 ---
-/* The Tim Urban "life in weeks" grid: one square per week of a 90-year life.
+/* The Tim Urban "life in weeks" grid: one square per week of a 90-year life,
+ * 52 columns by 90 rows, with life events from src/data/milestones.ts marked in
+ * colour.
  *
- * This component deliberately has NO <style> block. Astro stamps a
- * data-astro-cid-* attribute on every element of any component that defines
- * scoped styles — matched by a selector or not — and across 4,680 cells that
- * was 131 KB of raw HTML doing nothing. The styles live under "18. LIFE GRID"
- * in public/Style.css instead.
+ * Two structural decisions worth knowing:
  *
- * The grid is rendered complete and correct at build time so it is right for
- * no-JS visitors and right on first paint; initLifeGrid() in motion.js then
+ * 1. NO scoped <style> here. Astro stamps a data-astro-cid-* attribute on every
+ *    element of any component that defines one — matched by a selector or not —
+ *    and across 4,680 cells that was 131 KB of raw HTML. The styles live under
+ *    "18. LIFE GRID" in public/Style.css instead.
+ *
+ * 2. Cells are wrapped in rows rather than sitting in one flat grid. That is
+ *    what makes the fill animation affordable: 90 rows each carry one --r index
+ *    for a staggered delay, where per-cell delays would have meant 4,680 inline
+ *    styles.
+ *
+ * Rendered complete and correct at build time, so it is right for no-JS
+ * visitors and right on first paint; initLifeGrid() in motion.js then
  * reconciles the weeks elapsed since the last deploy.
  */
+import { MILESTONES, milestoneWeek, type MilestoneKind } from '../data/milestones';
+
 interface Props {
   /** Local-time birth timestamp, e.g. "2008-12-06T00:00:00". */
   birth: string;
   weeksLived: number;
   totalWeeks: number;
+  columns?: number;
 }
 
-const { birth, weeksLived, totalWeeks } = Astro.props;
+const { birth, weeksLived, totalWeeks, columns = 52 } = Astro.props;
+
+const birthDate = new Date(birth);
+const rows = Math.ceil(totalWeeks / columns);
 const percent = ((weeksLived / totalWeeks) * 100).toFixed(1);
+
+/* week index -> the event that falls in it. A month maps to one week, so
+   collisions are only possible for events in the same month; last wins. */
+const events = new Map<number, { kind: MilestoneKind; label: string }>();
+for (const m of MILESTONES) {
+  const week = milestoneWeek(m.month, birthDate);
+  if (week >= 0 && week < totalWeeks) events.set(week, { kind: m.kind, label: m.label });
+}
+
+function cellClass(i: number): string | undefined {
+  const event = events.get(i);
+  const state = i < weeksLived ? 'is-lived' : i === weeksLived ? 'is-now' : '';
+  if (!event) return state || undefined;
+  return `${state} is-event ev-${event.kind}`.trim();
+}
+
+function cellTitle(i: number): string | undefined {
+  const event = events.get(i);
+  if (!event) return undefined;
+  const [y, m] = MILESTONES.find((x) => milestoneWeek(x.month, birthDate) === i)!.month.split('-');
+  const name = new Date(Number(y), Number(m) - 1, 1).toLocaleDateString('en-GB', {
+    month: 'long',
+    year: 'numeric',
+  });
+  return `${name} — ${event.label}`;
+}
 ---
-{/* role="img" with a label: 4,680 empty cells would otherwise be announced
-    one at a time. The figures underneath carry the actual meaning. */}
+{/* role="img" with a label: 4,680 empty cells would otherwise be announced one
+    at a time. The figures and the event list underneath carry the meaning. */}
 <div
   class="life-grid"
   role="img"
   data-birth={birth}
   data-lived={weeksLived}
   aria-label={`Life in weeks: ${weeksLived} of ${totalWeeks} weeks lived, ${percent} per cent.`}
->{Array.from({ length: totalWeeks }, (_, i) => (
-  <i class={i < weeksLived ? 'is-lived' : i === weeksLived ? 'is-now' : undefined}></i>
+>{Array.from({ length: rows }, (_, r) => (
+  <div class="life-row" style={`--r:${r}`}>{Array.from({ length: columns }, (_, c) => {
+    const i = r * columns + c;
+    return i < totalWeeks ? <i class={cellClass(i)} title={cellTitle(i)}></i> : null;
+  })}</div>
 ))}</div>

@@ -7,6 +7,7 @@ import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Faq from '../components/Faq.astro';
 import LifeGrid from '../components/LifeGrid.astro';
+import { MILESTONES } from '../data/milestones';
 import { aboutPageSchema } from '../data/schema';
 import { HOMEPAGE_FAQ } from '../data/faq';
 import { PERSON, FACTS, SAME_AS, absoluteUrl } from '../data/identity';
@@ -95,6 +96,12 @@ const weeksLived = Math.min(
     Math.max(0, Math.floor((NOW.getTime() - BIRTH.getTime()) / 604_800_000)),
 );
 const livedPercent = ((weeksLived / TOTAL_WEEKS) * 100).toFixed(1);
+
+/** "2024-03" -> "March 2024". */
+function monthLabel(month: string): string {
+    const [y, m] = month.split('-').map(Number);
+    return new Date(y, m - 1, 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+}
 
 const ventures = [
     { year: '2020–2022', project: 'YouTube channel playmoj', outcome: 'Terminated following account compromise' },
@@ -207,7 +214,27 @@ const ventures = [
                     <li><i class="is-lived" aria-hidden="true"></i> Lived</li>
                     <li><i class="is-now" aria-hidden="true"></i> This week</li>
                     <li><i aria-hidden="true"></i> Ahead</li>
+                    <li><i class="ev-personal" aria-hidden="true"></i> Milestone</li>
+                    <li><i class="ev-setback" aria-hidden="true"></i> Setback</li>
+                    <li><i class="ev-flashfx" aria-hidden="true"></i> FlashFX</li>
                 </ul>
+
+                {/* The coloured cells carry a title attribute, but a role="img"
+                    grid hides its children from assistive tech — so the events
+                    are also listed here as real text, which is what a crawler
+                    and an answer engine will read. */}
+                <details class="life-events">
+                    <summary>{MILESTONES.length} marked weeks</summary>
+                    <ol>
+                        {MILESTONES.map((m) => (
+                            <li>
+                                <i class={`ev-${m.kind}`} aria-hidden="true"></i>
+                                <time datetime={m.month}>{monthLabel(m.month)}</time>
+                                <span>{m.label}</span>
+                            </li>
+                        ))}
+                    </ol>
+                </details>
             </section>
         </div>
 
@@ -527,10 +554,11 @@ const ventures = [
     .bio-split {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-        gap: 56px;
+        gap: 72px;
         align-items: start;
-        margin-bottom: 64px;
-        padding-bottom: 56px;
+        margin-top: 24px;
+        margin-bottom: 96px;
+        padding-bottom: 88px;
         border-bottom: 1px solid var(--gray-line);
     }
 
@@ -578,6 +606,68 @@ const ventures = [
     .life-caption strong {
         font-weight: 400;
         color: var(--black);
+    }
+
+    /* Collapsed by default: 25 dated entries would otherwise repeat the
+       homepage timeline in full right under the grid. */
+    .life-events {
+        margin-top: 28px;
+        border-top: 1px solid var(--gray-line);
+        padding-top: 20px;
+    }
+
+    .life-events summary {
+        cursor: pointer;
+        font-size: var(--text-xs);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        transition: color var(--dur) var(--ease);
+    }
+
+    .life-events summary:hover { color: var(--black); }
+
+    .life-events ol {
+        list-style: none;
+        padding: 0;
+        margin: 24px 0 0;
+    }
+
+    .life-events li {
+        display: grid;
+        grid-template-columns: 10px 132px 1fr;
+        align-items: baseline;
+        gap: 14px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--gray-line);
+        font-size: var(--text-xs);
+        line-height: 1.6;
+        color: var(--gray-dark);
+    }
+
+    .life-events li:last-child { border-bottom: none; }
+
+    .life-events time {
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .life-events i {
+        width: 9px;
+        height: 9px;
+        border-radius: 1px;
+        transform: translateY(1px);
+    }
+
+    @media (max-width: 620px) {
+        .life-events li {
+            grid-template-columns: 10px 1fr;
+            gap: 6px 12px;
+        }
+
+        .life-events time { grid-column: 2; }
+        .life-events span { grid-column: 2; }
     }
 
     .life-key {

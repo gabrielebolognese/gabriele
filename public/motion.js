@@ -340,7 +340,10 @@
         var birth = new Date(grid.getAttribute('data-birth') || '');
         if (isNaN(birth.getTime())) return;
 
-        var cells = grid.children;
+        // Cells are nested one level inside .life-row, so this is a flat query
+        // rather than grid.children. Run once; the loop below touches only the
+        // handful of cells that changed.
+        var cells = grid.querySelectorAll('.life-row > i');
         var total = cells.length;
         if (!total) return;
 
@@ -351,14 +354,21 @@
         if (lived < 0) lived = 0;
         if (lived > total) lived = total;
 
+        // Event colouring is baked in at build time and must survive a restate,
+        // so only the lived/now state is rewritten.
+        function setState(cell, state) {
+            cell.classList.remove('is-lived', 'is-now');
+            if (state) cell.classList.add(state);
+        }
+
         if (lived !== built) {
             var i;
             if (lived > built) {
-                for (i = built; i < lived; i++) cells[i].className = 'is-lived';
+                for (i = built; i < lived; i++) setState(cells[i], 'is-lived');
             } else {
-                for (i = lived; i < built; i++) cells[i].className = '';
+                for (i = lived; i < built; i++) setState(cells[i], '');
             }
-            if (cells[lived]) cells[lived].className = 'is-now';
+            if (cells[lived]) setState(cells[lived], 'is-now');
             grid.setAttribute('data-lived', String(lived));
         }
 

@@ -1543,53 +1543,145 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 /* ── 18. LIFE GRID ───────────────────────────────────────────────────────── */
 /* Lives here rather than in src/components/LifeGrid.astro on purpose: a scoped
    <style> in that component would make Astro stamp a data-astro-cid attribute
-   on all 4,680 cells, adding ~131 KB of raw HTML to /about for nothing. */
+   on all 4,680 cells, adding ~131 KB of raw HTML to /about for nothing.
+
+   The only colour on the site. Everything else is monochrome by design, so
+   these three hues carry all of the meaning in the grid and are used nowhere
+   else. */
+:root {
+    --life-personal: #2563eb;   /* blue   — personal milestones */
+    --life-setback:  #dc2626;   /* red    — losses and failures */
+    --life-flashfx:  #7c3aed;   /* purple — FlashFX             */
+}
+
 .life-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* Rows exist so the fill animation can stagger by row index. A flat grid would
+   have needed a delay on each of the 4,680 cells. */
+.life-row {
     display: grid;
     grid-template-columns: repeat(52, 1fr);
     gap: 2px;
 }
 
-.life-grid > i {
+.life-row > i {
     aspect-ratio: 1;
-    background: var(--gray-line);
+    background: var(--white);
+    box-shadow: inset 0 0 0 1px var(--gray-line);
     border-radius: 1px;
 }
 
-.life-grid > i.is-lived { background: var(--black); }
+.life-row > i.is-lived {
+    background: var(--black);
+    box-shadow: none;
+}
 
 /* The current week sits on the boundary between the filled and empty regions,
-   so it inverts rather than recolours — a monochrome palette has no spare hue
-   to spend on it. */
-.life-grid > i.is-now {
+   so it inverts and pulses rather than recolouring — it has to be findable
+   without spending one of the three event hues on it. */
+.life-row > i.is-now {
     background: var(--white);
     box-shadow: 0 0 0 1.5px var(--black);
     animation: life-pulse 2.4s var(--ease-soft) infinite;
+    z-index: 1;
 }
 
 @keyframes life-pulse {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: 0.35; }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.82); }
+}
+
+/* Event weeks. Colour wins over the lived/unlived fill, since that is the whole
+   point of marking them. */
+.life-row > i.is-event {
+    box-shadow: none;
+    position: relative;
+    z-index: 1;
+}
+
+.life-row > i.ev-personal { background: var(--life-personal); }
+.life-row > i.ev-setback  { background: var(--life-setback); }
+.life-row > i.ev-flashfx  { background: var(--life-flashfx); }
+
+/* Future events keep the hue but read as outlines, so "already happened" is
+   still legible at a glance. */
+.life-row > i.is-event:not(.is-lived):not(.is-now) {
+    background: var(--white);
+}
+
+.life-row > i.ev-personal:not(.is-lived) { box-shadow: inset 0 0 0 1.5px var(--life-personal); }
+.life-row > i.ev-setback:not(.is-lived)  { box-shadow: inset 0 0 0 1.5px var(--life-setback); }
+.life-row > i.ev-flashfx:not(.is-lived)  { box-shadow: inset 0 0 0 1.5px var(--life-flashfx); }
+
+/* ── Fill animation ──────────────────────────────────────────────────────
+   Rows sweep in top to bottom once the panel scrolls into view. Gated on
+   `.js` so a no-JS visitor gets the finished grid immediately, and on
+   `.bio-panel.is-in` so it fires on arrival rather than on load. */
+.js .life-row { opacity: 0; }
+
+.js .bio-panel.is-in .life-row {
+    animation: life-row-in 460ms var(--ease-expo) both;
+    animation-delay: calc(var(--r) * 9ms);
+}
+
+@keyframes life-row-in {
+    from { opacity: 0; transform: translate3d(0, -6px, 0); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ── Legend ──────────────────────────────────────────────────────────────── */
+.life-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+}
+
+.life-key li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .life-key i {
     width: 9px;
     height: 9px;
     border-radius: 1px;
-    background: var(--gray-line);
-}
-
-.life-key i.is-lived { background: var(--black); }
-
-.life-key i.is-now {
     background: var(--white);
-    box-shadow: 0 0 0 1.5px var(--black);
+    box-shadow: inset 0 0 0 1px var(--gray-line);
+    flex-shrink: 0;
 }
+
+.life-key i.is-lived { background: var(--black); box-shadow: none; }
+.life-key i.is-now   { background: var(--white); box-shadow: 0 0 0 1.5px var(--black); }
+
+/* Swatches, shared by the legend and the expandable event list below it. */
+.life-key i.ev-personal,
+.life-events i.ev-personal { background: var(--life-personal); box-shadow: none; }
+
+.life-key i.ev-setback,
+.life-events i.ev-setback  { background: var(--life-setback);  box-shadow: none; }
+
+.life-key i.ev-flashfx,
+.life-events i.ev-flashfx  { background: var(--life-flashfx);  box-shadow: none; }
 
 @media (prefers-reduced-motion: reduce) {
-    .life-grid > i.is-now { animation: none; }
+    .life-row > i.is-now { animation: none; }
+    .js .life-row { opacity: 1; }
+    .js .bio-panel.is-in .life-row { animation: none; }
 }
 
 @media (max-width: 520px) {
-    .life-grid { gap: 1px; }
+    .life-grid,
+    .life-row { gap: 1px; }
 }
