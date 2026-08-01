@@ -6,6 +6,7 @@
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Faq from '../components/Faq.astro';
+import LifeGrid from '../components/LifeGrid.astro';
 import { aboutPageSchema } from '../data/schema';
 import { HOMEPAGE_FAQ } from '../data/faq';
 import { PERSON, FACTS, SAME_AS, absoluteUrl } from '../data/identity';
@@ -45,6 +46,56 @@ function labelFor(url: string): string {
     return map[host] ?? host;
 }
 
+/* ── Age and life grid, computed at build time ───────────────────────────────
+   Both are rendered complete and correct in the HTML rather than drawn by JS on
+   load, so a no-JS visitor sees real figures and there is no layout shift.
+   motion.js then reconciles the drift since the last deploy. */
+
+const BIRTH = new Date(PERSON.birthDateTime);
+const NOW = new Date();
+
+/** Whole calendar days between two dates — ms division drifts across DST. */
+function calendarDays(from: Date, to: Date): number {
+    const a = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
+    const b = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate());
+    return Math.round((b - a) / 86_400_000);
+}
+
+function ageAt(now: Date) {
+    let years = now.getFullYear() - BIRTH.getFullYear();
+    let mark = new Date(BIRTH.getTime());
+    mark.setFullYear(BIRTH.getFullYear() + years);
+    if (mark.getTime() > now.getTime()) {
+        years -= 1;
+        mark = new Date(BIRTH.getTime());
+        mark.setFullYear(BIRTH.getFullYear() + years);
+    }
+    let days = calendarDays(mark, now);
+    const secsIn = (d: Date) => d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+    let delta = secsIn(now) - secsIn(BIRTH);
+    if (delta < 0) { delta += 86_400; days -= 1; }
+    return {
+        years,
+        days,
+        hours: Math.floor(delta / 3600),
+        mins: Math.floor((delta % 3600) / 60),
+        secs: delta % 60,
+    };
+}
+
+const age = ageAt(NOW);
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/* The Tim Urban "life in weeks" grid: 52 columns, 90 rows, one square a week. */
+const WEEK_COLUMNS = 52;
+const LIFE_ROWS = 90;
+const TOTAL_WEEKS = WEEK_COLUMNS * LIFE_ROWS;
+const weeksLived = Math.min(
+    TOTAL_WEEKS,
+    Math.max(0, Math.floor((NOW.getTime() - BIRTH.getTime()) / 604_800_000)),
+);
+const livedPercent = ((weeksLived / TOTAL_WEEKS) * 100).toFixed(1);
+
 const ventures = [
     { year: '2020–2022', project: 'YouTube channel playmoj', outcome: 'Terminated following account compromise' },
     { year: '2022–2023', project: 'Freelance editing via Fiverr (Emerals)', outcome: '$1,200 total earnings; client concluded operations' },
@@ -78,30 +129,87 @@ const ventures = [
         <header class="bio-header">
             <h1 class="bio-h1">Who is Gabriele Bolognese?</h1>
             <p class="bio-standfirst">
-                The full story of Gabriele Bolognese, Italian founder and lead developer of
+                Italian founder and lead developer of
                 <a href="https://flashfx.app" target="_blank" rel="noopener noreferrer">FlashFX</a> —
                 from a hacked Minecraft channel in 2020 to a browser-based motion graphics and video
                 editing platform used by over {FACTS.usersLabel} people.
             </p>
-            <Image
-                src={portrait}
-                alt="Gabriele Bolognese, founder of FlashFX"
-                class="bio-portrait"
-                widths={[320, 640]}
-                sizes="(max-width: 860px) 100vw, 320px"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-            />
+
+            {/* Count-up, the mirror of the homepage countdown. Rendered with real
+                values at build time; motion.js takes over once it loads. */}
+            <div class="age" data-birth={PERSON.birthDateTime}>
+                <span class="age-label">Alive for</span>
+                <div class="age-display">
+                    <div class="age-unit">
+                        <span class="age-num" id="age-years">{age.years}</span>
+                        <span class="age-unit-label">Years</span>
+                    </div>
+                    <span class="age-sep">.</span>
+                    <div class="age-unit">
+                        <span class="age-num" id="age-days">{age.days}</span>
+                        <span class="age-unit-label">Days</span>
+                    </div>
+                    <span class="age-sep">.</span>
+                    <div class="age-unit">
+                        <span class="age-num" id="age-hours">{pad(age.hours)}</span>
+                        <span class="age-unit-label">Hours</span>
+                    </div>
+                </div>
+                <p class="age-sub">
+                    and <span id="age-mins">{pad(age.mins)}</span> minutes,
+                    <span id="age-secs">{pad(age.secs)}</span> seconds —
+                    since <time datetime={PERSON.birthDate}>6 December 2008</time>
+                </p>
+            </div>
         </header>
 
-        <p class="bio-lede">
-            <strong>Gabriele Bolognese</strong> (born December 2008) is an Italian software developer,
-            entrepreneur, and content creator, best known as the founder and chief executive officer of
-            FlashFX, a browser-based motion design and video editing application. He began teaching himself
-            video production at the age of eleven and later moved into freelance editing and independent
-            software development, founding FlashFX without formal training in computer science.
-        </p>
+        <div class="bio-split">
+            <aside class="bio-side">
+                <Image
+                    src={portrait}
+                    alt="Gabriele Bolognese, founder of FlashFX"
+                    class="bio-portrait"
+                    widths={[320, 640]}
+                    sizes="(max-width: 900px) 100vw, 340px"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                />
+
+                <h2 class="bio-side-heading">About</h2>
+                <p class="bio-lede">
+                    <strong>Gabriele Bolognese</strong> (born 6 December 2008) is an Italian software
+                    developer, entrepreneur, and content creator, best known as the founder and chief
+                    executive officer of FlashFX, a browser-based motion design and video editing
+                    application. He began teaching himself video production at the age of eleven and later
+                    moved into freelance editing and independent software development, founding FlashFX
+                    without formal training in computer science.
+                </p>
+            </aside>
+
+            <section class="bio-panel" aria-labelledby="life-heading">
+                <h2 id="life-heading" class="bio-side-heading">Life in weeks</h2>
+                <p class="life-intro">
+                    One square is one week. Ninety years, {TOTAL_WEEKS.toLocaleString()} of them.
+                </p>
+                <LifeGrid
+                    birth={PERSON.birthDateTime}
+                    weeksLived={weeksLived}
+                    totalWeeks={TOTAL_WEEKS}
+                />
+
+                <p class="life-caption">
+                    <strong id="life-count">{weeksLived.toLocaleString()}</strong> weeks lived ·
+                    <strong id="life-percent">{livedPercent}%</strong>
+                </p>
+
+                <ul class="life-key">
+                    <li><i class="is-lived" aria-hidden="true"></i> Lived</li>
+                    <li><i class="is-now" aria-hidden="true"></i> This week</li>
+                    <li><i aria-hidden="true"></i> Ahead</li>
+                </ul>
+            </section>
+        </div>
 
         <h2 id="early-life">Early life and education</h2>
         <p>
@@ -278,9 +386,23 @@ const ventures = [
 </Layout>
 
 <style>
+    /* The article runs the full content width so the header and the split can
+       use it; the prose below is pulled back to a readable measure instead of
+       constraining everything to 760px. */
     .bio {
-        max-width: 760px;
+        max-width: var(--content-max);
         margin: 0 auto;
+    }
+
+    .bio > h2,
+    .bio > h3,
+    .bio > p,
+    .bio > .bio-figure,
+    .bio > .bio-table-wrap,
+    .bio > .bio-links {
+        max-width: 760px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .breadcrumb ol {
@@ -304,7 +426,11 @@ const ventures = [
     .breadcrumb a { color: var(--gray-dark); }
     .breadcrumb a:hover { color: var(--black); }
 
-    .bio-header { margin-bottom: 48px; }
+    /* ── Header: title and the count-up, centred ─────────────────────────── */
+    .bio-header {
+        text-align: center;
+        margin-bottom: 72px;
+    }
 
     .bio-h1 {
         font-family: var(--font-display);
@@ -320,23 +446,172 @@ const ventures = [
         line-height: 1.8;
         color: var(--gray-dark);
         max-width: 62ch;
+        margin: 0 auto;
+    }
+
+    .age {
+        margin-top: 56px;
+        padding-top: 48px;
+        border-top: 1px solid var(--gray-line);
+    }
+
+    .age-label {
+        display: block;
+        font-family: var(--font-wide);
+        font-size: 9px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        margin-bottom: 32px;
+    }
+
+    .age-display {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+    }
+
+    .age-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .age-num {
+        font-family: var(--font-wide);
+        font-weight: 200;
+        font-size: clamp(48px, 8vw, 104px);
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: var(--black);
+        min-width: 2ch;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Shares the countdown's digit-roll keyframe, set in Style.css. */
+    .age-num.is-tick { animation: tick-in 520ms var(--ease-expo) both; }
+
+    .age-unit-label {
+        font-family: var(--font-wide);
+        font-size: 8px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--gray-line);
+        margin-top: 14px;
+        transition: color var(--dur) var(--ease);
+    }
+
+    .age-display:hover .age-unit-label { color: var(--gray-mid); }
+
+    .age-sep {
+        font-family: var(--font-wide);
+        font-weight: 200;
+        font-size: clamp(28px, 5vw, 64px);
+        line-height: 1;
+        color: var(--gray-line);
+        margin: 0 14px;
+    }
+
+    .age-sub {
+        margin-top: 28px;
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .age-sub time { color: var(--gray-dark); }
+
+    /* ── Split: portrait + about on the left, life grid on the right ─────── */
+    .bio-split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        gap: 56px;
+        align-items: start;
+        margin-bottom: 64px;
+        padding-bottom: 56px;
+        border-bottom: 1px solid var(--gray-line);
     }
 
     .bio-portrait {
         width: 100%;
-        max-width: 320px;
         height: auto;
-        margin-top: 40px;
         filter: grayscale(100%);
     }
 
+    .bio-side-heading {
+        font-family: var(--font-wide);
+        font-size: 9px;
+        font-weight: 400;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        margin: 32px 0 18px;
+    }
+
+    .bio-panel .bio-side-heading { margin-top: 0; }
+
     .bio-lede {
-        font-size: var(--text-lg);
-        line-height: 1.75;
+        font-size: var(--text-sm);
+        line-height: 1.9;
+        color: var(--gray-dark);
+        margin: 0;
+    }
+
+    /* ── Life in weeks ───────────────────────────────────────────────────── */
+    .life-intro {
+        font-size: var(--text-xs);
+        letter-spacing: 0.06em;
+        color: var(--gray-mid);
+        margin-bottom: 24px;
+    }
+
+    .life-caption {
+        margin-top: 22px;
+        font-size: var(--text-xs);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .life-caption strong {
+        font-weight: 400;
         color: var(--black);
-        margin-bottom: 56px;
-        padding-bottom: 40px;
-        border-bottom: 1px solid var(--gray-line);
+    }
+
+    .life-key {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 24px;
+        list-style: none;
+        padding: 0;
+        margin: 16px 0 0;
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .life-key li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    @media (max-width: 900px) {
+        .bio-split {
+            grid-template-columns: 1fr;
+            gap: 48px;
+        }
+
+        .bio-portrait { max-width: 320px; }
+    }
+
+    @media (max-width: 520px) {
+        .age-num { font-size: clamp(34px, 13vw, 56px); }
+        .age-sep { font-size: clamp(20px, 8vw, 34px); margin: 0 8px; }
+        .life-grid { gap: 1px; }
     }
 
     .bio h2 {
@@ -438,3 +713,4 @@ const ventures = [
         .bio h2 { margin-top: 48px; }
     }
 </style>
+

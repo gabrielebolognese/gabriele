@@ -25,6 +25,7 @@
         '.next-paragraph', '.next-contact',
         '.faq-item',
         '.bio-lede', '.bio-figure', '.bio-table-wrap', '.bio-links', '.breadcrumb',
+        '.age', '.bio-panel',
         '.article-cover-img', '.article-h1',
         '.rule'
     ].join(',');
@@ -224,7 +225,9 @@
 
         function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
 
-        var timer = null;
+        // Assigned below. tick() only reaches it once the deadline has passed,
+        // by which point tickWhileVisible has returned.
+        var halt = null;
 
         function tick() {
             var diff = end.getTime() - Date.now();
@@ -236,7 +239,7 @@
                 put(units.mins, '00');
                 put(units.secs, '00');
                 section.classList.add('is-complete');
-                stop();
+                if (halt) halt();
                 return;
             }
 
@@ -246,37 +249,166 @@
             put(units.secs, pad(Math.floor((diff % 60000) / 1000)));
         }
 
-        function start() {
-            if (timer) return;
-            timer = setInterval(tick, 1000);
-            tick();
+        halt = tickWhileVisible(section, tick);
+    }
+
+    /* ── Age count-up ────────────────────────────────────────────────────── */
+
+    /* Whole calendar days between two dates, ignoring clock time. Doing this by
+       millisecond division drifts by an hour across a DST boundary, which is
+       enough to show the wrong day count for half the year. */
+    function calendarDays(from, to) {
+        var a = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
+        var b = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate());
+        return Math.round((b - a) / 86400000);
+    }
+
+    function secondsIntoDay(d) {
+        return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+    }
+
+    function ageParts(birth, now) {
+        // Most recent birthday on or before `now`.
+        var years = now.getFullYear() - birth.getFullYear();
+        var mark = new Date(birth.getTime());
+        mark.setFullYear(birth.getFullYear() + years);
+        if (mark.getTime() > now.getTime()) {
+            years -= 1;
+            mark = new Date(birth.getTime());
+            mark.setFullYear(birth.getFullYear() + years);
         }
 
-        function stop() {
+        var days = calendarDays(mark, now);
+        var delta = secondsIntoDay(now) - secondsIntoDay(birth);
+        if (delta < 0) { delta += 86400; days -= 1; }
+
+        return {
+            years: years,
+            days: days,
+            hours: Math.floor(delta / 3600),
+            mins: Math.floor((delta % 3600) / 60),
+            secs: delta % 60
+        };
+    }
+
+    function initAgeCount() {
+        var section = document.querySelector('.age');
+        if (!section) return;
+
+        var birth = new Date(section.getAttribute('data-birth') || '');
+        if (isNaN(birth.getTime())) return;
+
+        var units = {
+            years: document.getElementById('age-years'),
+            days: document.getElementById('age-days'),
+            hours: document.getElementById('age-hours'),
+            mins: document.getElementById('age-mins'),
+            secs: document.getElementById('age-secs')
+        };
+        if (!units.years) return;
+
+        function put(el, value) {
+            if (!el || el.textContent === value) return;
+            el.textContent = value;
+            if (!reduced) retick(el);
+        }
+
+        function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
+
+        function tick() {
+            var a = ageParts(birth, new Date());
+            put(units.years, String(a.years));
+            put(units.days, String(a.days));
+            put(units.hours, pad(a.hours));
+            put(units.mins, pad(a.mins));
+            put(units.secs, pad(a.secs));
+        }
+
+        tickWhileVisible(section, tick);
+    }
+
+    /* ── Life in weeks ───────────────────────────────────────────────────── */
+
+    /* The grid is rendered complete and correct at build time, so it is right
+       for no-JS visitors and right the moment the page paints. This only
+       reconciles the drift since the last deploy, touching the handful of cells
+       that changed rather than walking all 4,680. */
+    function initLifeGrid() {
+        var grid = document.querySelector('.life-grid');
+        if (!grid) return;
+
+        var birth = new Date(grid.getAttribute('data-birth') || '');
+        if (isNaN(birth.getTime())) return;
+
+        var cells = grid.children;
+        var total = cells.length;
+        if (!total) return;
+
+        var built = parseInt(grid.getAttribute('data-lived'), 10);
+        if (isNaN(built)) built = 0;
+
+        var lived = Math.floor((Date.now() - birth.getTime()) / 604800000);
+        if (lived < 0) lived = 0;
+        if (lived > total) lived = total;
+
+        if (lived !== built) {
+            var i;
+            if (lived > built) {
+                for (i = built; i < lived; i++) cells[i].className = 'is-lived';
+            } else {
+                for (i = lived; i < built; i++) cells[i].className = '';
+            }
+            if (cells[lived]) cells[lived].className = 'is-now';
+            grid.setAttribute('data-lived', String(lived));
+        }
+
+        var pct = (lived / total * 100).toFixed(1);
+        grid.setAttribute('aria-label',
+            'Life in weeks: ' + lived + ' of ' + total + ' weeks lived, ' + pct + ' per cent.');
+
+        var count = document.getElementById('life-count');
+        if (count) count.textContent = lived.toLocaleString();
+        var percent = document.getElementById('life-percent');
+        if (percent) percent.textContent = pct + '%';
+    }
+
+    /* ── Shared ──────────────────────────────────────────────────────────── */
+
+    /* Both clocks call retick(), which forces a synchronous reflow. Doing that
+       once a second forever — scrolled out of view, or in a background tab — is
+       pure main-thread cost and shows up as INP. So a clock only runs while it
+       is actually on screen. Returns a function that stops it for good. */
+    function tickWhileVisible(section, onTick) {
+        var timer = null;
+
+        function begin() {
+            if (timer) return;
+            timer = setInterval(onTick, 1000);
+            onTick();
+        }
+
+        function halt() {
             if (!timer) return;
             clearInterval(timer);
             timer = null;
         }
 
-        // The seconds digit calls retick(), which forces a synchronous reflow.
-        // Doing that once a second forever — while the section is scrolled out
-        // of view, or the tab is in the background — is pure main-thread cost
-        // and shows up as INP. So the clock only runs while it is on screen.
         if ('IntersectionObserver' in window) {
             new IntersectionObserver(function (entries) {
-                if (entries[entries.length - 1].isIntersecting) start();
-                else stop();
+                if (entries[entries.length - 1].isIntersecting) begin();
+                else halt();
             }, { threshold: 0 }).observe(section);
         } else {
-            start();
+            begin();
         }
 
         document.addEventListener('visibilitychange', function () {
-            if (document.hidden) stop();
-            else if (section.getBoundingClientRect().top < window.innerHeight) start();
+            if (document.hidden) halt();
+            else if (section.getBoundingClientRect().top < window.innerHeight) begin();
         });
 
-        tick();   // paint real values immediately, even before the observer fires
+        onTick();   // paint real values immediately, before the observer fires
+        return halt;
     }
 
     function start() {
@@ -285,6 +417,8 @@
         initProgress();
         initCarousels();
         initCountdown();
+        initAgeCount();
+        initLifeGrid();
     }
 
     if (document.readyState === 'loading') {

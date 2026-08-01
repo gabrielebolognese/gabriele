@@ -20,6 +20,7 @@
    15. What's next
    16. Footer
    17. Article page & prose
+   18. Life grid
 
    Conventions: each section owns its own media queries; breakpoints are
    860px (tablet) and 520px (phone).
@@ -185,6 +186,8 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .bio-table-wrap,
 .js .bio-links,
 .js .breadcrumb,
+.js .age,
+.js .bio-panel,
 .js .article-cover-img,
 .js .article-h1 {
     opacity: 0;
@@ -291,6 +294,8 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .bio-table-wrap,
     .js .bio-links,
     .js .breadcrumb,
+    .js .age,
+    .js .bio-panel,
     .js .article-cover-img,
     .js .article-h1 { opacity: 1; transform: none; }
 
@@ -1532,4 +1537,59 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     text-transform: uppercase;
     color: var(--gray-mid);
     background: var(--gray-soft);
+}
+
+
+/* ── 18. LIFE GRID ───────────────────────────────────────────────────────── */
+/* Lives here rather than in src/components/LifeGrid.astro on purpose: a scoped
+   <style> in that component would make Astro stamp a data-astro-cid attribute
+   on all 4,680 cells, adding ~131 KB of raw HTML to /about for nothing. */
+.life-grid {
+    display: grid;
+    grid-template-columns: repeat(52, 1fr);
+    gap: 2px;
+}
+
+.life-grid > i {
+    aspect-ratio: 1;
+    background: var(--gray-line);
+    border-radius: 1px;
+}
+
+.life-grid > i.is-lived { background: var(--black); }
+
+/* The current week sits on the boundary between the filled and empty regions,
+   so it inverts rather than recolours — a monochrome palette has no spare hue
+   to spend on it. */
+.life-grid > i.is-now {
+    background: var(--white);
+    box-shadow: 0 0 0 1.5px var(--black);
+    animation: life-pulse 2.4s var(--ease-soft) infinite;
+}
+
+@keyframes life-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.35; }
+}
+
+.life-key i {
+    width: 9px;
+    height: 9px;
+    border-radius: 1px;
+    background: var(--gray-line);
+}
+
+.life-key i.is-lived { background: var(--black); }
+
+.life-key i.is-now {
+    background: var(--white);
+    box-shadow: 0 0 0 1.5px var(--black);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .life-grid > i.is-now { animation: none; }
+}
+
+@media (max-width: 520px) {
+    .life-grid { gap: 1px; }
 }

@@ -35,10 +35,12 @@ export const PERSON = {
   longDescription:
     'Gabriele Bolognese is an Italian founder and self-taught developer, and the creator of FlashFX, a browser-based motion graphics and video editing platform used by more than 8,000 people. He built it solo across four complete rebuilds.',
 
-  // TODO: confirm. story.html says born 2008; the homepage hardcodes "17-year-old",
-  // which goes stale on its own. Giving schema a birthDate lets the age be derived
-  // instead of asserted. Set to null to omit entirely.
-  birthDate: '2008' as string | null,
+  /** Confirmed 2026-07-31. Also drives the live age counter and the life grid
+   *  on /about, so the age is derived everywhere rather than asserted — the
+   *  hardcoded "17-year-old" in the old copy went stale on its own. */
+  birthDate: '2008-12-06' as string | null,
+  /** Local midnight, for the counter. No birth time on record. */
+  birthDateTime: '2008-12-06T00:00:00',
 
   // TODO: confirm — the footer says Rovigo, Italy.
   address: {
@@ -79,8 +81,10 @@ export const ORGANIZATION = {
   url: 'https://flashfx.app',
   description:
     'FlashFX is a browser-based motion graphics and video editing platform, offering an alternative to After Effects and Premiere Pro.',
-  // TODO: the page body says "January 3rd, 2024" but the old schema said 2024-01-01.
-  foundingDate: '2024-01-03',
+  /** Confirmed 2026-07-31: the idea was formed and formalised on day one of
+   *  2024. Note the /about narrative separately dates Vision AI Demo — a
+   *  different, earlier project — to 3 January 2024. */
+  foundingDate: '2024-01-01',
   // TODO: a real logo URL. Organization.logo is required for the logo rich result.
   logo: 'https://flashfx.app/logo.png',
   xHandle: 'FlashFXeditor',

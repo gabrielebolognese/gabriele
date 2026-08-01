@@ -1,0 +1,34 @@
+---
+/* The Tim Urban "life in weeks" grid: one square per week of a 90-year life.
+ *
+ * This component deliberately has NO <style> block. Astro stamps a
+ * data-astro-cid-* attribute on every element of any component that defines
+ * scoped styles — matched by a selector or not — and across 4,680 cells that
+ * was 131 KB of raw HTML doing nothing. The styles live under "18. LIFE GRID"
+ * in public/Style.css instead.
+ *
+ * The grid is rendered complete and correct at build time so it is right for
+ * no-JS visitors and right on first paint; initLifeGrid() in motion.js then
+ * reconciles the weeks elapsed since the last deploy.
+ */
+interface Props {
+  /** Local-time birth timestamp, e.g. "2008-12-06T00:00:00". */
+  birth: string;
+  weeksLived: number;
+  totalWeeks: number;
+}
+
+const { birth, weeksLived, totalWeeks } = Astro.props;
+const percent = ((weeksLived / totalWeeks) * 100).toFixed(1);
+---
+{/* role="img" with a label: 4,680 empty cells would otherwise be announced
+    one at a time. The figures underneath carry the actual meaning. */}
+<div
+  class="life-grid"
+  role="img"
+  data-birth={birth}
+  data-lived={weeksLived}
+  aria-label={`Life in weeks: ${weeksLived} of ${totalWeeks} weeks lived, ${percent} per cent.`}
+>{Array.from({ length: totalWeeks }, (_, i) => (
+  <i class={i < weeksLived ? 'is-lived' : i === weeksLived ? 'is-now' : undefined}></i>
+))}</div>
