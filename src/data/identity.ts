@@ -29,7 +29,7 @@ export const PERSON = {
 
   /** Kept under ~155 chars so it is not truncated in the SERP. */
   description:
-    'Gabriele Bolognese is an Italian founder and developer, creator of FlashFX — a browser-based motion graphics and video editing platform.',
+    'Gabriele Bolognese is an Italian founder and developer, creator of FlashFX, a browser-based motion graphics and video editing platform.',
 
   /** Longer form, used for JSON-LD where there is no length pressure. */
   longDescription:

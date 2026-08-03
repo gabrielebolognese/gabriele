@@ -58,7 +58,7 @@ function cellTitle(i: number): string | undefined {
     month: 'long',
     year: 'numeric',
   });
-  return `${name} — ${event.label}`;
+  return `${name}, ${event.label}`;
 }
 ---
 {/* role="img" with a label: 4,680 empty cells would otherwise be announced one

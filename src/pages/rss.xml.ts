@@ -8,7 +8,7 @@ export async function GET(context: APIContext) {
   const sorted = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
   return rss({
-    title: `${PERSON.name} — Articles`,
+    title: `${PERSON.name}, Articles`,
     description:
       'Essays by Gabriele Bolognese on building FlashFX, motion design, and founding a software company solo.',
     site: context.site ?? SITE.url,

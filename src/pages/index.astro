@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import {getCollection} from 'astro:content';
 import Card from '../components/Card.astro';
 import Faq from '../components/Faq.astro';
+import LifeSection from '../components/LifeSection.astro';
 import { Image } from 'astro:assets';
 import img1 from '../assets/1.png';
 import img2 from '../assets/2.png';
@@ -74,53 +75,33 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
 
     <!-- ─── 2. INTRODUCTION ─── -->
     <section class="section intro" id="about" aria-labelledby="about-heading">
-        <div class="intro-grid">
-            <div class="intro-text">
-                <h2 id="about-heading" class="section-label">About</h2>
-                <p>
-                    I am Gabriele Bolognese, a founder and software developer based in the Venice–Treviso area of
-                    northern Italy. At 17, I lead FlashFX, a browser-native motion graphics and video editing platform,
-                    handling everything from product architecture to community growth. FlashFX has grown to over
-                    {FACTS.usersLabel} users entirely through organic traction, without spending a single dollar on
-                    advertising.
-                </p>
-                <p>
-                    My work sits at the intersection of creative creation, web development, and applied machine
-                    learning.
-                    Outside of building, I compete in Italian mathematics nationals at the champion level, national
-                    coding competitions, and train in gymnastics and sprinting.
-                </p>
-                {/* These must stay identical to SAME_AS in src/data/identity.ts —
-                    a visible link corroborating each sameAs claim is what makes
-                    the claim worth anything. */}
-                <div class="intro-links">
-                    <a href="https://www.linkedin.com/in/gabriele-bolognese/" target="_blank" rel="noopener noreferrer me"
-                       class="link-pill">LinkedIn</a>
-                    <a href="https://github.com/gabrielebolognese" target="_blank" rel="noopener noreferrer me"
-                       class="link-pill">GitHub</a>
-                    <a href="https://x.com/FlashFXeditor" target="_blank" rel="noopener noreferrer me"
-                       class="link-pill">X / Twitter</a>
-                    <a href="https://www.youtube.com/@gabriele.bolognese" target="_blank" rel="noopener noreferrer me"
-                       class="link-pill">YouTube</a>
-                    <a href="https://www.instagram.com/logs.of.gabry/" target="_blank" rel="noopener noreferrer me"
-                       class="link-pill">Instagram</a>
-                </div>
-            </div>
-            <div class="intro-image-wrap">
-                {/* The LCP element. Eager + high priority so it is not queued
-                    behind the stylesheet; the original shipped as a 1.19 MB PNG. */}
-                <Image
-                        src={imgportrait}
-                        alt="Gabriele Bolognese, founder of FlashFX, photographed in northern Italy"
-                        class="intro-image"
-                        widths={[420, 640, 1024]}
-                        sizes="(max-width: 860px) 100vw, 420px"
-                        loading="eager"
-                        fetchpriority="high"
-                        decoding="async"
-                />
-            </div>
-        </div>
+        <h2 id="about-heading" class="visually-hidden">About</h2>
+        <LifeSection aboutHeading="About" showLinks={true}>
+            <p>
+                I am Gabriele Bolognese, a founder and software developer based in the Venice, Treviso
+                area of northern Italy. At 17 I lead FlashFX, a browser-native motion graphics and video
+                editing platform, handling everything from product architecture to community growth.
+                FlashFX has grown to over {FACTS.usersLabel} users entirely through organic traction,
+                without spending a single dollar on advertising.
+            </p>
+            <p>
+                My work sits at the intersection of creative tooling, web development, and applied
+                machine learning. Outside of building, I compete in the Italian mathematics nationals at
+                champion level and in national coding competitions, and I train in gymnastics and
+                sprinting.
+            </p>
+            <p>
+                I wrote my first line of code in January 2024, having never programmed before, and lost
+                that entire project to a single file-path error a few weeks later. Everything since has
+                been built on what that failure taught me: four complete rebuilds of FlashFX, roughly
+                300,000 lines of TypeScript, and a product that now runs in the browser with no install,
+                no licence, and no barrier to anyone who wants to make something move.
+            </p>
+            <p>
+                The grid on the right is every week of a ninety year life. The coloured squares are the
+                weeks that changed the direction of mine.
+            </p>
+        </LifeSection>
     </section>
 
     <div class="rule"></div>
@@ -162,7 +143,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         <div class="projects-grid">
 
             <!-- ── Row 1 ── -->
-            <article class="project-card project-featured" aria-label="FlashFX — featured project">
+            <article class="project-card project-featured" aria-label="FlashFX, featured project">
                 <div class="featured-badge">Featured Project</div>
                 <header class="project-header">
                     <div class="project-logo-placeholder flashfx-logo" aria-hidden="true">FX</div>
@@ -192,9 +173,9 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 </p>
                 <div class="carousel" aria-label="FlashFX screenshot gallery">
                     <div class="carousel-track" id="flashfx-track">
-                        <Image src={img1} alt="FlashFX Animator interface — timeline and canvas view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img1} alt="FlashFX Animator interface, timeline and canvas view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                         <Image src={img2} alt="FlashFX motion graphics editor with keyframe controls" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={img3} alt="FlashFX Animator — layer panel and effects toolbar" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={img3} alt="FlashFX Animator, layer panel and effects toolbar" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                         <Image src={img5} alt="FlashFX 3D object integration in browser" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                         <Image src={img7} alt="FlashFX AI features and smart animation tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                         <Image src={img8} alt="FlashFX dashboard and project management view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
@@ -207,7 +188,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 </div>
             </article>
 
-            <article class="project-card project-featured" aria-label="FlashFX Editor — featured project">
+            <article class="project-card project-featured" aria-label="FlashFX Editor, featured project">
                 <div class="featured-badge">Featured Project</div>
                 <header class="project-header">
                     <div class="project-logo-placeholder flashfx-logo" aria-hidden="true">FE</div>
@@ -227,7 +208,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     <dd>Premiere Pro, DaVinci Resolve, CapCut, Clideo, Veed.io</dd>
                 </dl>
                 <p class="project-desc">
-                    The <strong>Editor</strong> is FlashFX's Premiere Pro alternative — a full video sequencing and
+                    The <strong>Editor</strong> is FlashFX's Premiere Pro alternative, a full video sequencing and
                     compositing suite in the browser. Includes a timeline, multi-track video and audio editing,
                     color grading, and node-based animation controls. Designed to sit alongside the Animator as the
                     second pillar of the FlashFX creative suite.
@@ -296,7 +277,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 </dl>
                 <p class="project-desc">
                     An AI-powered content automation platform that turns one piece of source content into
-                    a full multi-platform distribution pipeline — adapted for tone, format, and audience
+                    a full multi-platform distribution pipeline, adapted for tone, format, and audience
                     per channel, with zero manual reformatting.
                 </p>
                 <div class="carousel" aria-label="FlashFX Documentation screenshot gallery">
@@ -317,7 +298,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     <dt>Industry</dt>
                     <dd>Creative Software / AI Tools</dd>
                     <dt>Context</dt>
-                    <dd>The original concept that preceded FlashFX — an AI-powered animation editor
+                    <dd>The original concept that preceded FlashFX, an AI-powered animation editor
                         built in January 2024. Crashed after a file restructuring error wiped the codebase.
                     </dd>
                     <dt>Legacy</dt>

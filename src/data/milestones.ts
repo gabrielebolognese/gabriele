@@ -28,10 +28,10 @@ export const MILESTONE_KINDS: Record<MilestoneKind, string> = {
 
 export const MILESTONES: Milestone[] = [
   { month: '2020-01', kind: 'personal', label: 'YouTube channel started, first edits in Shotcut' },
-  { month: '2021-06', kind: 'personal', label: 'YouTube channel peak — 350 videos' },
+  { month: '2021-06', kind: 'personal', label: 'YouTube channel peak, 350 videos' },
   { month: '2022-01', kind: 'setback',  label: 'Channel hacked, 600+ videos deleted overnight' },
   { month: '2022-11', kind: 'personal', label: 'First Fiverr account, freelance career begins' },
-  { month: '2022-12', kind: 'personal', label: 'First client, Emerals — $5 a video' },
+  { month: '2022-12', kind: 'personal', label: 'First client, Emerals, $5 a video' },
   { month: '2023-04', kind: 'personal', label: 'First payment card' },
   { month: '2023-06', kind: 'setback',  label: 'Emerals client lost, income gone again' },
   { month: '2023-08', kind: 'personal', label: 'HowToAI discovery, automation era begins' },
@@ -41,7 +41,7 @@ export const MILESTONES: Milestone[] = [
   { month: '2024-03', kind: 'setback',  label: 'Vision AI Demo crashes, first real debt' },
   { month: '2024-08', kind: 'setback',  label: 'Second €200 loan' },
   { month: '2024-09', kind: 'personal', label: 'National coding competition, top placement' },
-  { month: '2025-01', kind: 'flashfx',  label: 'FlashFX named — TypeScript and motion design' },
+  { month: '2025-01', kind: 'flashfx',  label: 'FlashFX named, TypeScript and motion design' },
   { month: '2025-02', kind: 'flashfx',  label: 'TypeScript solo grind, building alone' },
   { month: '2025-04', kind: 'personal', label: 'New editing client, $250 a month' },
   { month: '2025-06', kind: 'flashfx',  label: 'Bolt hackathon, final submission' },

@@ -1,0 +1,424 @@
+---
+/* The age count-up and the life-in-weeks grid, rendered on both the homepage
+ * and /about. Extracted so the two cannot drift the way the <head> once did.
+ *
+ * Layout: the count-up spans the full width at the top, then a split with the
+ * portrait and the About copy in a one-third column and the grid in the
+ * remaining two thirds. The grid deliberately carries no heading or caption
+ * above it, so its first row lines up with the top of the portrait.
+ *
+ * Age and week counts are computed here at build time, so both pages get real
+ * values in the HTML with no layout shift; motion.js reconciles the drift since
+ * the last deploy.
+ */
+import { Image } from 'astro:assets';
+import LifeGrid from './LifeGrid.astro';
+import { PERSON, SAME_AS, ORGANIZATION } from '../data/identity';
+import { MILESTONES } from '../data/milestones';
+import portrait from '../assets/portrait.png';
+
+interface Props {
+  /** Heading above the About copy in the left column. */
+  aboutHeading?: string;
+  /** Renders the profile pills under the About copy. */
+  showLinks?: boolean;
+  /** Heading level for the About/section labels, so each page keeps a sane outline. */
+  eager?: boolean;
+}
+
+const { aboutHeading = 'About', showLinks = false, eager = true } = Astro.props;
+
+const WEEK_COLUMNS = 52;
+const LIFE_ROWS = 90;
+const TOTAL_WEEKS = WEEK_COLUMNS * LIFE_ROWS;
+
+const BIRTH = new Date(PERSON.birthDateTime);
+const NOW = new Date();
+
+/** Whole calendar days between two dates. Millisecond division drifts by an
+ *  hour across a DST boundary, which is enough to show the wrong day count for
+ *  half the year. */
+function calendarDays(from: Date, to: Date): number {
+  const a = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
+  const b = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate());
+  return Math.round((b - a) / 86_400_000);
+}
+
+function ageAt(now: Date) {
+  let years = now.getFullYear() - BIRTH.getFullYear();
+  let mark = new Date(BIRTH.getTime());
+  mark.setFullYear(BIRTH.getFullYear() + years);
+  if (mark.getTime() > now.getTime()) {
+    years -= 1;
+    mark = new Date(BIRTH.getTime());
+    mark.setFullYear(BIRTH.getFullYear() + years);
+  }
+  let days = calendarDays(mark, now);
+  const secsIn = (d: Date) => d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+  let delta = secsIn(now) - secsIn(BIRTH);
+  if (delta < 0) { delta += 86_400; days -= 1; }
+  return {
+    years,
+    days,
+    hours: Math.floor(delta / 3600),
+    mins: Math.floor((delta % 3600) / 60),
+    secs: delta % 60,
+  };
+}
+
+const age = ageAt(NOW);
+const pad = (n: number) => String(n).padStart(2, '0');
+
+const weeksLived = Math.min(
+  TOTAL_WEEKS,
+  Math.max(0, Math.floor((NOW.getTime() - BIRTH.getTime()) / 604_800_000)),
+);
+const livedPercent = ((weeksLived / TOTAL_WEEKS) * 100).toFixed(1);
+
+/** "2024-03" -> "March 2024". */
+function monthLabel(month: string): string {
+  const [y, m] = month.split('-').map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+}
+
+function labelFor(url: string): string {
+  const host = new URL(url).hostname.replace(/^www\./, '');
+  const map: Record<string, string> = {
+    'linkedin.com': 'LinkedIn',
+    'github.com': 'GitHub',
+    'youtube.com': 'YouTube',
+    'instagram.com': 'Instagram',
+    'producthunt.com': 'Product Hunt',
+    'peerlist.io': 'Peerlist',
+    'connectively.us': 'Connectively',
+  };
+  return map[host] ?? host;
+}
+
+/* The visible pills. Every one corroborates a sameAs claim, which is what makes
+   the claim worth anything, so they are derived from that array rather than
+   hand-listed. The X account comes from ORGANIZATION because it is FlashFX's,
+   not a personal profile. */
+const PILLS: Array<{ url: string; label: string }> = [
+  ...SAME_AS.filter((url) => {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    return ['linkedin.com', 'github.com', 'youtube.com', 'instagram.com'].includes(host);
+  }).map((url) => ({ url, label: labelFor(url) })),
+  ...(ORGANIZATION.sameAs.includes(`https://x.com/${ORGANIZATION.xHandle}`)
+    ? [{ url: `https://x.com/${ORGANIZATION.xHandle}`, label: 'X / Twitter' }]
+    : []),
+];
+---
+{/* Count-up. Rendered with real values at build time; motion.js takes over. */}
+<div class="age" data-birth={PERSON.birthDateTime}>
+  <span class="age-label">Alive for</span>
+  <div class="age-display">
+    <div class="age-unit">
+      <span class="age-num" id="age-years">{age.years}</span>
+      <span class="age-unit-label">Years</span>
+    </div>
+    <span class="age-sep">.</span>
+    <div class="age-unit">
+      <span class="age-num" id="age-days">{age.days}</span>
+      <span class="age-unit-label">Days</span>
+    </div>
+    <span class="age-sep">.</span>
+    <div class="age-unit">
+      <span class="age-num" id="age-hours">{pad(age.hours)}</span>
+      <span class="age-unit-label">Hours</span>
+    </div>
+  </div>
+
+  {/* Full span under the counter. Also carries the grid's explainer, which used
+      to sit above the squares and pushed them out of line with the portrait. */}
+  <p class="age-sub">
+    and <span id="age-mins">{pad(age.mins)}</span> minutes,
+    <span id="age-secs">{pad(age.secs)}</span> seconds, since
+    <time datetime={PERSON.birthDate}>6 December 2008</time>
+  </p>
+  <p class="age-sub age-sub-grid">
+    One square to the right is one week. Ninety years, {TOTAL_WEEKS.toLocaleString()} of them.
+  </p>
+</div>
+
+<div class="bio-split">
+  <aside class="bio-side">
+    <Image
+      src={portrait}
+      alt="Gabriele Bolognese, founder of FlashFX"
+      class="bio-portrait"
+      widths={[320, 640]}
+      sizes="(max-width: 900px) 100vw, 340px"
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : undefined}
+      decoding="async"
+    />
+
+    <h2 class="bio-side-heading">{aboutHeading}</h2>
+    <div class="bio-lede">
+      <slot />
+    </div>
+
+    {showLinks && (
+      <div class="intro-links">
+        {PILLS.map((pill) => (
+          <a href={pill.url} target="_blank" rel="noopener noreferrer me" class="link-pill">
+            {pill.label}
+          </a>
+        ))}
+      </div>
+    )}
+  </aside>
+
+  {/* No heading or caption above the grid: its first row has to line up with
+      the top of the portrait. The label lives on the section instead. */}
+  <section class="bio-panel" aria-label="Life in weeks">
+    <LifeGrid
+      birth={PERSON.birthDateTime}
+      weeksLived={weeksLived}
+      totalWeeks={TOTAL_WEEKS}
+      columns={WEEK_COLUMNS}
+    />
+
+    <p class="life-caption">
+      <strong id="life-count">{weeksLived.toLocaleString()}</strong> weeks lived ·
+      <strong id="life-percent">{livedPercent}%</strong>
+    </p>
+
+    <ul class="life-key">
+      <li><i class="is-lived" aria-hidden="true"></i> Lived</li>
+      <li><i class="is-now" aria-hidden="true"></i> This week</li>
+      <li><i aria-hidden="true"></i> Ahead</li>
+      <li><i class="ev-personal" aria-hidden="true"></i> Milestone</li>
+      <li><i class="ev-setback" aria-hidden="true"></i> Setback</li>
+      <li><i class="ev-flashfx" aria-hidden="true"></i> FlashFX</li>
+    </ul>
+
+    {/* The coloured cells carry a title attribute, but a role="img" grid hides
+        its children from assistive tech, so the events are also listed here as
+        real text, which is what a crawler and an answer engine will read. */}
+    <details class="life-events">
+      <summary>{MILESTONES.length} marked weeks</summary>
+      <ol>
+        {MILESTONES.map((m) => (
+          <li>
+            <i class={`ev-${m.kind}`} aria-hidden="true"></i>
+            <time datetime={m.month}>{monthLabel(m.month)}</time>
+            <span>{m.label}</span>
+          </li>
+        ))}
+      </ol>
+    </details>
+  </section>
+</div>
+
+<style>
+    /* ── Count-up, centred and full span ─────────────────────────────────── */
+    .age {
+        margin-top: 56px;
+        padding-top: 48px;
+        border-top: 1px solid var(--gray-line);
+        text-align: center;
+    }
+
+    .age-label {
+        display: block;
+        font-family: var(--font-wide);
+        font-size: 9px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        margin-bottom: 32px;
+    }
+
+    .age-display {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+    }
+
+    .age-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .age-num {
+        font-family: var(--font-wide);
+        font-weight: 200;
+        font-size: clamp(48px, 8vw, 104px);
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: var(--black);
+        min-width: 2ch;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Shares the countdown's digit-roll keyframe, set in Style.css. */
+    .age-num.is-tick { animation: tick-in 520ms var(--ease-expo) both; }
+
+    .age-unit-label {
+        font-family: var(--font-wide);
+        font-size: 8px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--gray-line);
+        margin-top: 14px;
+        transition: color var(--dur) var(--ease);
+    }
+
+    .age-display:hover .age-unit-label { color: var(--gray-mid); }
+
+    .age-sep {
+        font-family: var(--font-wide);
+        font-weight: 200;
+        font-size: clamp(28px, 5vw, 64px);
+        line-height: 1;
+        color: var(--gray-line);
+        margin: 0 14px;
+    }
+
+    /* Full span under the counter. Both lines sit here rather than above the
+       grid, so the grid's first row can line up with the top of the portrait. */
+    .age-sub {
+        margin-top: 28px;
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .age-sub time { color: var(--gray-dark); }
+    .age-sub-grid { margin-top: 10px; }
+
+    /* ── Split: portrait + about on the left, life grid on the right ─────── */
+    .bio-split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        gap: 72px;
+        align-items: start;
+        margin-top: 64px;
+        margin-bottom: 96px;
+        padding-bottom: 88px;
+        border-bottom: 1px solid var(--gray-line);
+    }
+
+    .bio-portrait {
+        width: 100%;
+        height: auto;
+        filter: grayscale(100%);
+    }
+
+    .bio-side-heading {
+        font-family: var(--font-wide);
+        font-size: 9px;
+        font-weight: 400;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        margin: 32px 0 18px;
+    }
+
+    .bio-lede {
+        font-size: var(--text-sm);
+        line-height: 1.9;
+        color: var(--gray-dark);
+    }
+
+    .bio-lede :global(p) { margin-bottom: 16px; }
+    .bio-lede :global(p:last-child) { margin-bottom: 0; }
+    .bio-lede :global(strong) { color: var(--black); font-weight: 500; }
+
+    .intro-links { margin-top: 28px; }
+
+    /* ── Life in weeks ───────────────────────────────────────────────────── */
+    .life-caption {
+        margin-top: 22px;
+        font-size: var(--text-xs);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .life-caption strong {
+        font-weight: 400;
+        color: var(--black);
+    }
+
+    /* Collapsed by default: 25 dated entries would otherwise repeat the
+       homepage timeline in full right under the grid. */
+    .life-events {
+        margin-top: 28px;
+        border-top: 1px solid var(--gray-line);
+        padding-top: 20px;
+    }
+
+    .life-events summary {
+        cursor: pointer;
+        font-size: var(--text-xs);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        transition: color var(--dur) var(--ease);
+    }
+
+    .life-events summary:hover { color: var(--black); }
+
+    .life-events ol {
+        list-style: none;
+        padding: 0;
+        margin: 24px 0 0;
+    }
+
+    .life-events li {
+        display: grid;
+        grid-template-columns: 10px 132px 1fr;
+        align-items: baseline;
+        gap: 14px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--gray-line);
+        font-size: var(--text-xs);
+        line-height: 1.6;
+        color: var(--gray-dark);
+    }
+
+    .life-events li:last-child { border-bottom: none; }
+
+    .life-events time {
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .life-events i {
+        width: 9px;
+        height: 9px;
+        border-radius: 1px;
+        transform: translateY(1px);
+    }
+
+    @media (max-width: 900px) {
+        .bio-split {
+            grid-template-columns: 1fr;
+            gap: 48px;
+        }
+
+        .bio-portrait { max-width: 320px; }
+    }
+
+    @media (max-width: 620px) {
+        .life-events li {
+            grid-template-columns: 10px 1fr;
+            gap: 6px 12px;
+        }
+
+        .life-events time { grid-column: 2; }
+        .life-events span { grid-column: 2; }
+    }
+
+    @media (max-width: 520px) {
+        .age-num { font-size: clamp(34px, 13vw, 56px); }
+        .age-sep { font-size: clamp(20px, 8vw, 34px); margin: 0 8px; }
+    }
+</style>

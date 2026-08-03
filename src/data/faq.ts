@@ -17,7 +17,7 @@ export const HOMEPAGE_FAQ: FaqEntry[] = [
   {
     question: 'Who is Gabriele Bolognese?',
     answer:
-      'Gabriele Bolognese is an Italian founder and self-taught developer, known as the creator of FlashFX — a browser-based motion graphics and video editing platform. He started as a video editor and YouTube creator before teaching himself TypeScript and building FlashFX solo.',
+      'Gabriele Bolognese is an Italian founder and self-taught developer, known as the creator of FlashFX, a browser-based motion graphics and video editing platform. He started as a video editor and YouTube creator before teaching himself TypeScript and building FlashFX solo.',
   },
   {
     question: 'What is FlashFX?',
@@ -32,7 +32,7 @@ export const HOMEPAGE_FAQ: FaqEntry[] = [
   {
     question: 'How did Gabriele Bolognese learn to code?',
     answer:
-      'He is entirely self-taught. He began with AI-assisted prototypes, lost an early codebase to a file restructuring error, and rebuilt from fundamentals in TypeScript — a failure he credits as the reason FlashFX was eventually engineered properly.',
+      'He is entirely self-taught. He began with AI-assisted prototypes, lost an early codebase to a file restructuring error, and rebuilt from fundamentals in TypeScript, a failure he credits as the reason FlashFX was eventually engineered properly.',
   },
   {
     question: 'Where is Gabriele Bolognese based?',

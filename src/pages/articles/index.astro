@@ -26,7 +26,7 @@ const schema = blogIndexSchema({
 });
 ---
 <Layout
-        title={`Articles — ${PERSON.name}`}
+        title={`Articles, ${PERSON.name}`}
         description={description}
         schema={schema}
 >
@@ -54,7 +54,7 @@ const schema = blogIndexSchema({
         <p class="section-intro">{description}</p>
 
         {sorted.length === 0 ? (
-            <p class="section-intro">Nothing published yet — the first post is on its way.</p>
+            <p class="section-intro">Nothing published yet, the first post is on its way.</p>
         ) : (
             <div class="articles-grid">
                 {sorted.map(article => (
