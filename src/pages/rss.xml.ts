@@ -10,7 +10,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: `${PERSON.name}, Articles`,
     description:
-      'Essays by Gabriele Bolognese on building FlashFX, motion design, and founding a software company solo.',
+      'My writing on building FlashFX, motion design, and founding a software company on my own.',
     site: context.site ?? SITE.url,
     items: sorted.map((article) => ({
       title: article.data.title,

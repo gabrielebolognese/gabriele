@@ -15,9 +15,11 @@ import imgVision from '../assets/1010.png';
 import imgPivot from '../assets/1111.png';
 import imgSubmission from '../assets/111.png';
 
-const title = 'Who is Gabriele Bolognese?, Founder of FlashFX';
+/* The question stays in the third person on purpose: it is the phrase people
+   type into a search box. The page answers it in the first person. */
+const title = 'Who is Gabriele Bolognese? Founder of FlashFX';
 const description =
-    'The full biography of Gabriele Bolognese: Italian founder of FlashFX, from a hacked Minecraft channel in 2020 to a browser-based motion graphics platform.';
+    'My full story: Italian founder of FlashFX, from a hacked Minecraft channel in 2020 to a browser-based motion graphics platform used by thousands.';
 
 const schema = aboutPageSchema({
     portraitUrl: absoluteUrl(portrait.src, Astro.site),
@@ -88,82 +90,78 @@ const ventures = [
 
         <LifeSection aboutHeading="About" >
             <p>
-                <strong>Gabriele Bolognese</strong> (born 6 December 2008) is an Italian software
-                developer, entrepreneur, and content creator, best known as the founder and chief
-                executive officer of FlashFX, a browser-based motion design and video editing
-                application used by more than {FACTS.usersLabel} people.
+                I am <strong>Gabriele Bolognese</strong>, born 6 December 2008, an Italian software
+                developer and founder. I run FlashFX, a browser-based motion design and video editing
+                app that more than {FACTS.usersLabel} people use.
             </p>
             <p>
-                He began teaching himself video production at eleven, editing Minecraft footage on
-                consumer hardware, and moved into freelance editing at fourteen. He wrote his first
-                line of code in January 2024 and taught himself JavaScript, TypeScript and React
-                across the following year, without formal training in computer science.
+                I started teaching myself video production at eleven, editing Minecraft footage on a
+                laptop that could barely handle it, and I moved into freelance editing at fourteen. I
+                wrote my first line of code in January 2024 and taught myself JavaScript, TypeScript
+                and React over the year that followed, with no formal training in computer science.
             </p>
             <p>
-                FlashFX took four complete rebuilds before it worked. The first attempt was lost
-                entirely to a file-path error, at a cost he had borrowed. What survived each collapse
-                was the idea underneath it: that professional motion design belongs in the browser,
-                free of installs and licences, within reach of anyone with a laptop.
+                FlashFX took four complete rebuilds before it worked. The first attempt I lost entirely
+                to a file-path error, and the money I had spent on it was not even mine, I had borrowed
+                it. What survived every collapse was the idea underneath: that professional motion
+                design belongs in the browser, free of installs and licences, in reach of anyone with a
+                laptop.
             </p>
             <p>
-                He works from the Veneto region of northern Italy, competes in the Italian mathematics
-                nationals at champion level, and trains in gymnastics and sprinting.
+                I work from the Veneto region of northern Italy, I compete in the Italian mathematics
+                nationals at champion level, and I train in gymnastics and sprinting.
             </p>
         </LifeSection>
         </div>
 
         <h2 id="early-life">Early life and education</h2>
         <p>
-            Bolognese was born in December 2008 in Italy and grew up in the Veneto region. He attended
-            secondary school locally, later enrolling at IIS Viola Marchesini. His academic trajectory was
-            intermittently disrupted by professional and entrepreneurial activity pursued in parallel with
-            formal studies, including a failed academic year in 2025 that required a supplementary recovery
-            examination before progression to the subsequent grade.
+            I was born in December 2008 and grew up in the Veneto region. I went to secondary school
+            locally and later enrolled at IIS Viola Marchesini. My school years got messy, because I was
+            running professional work in parallel with studying, and in 2025 I failed the year and had to
+            sit a recovery exam before I could move up.
         </p>
         <p>
-            Outside the classroom, he practiced karate competitively throughout his adolescence, a commitment
-            he maintained with varying consistency depending on workload. Extended periods of intensive
-            software development led to prolonged interruptions in training during 2025.
+            Outside of school I did karate competitively for most of my adolescence, though how
+            consistently depended entirely on how much else I had on. In 2025 the long stretches of
+            building meant I stopped training for months at a time.
         </p>
         <p>
-            Bolognese is self-taught across all of his primary professional disciplines. He acquired English
-            predominantly through exposure to online content between the ages of eleven and thirteen, without
-            formal instruction. His programming knowledge, spanning JavaScript, TypeScript, and React, was
-            developed through independent study beginning in late December 2024.
+            I am self-taught in everything I do professionally. I picked up English almost entirely from
+            online content between eleven and thirteen, without a single lesson, which is probably why I
+            still make the occasional mistake in it. I started learning JavaScript, TypeScript and React
+            on my own in late December 2024.
         </p>
 
         <h2 id="career">Career</h2>
 
-        <h3 id="content-creation">Content creation (2020–2022)</h3>
+        <h3 id="content-creation">Content creation (2020&#8211;2022)</h3>
         <p>
-            During the COVID-19 pandemic lockdowns of 2020, at the age of eleven, Bolognese began publishing
-            Minecraft gameplay videos on YouTube under the channel name <em>playmoj</em>. Operating on
-            consumer-grade hardware, he taught himself video editing through Shotcut and later CapCut,
-            publishing content at an average rate of one to four videos per day. The channel accumulated
-            approximately 1,560 subscribers across more than 600 uploads before being compromised in 2022 by a
-            third-party service that deleted all published content and repurposed the account for fraudulent
-            activity. The incident ended his activity as a content creator.
+            During the lockdowns of 2020, when I was eleven, I started posting Minecraft videos on
+            YouTube under the name <em>playmoj</em>. I was working on hardware that really was not up to
+            it, teaching myself to edit in Shotcut and then CapCut, and putting out somewhere between one
+            and four videos a day. The channel got to around 1,560 subscribers across more than 600
+            uploads before it was compromised in 2022 by a third-party service, which deleted everything
+            I had published and turned the account into a scam. That was the end of me as a creator.
         </p>
 
-        <h3 id="freelance-editing">Freelance video editing (2022–2025)</h3>
+        <h3 id="freelance-editing">Freelance video editing (2022&#8211;2025)</h3>
         <p>
-            At the age of fourteen, Bolognese created a profile on the freelance platform Fiverr, motivated
-            initially by the need to fund a personal hardware purchase. He secured his first client, a
-            GTA-themed YouTube channel called Emerals, through outreach from a user identified online by the
-            alias <em>hansa</em>. Initial compensation was five dollars per edited video, rising incrementally
-            to twenty dollars over the course of the six-month engagement. Total earnings from the contract
-            amounted to approximately $1,200.
+            At fourteen I made a Fiverr profile, mostly because I wanted to buy a piece of hardware and
+            had no way to pay for it. My first client was a GTA-themed YouTube channel called Emerals,
+            who found me through someone going by the alias <em>hansa</em>. It started at five dollars a
+            video and worked its way up to twenty over about six months. In total that contract earned me
+            around $1,200.
         </p>
         <p>
-            Following the conclusion of that contract in mid-2023, subsequent Fiverr listings produced no
-            clients for several months. Bolognese returned to freelance editing intermittently through 2024
-            and into 2025, when a client in the financial content niche commissioned monthly video packages at
-            $250 per month. The arrangement was terminated after five deliverables, following persistent delays
-            and extensive revision cycles that he has publicly attributed to concurrent overcommitment across
-            editing, software development, and academic obligations.
+            After it ended in mid-2023 my Fiverr listings brought in nothing for months. I came back to
+            freelance editing on and off through 2024 and into 2025, when a client in the finance niche
+            put me on $250 a month for a package of videos. I ended up loosing that one after five
+            deliveries, and honestly it was because of me, I was late constantly and the revisions kept
+            piling up while I was trying to edit, build FlashFX and keep up with school all at once.
         </p>
 
-        <h3 id="software-development">Software development and entrepreneurship (2024–present)</h3>
+        <h3 id="software-development">Software development and entrepreneurship (2024&#8211;present)</h3>
 
         <figure class="bio-figure">
             <Image src={imgVision} alt="The Vision AI Demo browser-based video editor, 2024"
@@ -172,18 +170,17 @@ const ventures = [
         </figure>
 
         <p>
-            Bolognese's interest in software development emerged indirectly through exposure to AI-powered
-            content automation tools in late 2023. On January 3, 2024, he began his first development project,
-            a browser-based video editor called <em>Vision AI Demo</em>, using an AI assistant and the
-            development platform bolt.new, without any prior programming experience. The project was lost to a
-            file-path error that rendered the codebase unrecoverable, at a financial cost of €200 borrowed from
-            a younger cousin.
+            I got into software almost by accident, through the AI content automation tools I was playing
+            with in late 2023. On January 3, 2024 I started my first ever project, a browser-based video
+            editor called <em>Vision AI Demo</em>, using an AI assistant and bolt.new, having never
+            programmed before in my life. I lost it to a file-path error that made the codebase
+            unrecoverable, and it cost me &#8364;200 that I had borrowed off my younger cousin.
         </p>
         <p>
-            A second development cycle in mid-2024 produced five browser-based prototypes across different tool
-            categories, none of which reached a functional release. These experiences led to a conceptual
-            reorientation in late 2024, during which Bolognese identified motion design, rather than
-            traditional timeline-based video editing, as the appropriate product category for his core idea.
+            A second run in mid-2024 produced five browser-based prototypes across different categories
+            and not one of them ever shipped. Those failures are what made me rethink the whole thing, and
+            by late 2024 I had worked out that motion design, and not traditional timeline video editing,
+            was the right category for what I actually wanted to build.
         </p>
 
         <figure class="bio-figure">
@@ -193,9 +190,9 @@ const ventures = [
         </figure>
 
         <p>
-            Between December 2024 and early 2025, he undertook an intensive period of self-directed study in
-            JavaScript, TypeScript, and React, building a series of small utility applications to consolidate
-            practical skills. This phase preceded the development of what would become FlashFX.
+            Between December 2024 and early 2025 I did nothing but study. JavaScript, TypeScript, React,
+            building small useless utilities one after another until the fundamentals stuck. All of that
+            came before a single line of what became FlashFX.
         </p>
 
         <figure class="bio-figure">
@@ -205,32 +202,30 @@ const ventures = [
         </figure>
 
         <p>
-            In mid-2025, Bolognese entered Bolt's global hackathon, assembling a three-person team that
-            included an experienced TypeScript developer known through the hackathon's Discord community. The
-            team submitted a working prototype of FlashFX on June 30, 2025. Although the entry did not place,
-            the project attracted significant interest from fellow participants, providing external validation
-            of the concept. The team formally constituted FlashFX as a company shortly thereafter, with
-            Bolognese assuming the role of chief executive officer.
+            In mid-2025 I entered the Bolt global hackathon and put together a team of three, including an
+            experienced TypeScript developer I met in the hackathon Discord. We submitted a working
+            FlashFX prototype on June 30, 2025. We did not place, but the reaction from the other
+            participants was definately the first real signal that the idea was worth something. Shortly after, we
+            made FlashFX an actual company and I took the CEO role.
         </p>
         <p>
-            In January 2026, longtime online acquaintance Aziz joined FlashFX as co-founder. A marketing
-            manager, Camille Luciano, was subsequently appointed to lead social media and community
-            development. FlashFX V1, the first fully functional public release of the application, launched in
-            early 2026.
+            In January 2026 Aziz, who I had known online for years, joined me as co-founder. Me and him
+            then brought in Camille Luciano as marketing manager to run social and community. FlashFX V1,
+            the first properly working public release, launched in early 2026.
         </p>
 
         <h2 id="personal-profile">Personal profile</h2>
         <p>
-            Bolognese has publicly described his working method as iterative and failure-tolerant,
-            characterised by repeated full rebuilds of projects following significant setbacks. He has cited
-            early mentorship from his first editing client, whose real name he states he never learned, as a
-            formative influence on his professional development. He has also acknowledged a pattern of
-            beginning new projects on or around January 1 of each year, noting that multiple significant
-            personal milestones have originated in the first days of January.
+            The way I work is iterative and it tolerates failure well, mostly because it has had to. I
+            rebuild things from nothing when they break rather then patching around the damage. A lot of
+            how I think about this came from my first editing client, who kept me on when my work was bad
+            and whose real name I never even learned. I have also noticed I start almost everything around
+            January 1, and a strange number of the things that mattered to me began in the first days of
+            January.
         </p>
         <p>
-            He communicates primarily in Italian and English, the latter acquired informally through online
-            media consumption beginning at age eleven.
+            I speak Italian and English. The English I picked up informally from the internet starting at
+            eleven, which I think shows sometimes.
         </p>
 
         <h2 id="ventures">Ventures</h2>

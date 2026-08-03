@@ -12,7 +12,7 @@ const articles = await getCollection('articles', ({ data }) => !data.draft);
 const sorted = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const description =
-    'Essays by Gabriele Bolognese on building FlashFX, motion design, and founding a software company solo.';
+    'My writing on building FlashFX, motion design, and founding a software company on my own.';
 
 const schema = blogIndexSchema({
     path: Astro.url.pathname,

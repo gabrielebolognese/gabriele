@@ -27,11 +27,14 @@ export const PERSON = {
   familyName: 'Bolognese',
   jobTitle: 'Founder & Developer',
 
-  /** Kept under ~155 chars so it is not truncated in the SERP. */
+  /** Meta description. First person, like the rest of the site, and kept under
+   *  ~155 chars so it is not truncated in the SERP. */
   description:
-    'Gabriele Bolognese is an Italian founder and developer, creator of FlashFX, a browser-based motion graphics and video editing platform.',
+    'I am Gabriele Bolognese, an Italian founder and developer, and the creator of FlashFX, a browser-based motion graphics and video editing platform.',
 
-  /** Longer form, used for JSON-LD where there is no length pressure. */
+  /** JSON-LD only, never rendered. Deliberately third person: this one
+   *  describes the Person entity to a machine, and knowledge-graph extraction
+   *  expects an entity description rather than a quote from the subject. */
   longDescription:
     'Gabriele Bolognese is an Italian founder and self-taught developer, and the creator of FlashFX, a browser-based motion graphics and video editing platform used by more than 8,000 people. He built it solo across four complete rebuilds.',
 
