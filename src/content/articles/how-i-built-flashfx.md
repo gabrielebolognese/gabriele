@@ -2,7 +2,7 @@
 title: "How I Built FlashFX From Zero"
 date: 2026-04-27
 description: "Four rebuilds, two years, and 8,000 users later, the real story of building a browser-based motion design tool at 17."
-image: "../../assets/1.png"
+image: "../../assets/flashfx-animator-timeline-canvas.png"
 imageAlt: "The FlashFX animator interface, showing the timeline and canvas"
 draft: false
 ---

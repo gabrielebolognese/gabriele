@@ -6,7 +6,7 @@ import Layout from '../../layouts/Layout.astro';
 import Card from '../../components/Card.astro';
 import { blogIndexSchema } from '../../data/schema';
 import { PERSON, absoluteUrl } from '../../data/identity';
-import portrait from '../../assets/portrait.png';
+import portrait from '../../assets/gabriele-bolognese-portrait.png';
 
 const articles = await getCollection('articles', ({ data }) => !data.draft);
 const sorted = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -75,6 +75,8 @@ const schema = blogIndexSchema({
 <footer class="footer">
     <div class="footer-inner">
         <span>© 2026 Gabriele Bolognese</span>
+        <span class="dot">·</span>
+        <a href="/license">Image licence</a>
         <span class="dot">·</span>
         <a href="/about">About</a>
         <span class="dot">·</span>

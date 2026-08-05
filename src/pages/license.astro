@@ -1,0 +1,172 @@
+---
+/* The target of `license` and `acquireLicensePage` on every ImageObject in
+   schema.ts. Google's licensable-images feature requires both to be live URLs,
+   so this page existing is a hard dependency of that markup — if it is ever
+   removed or renamed, IMAGE_LICENSE in src/data/identity.ts has to move with it.
+
+   ⚠️  The terms below are a sensible default, not legal advice. Read them and
+   change anything you disagree with — they are what you are publicly offering.
+
+   Indexable on purpose: a noindex page is a weaker licence reference. */
+import Layout from '../layouts/Layout.astro';
+import { PERSON, ORGANIZATION, SITE, absoluteUrl } from '../data/identity';
+
+const title = `Image licence, ${PERSON.name}`;
+const description =
+    'How the photographs and FlashFX screenshots on this site may be used, and how to request anything else.';
+
+const url = absoluteUrl(Astro.url.pathname, Astro.site);
+
+/* A plain WebPage. No ImageObject nodes here on purpose: this page is what
+   those nodes point AT, and a licence that cites itself as its own source adds
+   nothing to the graph. */
+const schema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+        {
+            '@type': 'WebPage',
+            '@id': `${url}#webpage`,
+            url,
+            name: title,
+            description,
+            isPartOf: { '@id': `${SITE.url}/#website` },
+            about: { '@id': `${SITE.url}/#person` },
+            inLanguage: 'en',
+        },
+    ],
+};
+---
+<Layout title={title} description={description} schema={schema}>
+
+<nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-name">Gabriele Bolognese</a>
+    <ul class="nav-links">
+        <li><a href="/about">About</a></li>
+        <li><a href="/#projects">Projects</a></li>
+        <li><a href="/articles">Articles</a></li>
+        <li><a href="/#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<main id="main">
+    <article class="section licence">
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li aria-current="page">Image licence</li>
+            </ol>
+        </nav>
+
+        <h1 class="licence-h1">Image licence</h1>
+        <p class="licence-standfirst">
+            Every photograph and screenshot on this site is mine. Here is what you can do with them
+            without asking, and how to ask for anything else.
+        </p>
+
+        <h2>Photographs of me</h2>
+        <p>
+            Press, editorial and educational use is permitted at no cost. Reproduce the image unmodified
+            apart from cropping and colour correction, credit it to
+            <strong>{PERSON.name}</strong>, and link to
+            <a href={SITE.url}>gabrielebolognese.blog</a> where the medium allows a link.
+        </p>
+        <p>
+            Not permitted without written consent: use that implies I endorse a product, a company or a
+            position; use in advertising; and resale or redistribution as stock imagery.
+        </p>
+
+        <h2>{ORGANIZATION.name} screenshots</h2>
+        <p>
+            Screenshots of the {ORGANIZATION.name} Animator and Editor may be used in reviews, articles,
+            tutorials and any other coverage of {ORGANIZATION.name}, unmodified, credited to
+            <strong>{ORGANIZATION.name}</strong> with a link to
+            <a href={ORGANIZATION.url} target="_blank" rel="noopener noreferrer">flashfx.app</a>.
+        </p>
+        <p>
+            The {ORGANIZATION.name} name and interface design remain the property of
+            {ORGANIZATION.name}. A screenshot licence is not a trademark licence.
+        </p>
+
+        <h2>Everything else</h2>
+        <p>
+            All other rights are reserved. For commercial use, modified versions, print at size, or
+            anything the terms above do not cover, email
+            <a href={`mailto:${PERSON.email}`}>{PERSON.email}</a> and say which image and what for.
+            I answer quickly and I am not precious about it.
+        </p>
+
+    </article>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <span>© 2026 Gabriele Bolognese</span>
+        <span class="dot">·</span>
+        <span>Rovigo, Italy</span>
+    </div>
+</footer>
+
+</Layout>
+
+<style>
+    .licence {
+        max-width: 680px;
+        margin: 0 auto;
+        padding-top: 96px;
+        padding-bottom: 120px;
+    }
+
+    .licence-h1 {
+        font-family: var(--font-display);
+        font-size: clamp(34px, 6vw, 58px);
+        font-weight: 200;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+        color: var(--black);
+        margin: 28px 0 24px;
+    }
+
+    .licence-standfirst {
+        font-family: var(--font-serif);
+        font-size: clamp(18px, 2.4vw, 23px);
+        font-style: italic;
+        line-height: 1.6;
+        color: var(--gray-dark);
+        margin-bottom: 56px;
+    }
+
+    .licence h2 {
+        font-family: var(--font-wide);
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        margin: 56px 0 20px;
+        padding-top: 24px;
+        border-top: 1px solid var(--gray-line);
+    }
+
+    .licence p {
+        font-size: var(--text-sm);
+        line-height: 1.9;
+        color: var(--gray-dark);
+        margin-bottom: 18px;
+    }
+
+    .licence strong {
+        color: var(--black);
+        font-weight: 500;
+    }
+
+    .licence a {
+        color: var(--black);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-color: var(--gray-line);
+        transition: text-decoration-color var(--dur) var(--ease);
+    }
+
+    .licence a:hover { text-decoration-color: var(--black); }
+</style>

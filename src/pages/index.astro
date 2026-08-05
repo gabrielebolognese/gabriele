@@ -5,20 +5,25 @@ import Card from '../components/Card.astro';
 import Faq from '../components/Faq.astro';
 import LifeSection from '../components/LifeSection.astro';
 import { Image } from 'astro:assets';
-import img1 from '../assets/1.png';
-import img2 from '../assets/2.png';
-import img3 from '../assets/3.png';
-import img33 from '../assets/33.png';
-import img44 from '../assets/44.png';
-import img5 from '../assets/5.png';
-import img55 from '../assets/55.png';
-import img66 from '../assets/66.png';
-import img7 from '../assets/7.png';
-import img77 from '../assets/77.png';
-import img8 from '../assets/8.png';
-import img88 from '../assets/88.png';
-import img99 from '../assets/99.png';
-import imgportrait from '../assets/portrait.png';
+/* Asset filenames are load-bearing: Astro emits each one as
+   `<basename>.<hash>.webp`, so the source basename is the served filename and
+   the only keyword signal an image carries besides its alt text. These were
+   `1.png`, `33.png`, `1010.png` — descriptive names cost nothing. Keep the
+   local identifier and the filename describing the same thing. */
+import animatorTimeline from '../assets/flashfx-animator-timeline-canvas.png';
+import animatorKeyframes from '../assets/flashfx-animator-keyframe-controls.png';
+import animatorLayers from '../assets/flashfx-animator-layer-panel-effects.png';
+import animator3d from '../assets/flashfx-animator-3d-objects-browser.png';
+import animatorAi from '../assets/flashfx-animator-ai-animation-tools.png';
+import animatorDashboard from '../assets/flashfx-animator-dashboard-projects.png';
+import editorTimeline from '../assets/flashfx-editor-timeline-multitrack.png';
+import editor3d from '../assets/flashfx-editor-3d-compositing.png';
+import editorColor from '../assets/flashfx-editor-color-grading.png';
+import mledApp from '../assets/mled-machine-learning-app-interface.png';
+import flashfxDocs from '../assets/flashfx-documentation-site.png';
+import flashfxRoadmap from '../assets/flashfx-roadmap-page.png';
+import portfolioSite from '../assets/video-editing-portfolio-site.png';
+import portrait from '../assets/gabriele-bolognese-portrait.png';
 import {HOMEPAGE_FAQ} from '../data/faq';
 import {homepageSchema} from '../data/schema';
 import {PERSON, ORGANIZATION, FACTS, absoluteUrl} from '../data/identity';
@@ -27,8 +32,8 @@ const articles = await getCollection('articles', ({ data }) => !data.draft);
 const sorted = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const schema = homepageSchema({
-    portraitUrl: absoluteUrl(imgportrait.src, Astro.site),
-    softwareImage: absoluteUrl(img1.src, Astro.site),
+    portraitUrl: absoluteUrl(portrait.src, Astro.site),
+    softwareImage: absoluteUrl(animatorTimeline.src, Astro.site),
     faq: HOMEPAGE_FAQ,
 });
 
@@ -174,12 +179,12 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 </p>
                 <div class="carousel" aria-label="FlashFX screenshot gallery">
                     <div class="carousel-track" id="flashfx-track">
-                        <Image src={img1} alt="FlashFX Animator interface, timeline and canvas view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={img2} alt="FlashFX motion graphics editor with keyframe controls" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={img3} alt="FlashFX Animator, layer panel and effects toolbar" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={img5} alt="FlashFX 3D object integration in browser" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={img7} alt="FlashFX AI features and smart animation tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={img8} alt="FlashFX dashboard and project management view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={animatorTimeline} alt="FlashFX Animator interface, timeline and canvas view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={animatorKeyframes} alt="FlashFX motion graphics editor with keyframe controls" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={animatorLayers} alt="FlashFX Animator, layer panel and effects toolbar" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={animator3d} alt="FlashFX 3D object integration in browser" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={animatorAi} alt="FlashFX AI features and smart animation tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={animatorDashboard} alt="FlashFX dashboard and project management view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                     </div>
                     <div class="carousel-controls">
                         <button class="carousel-btn" id="flashfx-prev" aria-label="Previous screenshot">&#8592;</button>
@@ -216,9 +221,9 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 </p>
                 <div class="carousel" aria-label="FlashFX Editor screenshot gallery">
                     <div class="carousel-track" id="fxeditor-track">
-                        <Image src={img77} alt="FlashFX Editor timeline and multi-track view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={img88} alt="FlashFX Editor 3D compositing interface" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={img99} alt="FlashFX Editor color grading tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={editorTimeline} alt="FlashFX Editor timeline and multi-track view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={editor3d} alt="FlashFX Editor 3D compositing interface" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                        <Image src={editorColor} alt="FlashFX Editor color grading tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                     </div>
                     <div class="carousel-controls">
                         <button class="carousel-btn" id="fxeditor-prev" aria-label="Previous screenshot">&#8592;
@@ -254,7 +259,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     without a degree.
                 </p>
                 <div class="carousel" aria-label="MLed screenshot gallery">
-                    <Image src={img55} alt="MLed app interface" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                    <Image src={mledApp} alt="MLed app interface" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                 </div>
             </article>
 
@@ -282,7 +287,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     per channel, with zero manual reformatting.
                 </p>
                 <div class="carousel" aria-label="FlashFX Documentation screenshot gallery">
-                    <Image src={img33} alt="FlashFX documentation site" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                    <Image src={flashfxDocs} alt="FlashFX documentation site" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                 </div>
             </article>
 
@@ -311,7 +316,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     collapse became the direct foundation for FlashFX.
                 </p>
                 <div class="carousel" aria-label="FlashFX Roadmap screenshot gallery">
-                    <Image src={img44} alt="FlashFX Roadmap page" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                    <Image src={flashfxRoadmap} alt="FlashFX Roadmap page" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                 </div>
             </article>
 
@@ -339,7 +344,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     portfolio and a proof of craft.
                 </p>
                 <div class="carousel" aria-label="Video editing portfolio screenshot gallery">
-                    <Image src={img66} alt="Video editing portfolio site" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
+                    <Image src={portfolioSite} alt="Video editing portfolio site" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
                 </div>
             </article>
 
@@ -1233,6 +1238,8 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
 <footer class="footer">
     <div class="footer-inner">
         <span>© 2026 Gabriele Bolognese</span>
+        <span class="dot">·</span>
+        <a href="/license">Image licence</a>
         <span class="dot">·</span>
         <span>Rovigo, Italy</span>
         <span class="dot">·</span>

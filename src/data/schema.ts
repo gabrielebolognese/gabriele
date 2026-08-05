@@ -11,7 +11,15 @@
    other and resolve to one entity.
    ========================================================================= */
 
-import { SITE, PERSON, ORGANIZATION, SAME_AS, SUBJECT_OF, absoluteUrl } from './identity';
+import {
+  SITE,
+  PERSON,
+  ORGANIZATION,
+  SAME_AS,
+  SUBJECT_OF,
+  IMAGE_LICENSE,
+  absoluteUrl,
+} from './identity';
 
 /* Stable node identifiers — these are what make it a graph rather than a pile. */
 export const ID = {
@@ -23,6 +31,31 @@ export const ID = {
 
 type Node = Record<string, unknown>;
 
+/** Every real photograph or screenshot on the site goes through here.
+ *
+ *  `license` + `acquireLicensePage` are what Google's licensable-images feature
+ *  reads; `contentUrl` is emitted alongside `url` because the image rich result
+ *  documentation names contentUrl specifically. Excludes the FlashFX logo,
+ *  which is an Organization.logo and has its own requirements.
+ *
+ *  `creator` credits the Person. If a photograph is ever shot by someone else,
+ *  that image's creator is the photographer, not the subject — pass one in
+ *  rather than letting this default stand. */
+function imageObject(opts: { url: string; caption: string; id?: string; creator?: Node }): Node {
+  return {
+    '@type': 'ImageObject',
+    ...(opts.id ? { '@id': opts.id } : {}),
+    url: opts.url,
+    contentUrl: opts.url,
+    caption: opts.caption,
+    creator: opts.creator ?? { '@id': ID.person },
+    creditText: IMAGE_LICENSE.creditText,
+    copyrightNotice: IMAGE_LICENSE.copyrightNotice,
+    license: IMAGE_LICENSE.terms,
+    acquireLicensePage: IMAGE_LICENSE.acquire,
+  };
+}
+
 function personNode(portraitUrl: string): Node {
   const node: Node = {
     '@type': 'Person',
@@ -33,11 +66,13 @@ function personNode(portraitUrl: string): Node {
     url: SITE.url,
     jobTitle: PERSON.jobTitle,
     description: PERSON.longDescription,
-    image: {
-      '@type': 'ImageObject',
+    // Stable @id: the portrait is in every page's graph, so it should resolve
+    // to one image entity rather than one anonymous node per route.
+    image: imageObject({
       url: portraitUrl,
       caption: `${PERSON.name}, founder of ${ORGANIZATION.name}`,
-    },
+      id: `${SITE.url}/#portrait`,
+    }),
     // `nationality` expects a Country node, not the bare string "Italian" that
     // the old markup used.
     nationality: {
@@ -133,7 +168,11 @@ export function homepageSchema(opts: { portraitUrl: string; faq: FaqEntry[]; sof
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web Browser',
       description: ORGANIZATION.description,
-      image: opts.softwareImage,
+      image: imageObject({
+        url: opts.softwareImage,
+        caption: `The ${ORGANIZATION.name} Animator, timeline and canvas view`,
+        id: `${ORGANIZATION.url}/#screenshot`,
+      }),
       author: { '@id': ID.person },
       publisher: { '@id': ID.org },
       dateCreated: ORGANIZATION.foundingDate,
@@ -189,10 +228,15 @@ export function articleSchema(opts: {
   portraitUrl: string;
 }) {
   const url = absoluteUrl(opts.path);
+  // One image node, referenced twice. The BlogPosting and the WebPage used to
+  // carry separate anonymous copies of the same cover, which reads as two
+  // images rather than one and leaves neither carrying the licence.
+  const imageId = `${url}#primaryimage`;
   return graph([
     personNode(opts.portraitUrl),
     organizationNode(),
     websiteNode(),
+    imageObject({ url: opts.imageUrl, caption: opts.title, id: imageId }),
     {
       '@type': 'BlogPosting',
       '@id': `${url}#article`,
@@ -203,7 +247,7 @@ export function articleSchema(opts: {
       dateModified: (opts.modified ?? opts.published).toISOString(),
       author: { '@id': ID.person },
       publisher: { '@id': ID.person },
-      image: { '@type': 'ImageObject', url: opts.imageUrl },
+      image: { '@id': imageId },
       mainEntityOfPage: { '@id': `${url}#webpage` },
       isPartOf: { '@id': ID.website },
       inLanguage: 'en',
@@ -215,7 +259,7 @@ export function articleSchema(opts: {
       url,
       name: opts.title,
       isPartOf: { '@id': ID.website },
-      primaryImageOfPage: { '@type': 'ImageObject', url: opts.imageUrl },
+      primaryImageOfPage: { '@id': imageId },
       breadcrumb: { '@id': `${url}#breadcrumb` },
       inLanguage: 'en',
     },

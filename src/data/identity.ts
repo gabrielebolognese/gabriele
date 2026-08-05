@@ -156,6 +156,23 @@ export const FACTS = {
   discordLabel: '3,400',
 } as const;
 
+/* ── Image licensing ─────────────────────────────────────────────────────────
+   Google's licensable-images feature attaches a "Licensable" badge and a link
+   in Google Images, and it needs two properties on every ImageObject: `license`
+   (the terms) and `acquireLicensePage` (where to ask). BOTH MUST BE LIVE URLS —
+   pointing either at a 404 forfeits the enhancement, the same way a dead sameAs
+   entry devalues that array. They resolve to src/pages/license.astro.
+
+   No year in the notice on purpose: a hardcoded one goes stale silently, and a
+   build-time one changes the markup on every deploy for no benefit.
+   ------------------------------------------------------------------------- */
+export const IMAGE_LICENSE = {
+  terms: `${SITE.url}/license`,
+  acquire: `${SITE.url}/license`,
+  creditText: PERSON.name,
+  copyrightNotice: `© ${PERSON.name}`,
+} as const;
+
 /** Absolute URL helper — every canonical/OG URL on the site goes through this.
  *  Normalises to the slash-less form (matching `trailingSlash: 'never'` and
  *  Netlify's Pretty URLs), except for the root, which keeps its slash. */

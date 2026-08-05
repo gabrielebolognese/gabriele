@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import Layout from './Layout.astro';
 import { articleSchema } from '../data/schema';
 import { PERSON, absoluteUrl } from '../data/identity';
-import portrait from '../assets/portrait.png';
+import portrait from '../assets/gabriele-bolognese-portrait.png';
 
 interface Props {
   title: string;
@@ -91,6 +91,8 @@ const schema = articleSchema({
     <footer class="footer">
         <div class="footer-inner">
             <span>© 2026 Gabriele Bolognese</span>
+            <span class="dot">·</span>
+            <a href="/license">Image licence</a>
             <span class="dot">·</span>
             <a href="/about">About</a>
             <span class="dot">·</span>

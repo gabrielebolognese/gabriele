@@ -47,3 +47,7 @@ User-agent: meta-externalagent
 Allow: /
 
 Sitemap: https://gabrielebolognese.blog/sitemap-index.xml
+
+# Image discovery. @astrojs/sitemap emits page URLs only, so the <image:image>
+# declarations live in their own file — see src/pages/image-sitemap.xml.ts.
+Sitemap: https://gabrielebolognese.blog/image-sitemap.xml
