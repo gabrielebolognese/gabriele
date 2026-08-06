@@ -1,0 +1,145 @@
+---
+/* One page for every entry, and deliberately not one page per entry: 365 pages
+   of two sentences is thin content on a domain whose whole purpose is being
+   read as one credible entity. A single URL that gets deeper and fresher every
+   day is the stronger signal, and entries stay linkable through anchors. */
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import DevlogTimeline from '../components/DevlogTimeline.astro';
+import { PERSON, DEVLOG, absoluteUrl } from '../data/identity';
+import { devlogSchema } from '../data/schema';
+import portrait from '../assets/gabriele-bolognese-portrait.png';
+
+const entries = await getCollection('devlog');
+const sorted = [...entries].sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const first = sorted[0]?.data.date;
+const latest = sorted[sorted.length - 1]?.data.date;
+
+const days = first && latest
+  ? Math.floor(
+      (Date.UTC(latest.getFullYear(), latest.getMonth(), latest.getDate())
+        - Date.UTC(first.getFullYear(), first.getMonth(), first.getDate())) / 86_400_000,
+    ) + 1
+  : 0;
+
+const schema = devlogSchema({
+  path: Astro.url.pathname,
+  portraitUrl: absoluteUrl(portrait.src, Astro.site),
+  entries: sorted.map((entry) => ({
+    text: entry.data.text,
+    date: entry.data.date,
+  })),
+});
+---
+<Layout title={`${DEVLOG.name}, ${PERSON.name}`} description={DEVLOG.description} schema={schema}>
+
+<nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-name">Gabriele Bolognese</a>
+    <ul class="nav-links">
+        <li><a href="/about">About</a></li>
+        <li><a href="/#projects">Projects</a></li>
+        <li><a href="/devlog">Devlog</a></li>
+        <li><a href="/newsletter">Newsletter</a></li>
+        <li><a href="/#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<main id="main">
+    <section class="section" aria-labelledby="devlog-heading">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li aria-current="page">Devlog</li>
+            </ol>
+        </nav>
+
+        <h1 id="devlog-heading" class="devlog-h1">{DEVLOG.name}</h1>
+        <p class="devlog-intro">{DEVLOG.description}</p>
+
+        {entries.length > 0 && (
+            <p class="devlog-stat">
+                <strong>{entries.length}</strong> {entries.length === 1 ? 'entry' : 'entries'}
+                <span class="dot">·</span>
+                <strong>{days}</strong> {days === 1 ? 'day' : 'days'} in
+            </p>
+        )}
+
+        {entries.length === 0 ? (
+            <p class="devlog-intro">Nothing logged yet.</p>
+        ) : (
+            <DevlogTimeline headingLevel="h2" />
+        )}
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <span>© 2026 Gabriele Bolognese</span>
+        <span class="dot">·</span>
+        <a href="/license">Image licence</a>
+        <span class="dot">·</span>
+        <a href="/about">About</a>
+        <span class="dot">·</span>
+        <a href="/newsletter">Newsletter</a>
+        <span class="dot">·</span>
+        <a href="https://flashfx.app" target="_blank" rel="noopener noreferrer">flashfx.app</a>
+    </div>
+</footer>
+
+</Layout>
+
+<style>
+    .breadcrumb ol {
+        display: flex;
+        gap: 10px;
+        list-style: none;
+        margin: 0 0 32px;
+        padding: 0;
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .breadcrumb li + li::before {
+        content: '/';
+        margin-right: 10px;
+        color: var(--gray-line);
+    }
+
+    .breadcrumb a { color: var(--gray-dark); }
+    .breadcrumb a:hover { color: var(--black); }
+
+    .devlog-h1 {
+        font-family: var(--font-display);
+        font-size: clamp(34px, 6vw, 62px);
+        font-weight: 200;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+        color: var(--black);
+        margin-bottom: 20px;
+    }
+
+    .devlog-intro {
+        max-width: 620px;
+        font-family: var(--font-serif);
+        font-size: clamp(18px, 2.4vw, 23px);
+        font-style: italic;
+        line-height: 1.6;
+        color: var(--gray-dark);
+    }
+
+    .devlog-stat {
+        margin-top: 28px;
+        font-size: var(--text-xs);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .devlog-stat strong {
+        font-family: var(--font-wide);
+        font-weight: 400;
+        color: var(--black);
+    }
+</style>

@@ -21,6 +21,7 @@
    16. Footer
    17. Issue page & prose
    18. Life grid
+   19. Devlog timeline
 
    Conventions: each section owns its own media queries; breakpoints are
    860px (tablet) and 520px (phone).
@@ -207,6 +208,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .issue-masthead,
 .js .issue-figure,
 .js .issue-row,
+.js .devlog-entry,
 .js .subscribe {
     opacity: 0;
     transform: translate3d(0, 22px, 0);
@@ -318,6 +320,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .issue-masthead,
     .js .issue-figure,
     .js .issue-row,
+    .js .devlog-entry,
     .js .subscribe { opacity: 1; transform: none; }
 
     .js .rule > span { transform: scaleX(1); }
@@ -2001,4 +2004,178 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 @media (max-width: 520px) {
     .life-grid,
     .life-row { gap: 1px; }
+}
+
+
+/* ── 19. DEVLOG TIMELINE ─────────────────────────────────────────────────────
+   Rendered by src/components/DevlogTimeline.astro on both /devlog (in full)
+   and the homepage (truncated), so the styles live here rather than scoped to
+   the component.
+
+   A one-sentence headline is always visible and the long form sits in a
+   <details>. Collapsed content is still in the HTML and still indexed, which
+   is the point: the headline makes a hundred entries scannable, and the detail
+   is the substance worth indexing. Same trade as .life-events on /about.
+   ------------------------------------------------------------------------- */
+.devlog {
+    list-style: none;
+    margin: 48px 0 0;
+    padding: 0;
+    border-top: 1px solid var(--gray-line);
+}
+
+.devlog-entry {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 0 40px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--gray-line);
+    transition: background var(--dur-slow) var(--ease);
+}
+
+/* Deep-linked entry, so a shared anchor is obvious on arrival. */
+.devlog-entry:target { background: var(--gray-soft); }
+
+.devlog-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: var(--text-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+}
+
+.devlog-day {
+    font-family: var(--font-wide);
+    font-size: clamp(15px, 1.8vw, 20px);
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--black);
+}
+
+.devlog-permalink {
+    color: var(--gray-line);
+    font-size: var(--text-sm);
+    transition: color var(--dur) var(--ease);
+}
+
+.devlog-entry:hover .devlog-permalink { color: var(--gray-mid); }
+.devlog-permalink:hover { color: var(--black); }
+
+.devlog-headline {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--black);
+    margin: 0;
+}
+
+/* ── The long form ───────────────────────────────────────────────────────── */
+.devlog-detail { margin-top: 14px; }
+
+.devlog-detail summary {
+    display: inline-block;
+    cursor: pointer;
+    font-size: var(--text-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    transition: color var(--dur) var(--ease);
+}
+
+.devlog-detail summary:hover { color: var(--black); }
+.devlog-detail[open] summary { margin-bottom: 14px; }
+
+.devlog-prose {
+    max-width: 62ch;
+    font-size: var(--text-sm);
+    line-height: 1.85;
+    color: var(--gray-dark);
+    border-left: 1px solid var(--gray-line);
+    padding-left: 20px;
+}
+
+.devlog-prose p { margin-bottom: 14px; }
+.devlog-prose p:last-child { margin-bottom: 0; }
+
+.devlog-prose ul,
+.devlog-prose ol { margin: 0 0 14px; padding: 0; }
+
+.devlog-prose li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+}
+
+.devlog-prose ul > li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.85em;
+    width: 8px;
+    height: 1px;
+    background: var(--gray-mid);
+}
+
+.devlog-prose ol { counter-reset: devlog-counter; }
+.devlog-prose ol > li { counter-increment: devlog-counter; }
+
+.devlog-prose ol > li::before {
+    content: counter(devlog-counter) '.';
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: var(--text-xs);
+    color: var(--gray-mid);
+}
+
+.devlog-prose code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.86em;
+    background: var(--gray-soft);
+    border: 1px solid var(--gray-line);
+    padding: 1px 5px;
+    color: var(--black);
+}
+
+.devlog-prose pre {
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    border: 1px solid var(--gray-line);
+    padding: 14px 16px;
+    margin: 0 0 14px;
+    overflow-x: auto;
+}
+
+.devlog-prose pre code { border: none; padding: 0; background: none; }
+
+.devlog-prose a {
+    color: var(--black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--gray-line);
+    transition: text-decoration-color var(--dur) var(--ease);
+}
+
+.devlog-prose a:hover { text-decoration-color: var(--black); }
+
+.devlog-figure { margin-top: 18px; max-width: 640px; }
+
+.devlog-figure img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--gray-line);
+}
+
+@media (max-width: 860px) {
+    .devlog-entry { grid-template-columns: 1fr; gap: 10px; }
+
+    /* Rail above the headline rather than shrunk into a stub. */
+    .devlog-rail {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 12px;
+    }
 }

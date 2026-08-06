@@ -121,7 +121,26 @@ flashfx.app), `newsletter/index.astro` (the archive), `404.astro`, `license.astr
 `image-sitemap.xml.ts`. The nav and the footer are hand-duplicated across all six page files plus
 `IssueLayout` — add a link in one and you have added it in none.
 
-**The newsletter is the only writing surface.** `/articles` was folded into it, on the reasoning that
+**The devlog is one page, never one page per entry.** `/devlog` holds every entry; a daily log split
+across separate URLs is 365 pages of two sentences a year, which is thin content on a site whose whole
+purpose is being read as one credible entity. Entries stay linkable through date anchors
+(`/devlog#2026-08-06`). `DevlogTimeline.astro` renders both the full page and the truncated homepage
+section, so the two cannot drift.
+
+Every entry lives in `src/content/devlog.yaml` — one file, loaded with `file()` rather than `glob()`,
+because publishing has to be "add a block at the top and commit" or a daily log dies in week two. The
+custom parser in `content.config.ts` returns an **object** rather than an array so its keys become the
+ids: `file()` requires an id per item and will not derive one from array position, and keying by date
+keeps an `id:` line out of the yaml that would only duplicate `date:`. `js-yaml` is a direct dependency
+for that parser, imported as `{ load }` — the v5 ESM build has no default export.
+
+Each entry is a one-sentence `text` plus an optional markdown `detail`, rendered at build time with
+`createMarkdownProcessor` from `@astrojs/markdown-remark` (already an Astro dependency, so no new
+package). The headline is what makes a hundred entries scannable; the detail is the substance worth
+indexing, and it ships in the HTML inside a `<details>` — collapsed content is still indexed, same
+trade as `.life-events` on `/about`.
+
+**The newsletter is the only long-form writing surface.** `/articles` was folded into it, on the reasoning that
 two thin sections compete for one entity exactly as `story.html` competed with the homepage.
 `public/_redirects` 301s both `/articles` and `/articles/*` across; `NEWSLETTER` in `identity.ts` owns
 the name, description and Buttondown username.

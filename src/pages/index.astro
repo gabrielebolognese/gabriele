@@ -4,6 +4,7 @@ import {getCollection} from 'astro:content';
 import Card from '../components/Card.astro';
 import Faq from '../components/Faq.astro';
 import LifeSection from '../components/LifeSection.astro';
+import DevlogTimeline from '../components/DevlogTimeline.astro';
 import { Image } from 'astro:assets';
 /* Asset filenames are load-bearing: Astro emits each one as
    `<basename>.<hash>.webp`, so the source basename is the served filename and
@@ -26,7 +27,7 @@ import portfolioSite from '../assets/video-editing-portfolio-site.png';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 import {HOMEPAGE_FAQ} from '../data/faq';
 import {homepageSchema} from '../data/schema';
-import {PERSON, ORGANIZATION, FACTS, absoluteUrl} from '../data/identity';
+import {PERSON, ORGANIZATION, FACTS, DEVLOG, absoluteUrl} from '../data/identity';
 
 const articles = await getCollection('newsletter', ({ data }) => !data.draft);
 const sorted = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -54,6 +55,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         <li><a href="#projects">Projects</a></li>
         <li><a href="#story">Story</a></li>
         <li><a href="#timeline">Timeline</a></li>
+        <li><a href="/devlog">Devlog</a></li>
         <li><a href="/newsletter">Newsletter</a></li>
         <li><a href="#contact">Contact</a></li>
     </ul>
@@ -1185,6 +1187,21 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
 
     <div class="rule"></div>
 
+
+    {/* The devlog sits above the newsletter deliberately: it is the section
+        that changes most often, and the homepage is the highest-authority page
+        on the site. Fresh content here is the cheapest possible proof that any
+        of this is still being worked on. */}
+    <section class="section" id="devlog" aria-labelledby="home-devlog-heading">
+        <h2 id="home-devlog-heading" class="section-label">Devlog</h2>
+        <p class="section-intro">{DEVLOG.description}</p>
+        <DevlogTimeline limit={DEVLOG.homepageLimit} headingLevel="h3" />
+        <p class="articles-more">
+            <a href="/devlog">Every entry &#8594;</a>
+        </p>
+    </section>
+
+    <div class="rule"></div>
 
     <section class="section" id="newsletter" aria-labelledby="newsletter-heading">
         <h2 id="newsletter-heading" class="section-label">Newsletter</h2>

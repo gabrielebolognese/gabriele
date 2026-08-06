@@ -19,6 +19,7 @@ import {
   SUBJECT_OF,
   IMAGE_LICENSE,
   NEWSLETTER,
+  DEVLOG,
   absoluteUrl,
 } from './identity';
 
@@ -326,6 +327,54 @@ export function newsletterIndexSchema(opts: {
     breadcrumbNode(url, [
       { name: 'Home', item: SITE.url },
       { name: NEWSLETTER.name, item: url },
+    ]),
+  ]);
+}
+
+/** The devlog page.
+ *
+ *  A Blog whose posts have no URLs of their own, which is exactly what this
+ *  is — entries are anchors on one page, not separate documents. Deliberately
+ *  not LiveBlogPosting: that type is for live coverage of an event, and Google
+ *  has no result for it. Each entry is emitted with its date so the page's
+ *  freshness and cadence are legible without inventing 365 fake URLs. */
+export function devlogSchema(opts: {
+  path: string;
+  entries: Array<{ text: string; date: Date }>;
+  portraitUrl: string;
+}) {
+  const url = absoluteUrl(opts.path);
+  const dates = opts.entries.map((entry) => entry.date.getTime());
+  return graph([
+    personNode(opts.portraitUrl),
+    websiteNode(),
+    {
+      '@type': 'Blog',
+      '@id': `${url}#devlog`,
+      url,
+      name: `${DEVLOG.name}, ${PERSON.name}`,
+      description: DEVLOG.description,
+      author: { '@id': ID.person },
+      publisher: { '@id': ID.person },
+      isPartOf: { '@id': ID.website },
+      inLanguage: 'en',
+      ...(dates.length
+        ? {
+            datePublished: new Date(Math.min(...dates)).toISOString(),
+            dateModified: new Date(Math.max(...dates)).toISOString(),
+          }
+        : {}),
+      blogPost: opts.entries.map((entry) => ({
+        '@type': 'BlogPosting',
+        headline: entry.text,
+        datePublished: entry.date.toISOString(),
+        author: { '@id': ID.person },
+        isPartOf: { '@id': `${url}#devlog` },
+      })),
+    },
+    breadcrumbNode(url, [
+      { name: 'Home', item: SITE.url },
+      { name: DEVLOG.name, item: url },
     ]),
   ]);
 }

@@ -1,0 +1,70 @@
+# ============================================================================
+# devlog.yaml — every entry, in one file.
+#
+# ONE file on purpose. Publishing is: open this, add a block at the top,
+# commit. That works from GitHub's mobile web editor in about thirty seconds,
+# which is the only reason a daily log survives past week two. One file per
+# entry would be three times the actions and far more to get wrong on a phone.
+#
+# Newest FIRST. The page sorts by date anyway, but keeping the newest at the
+# top means the cursor lands where you type.
+#
+# Fields
+#   date    required, YYYY-MM-DD. Day numbers count from the oldest entry.
+#   text    required, ONE sentence. This is the timeline headline — keep it
+#           short enough to scan a hundred of them.
+#   detail  optional, the long version. Markdown: paragraphs, lists, `code`,
+#           links. This is where the commit-level substance goes.
+#   image   optional, path relative to src/assets/.
+#   imageAlt required whenever image is set.
+#
+# Entries are not separate pages and never should be. 365 pages of two
+# sentences is thin content on a domain whose whole purpose is being read as
+# one credible entity. One page that deepens daily is the stronger signal.
+# ============================================================================
+
+- date: 2026-08-06
+  text: Folded the articles section into a real newsletter and gave the devlog its own page.
+  detail: |
+    `/articles` held exactly one post and that post was placeholder text.
+    Two thin writing surfaces compete for the same entity, which is the
+    mistake `story.html` made against the homepage before it became
+    `/about`, so it is now one publication at `/newsletter` with the old
+    URLs 301ing across.
+
+    Issues are `.mdx` so the body can call real components. `<Figure>` takes
+    a width of `column`, `wide` or `full`, which maps to named columns on a
+    CSS grid — that grid is the entire mechanism, and it only reaches the
+    figures because MDX renders them as direct children of the slot. Wrap
+    that slot and every figure silently snaps back to the text width with
+    nothing failing.
+
+- date: 2026-08-05
+  text: Renamed every image asset after what it actually shows, then declared them all in a sitemap.
+  detail: |
+    Astro emits `<source-basename>.<hash>.webp`, so the filename in
+    `src/assets/` is the filename Google sees. Eighteen images were shipping
+    as `1.png`, `33.png`, `1010.png` — the only keyword signal an image
+    carries besides its alt text, thrown away for free.
+
+    Two things found while doing it:
+
+    - `7.png` and `111.png` were byte-identical. Astro dedupes on content,
+      so the homepage's "AI features" screenshot and the `/about` "Bolt
+      hackathon prototype" have always been one file with two contradictory
+      captions.
+    - `@astrojs/sitemap` emits page URLs only, with no `<image:image>`
+      support, so every screenshot was discoverable only by a crawler
+      parsing a lazy-loaded `<img>` inside a carousel.
+
+- date: 2026-08-04
+  text: Gave every image a licence in the structured data, which meant building a page for it to point at.
+  detail: |
+    Google's licensable-images feature needs `license` and
+    `acquireLicensePage` on the `ImageObject`, and both have to be live
+    URLs — it drops the enhancement silently if either 404s, the same way a
+    dead `sameAs` entry devalues that whole array.
+
+    So `/license` exists now, and `IMAGE_LICENSE` in `identity.ts` points at
+    it. That page existing is a hard dependency of the markup: rename it and
+    the constant has to move with it.

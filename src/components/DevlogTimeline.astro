@@ -1,0 +1,100 @@
+---
+/* The devlog timeline. Rendered on /devlog in full and on the homepage
+ * truncated, from one component, so the two cannot drift the way the <head>
+ * once did.
+ *
+ * Each entry is a one-sentence headline plus an optional long form in a
+ * <details>. Both ship in the HTML — collapsed content is still indexed, and
+ * it is the long version that carries the substance worth indexing. Same
+ * pattern as `.life-events` on /about, for the same reason.
+ *
+ * Markdown in `detail` is rendered here at build time with the processor Astro
+ * already uses for .md files, so commit-style prose (lists, `code`, links)
+ * comes out right without adding a dependency.
+ */
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+
+interface Props {
+  /** Omit for all entries. The homepage passes a small number. */
+  limit?: number;
+  /** Heading level inside each entry, so each page keeps a sane outline. */
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { limit, headingLevel = 'h3' } = Astro.props;
+
+const all = await getCollection('devlog');
+/* Newest first for display. The day number counts from the OLDEST entry, so
+   it is derived from the data rather than a configured start date that could
+   drift out of sync with the first entry. */
+const chronological = [...all].sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const firstDay = chronological[0]?.data.date;
+
+const dayNumber = (date: Date): number => {
+  if (!firstDay) return 1;
+  const ms = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    - Date.UTC(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate());
+  return Math.floor(ms / 86_400_000) + 1;
+};
+
+const shown = [...chronological].reverse().slice(0, limit ?? undefined);
+
+const processor = await createMarkdownProcessor({});
+const rendered = await Promise.all(
+  shown.map(async (entry) => ({
+    entry,
+    detailHtml: entry.data.detail ? (await processor.render(entry.data.detail)).code : null,
+  })),
+);
+
+const Heading = headingLevel;
+
+/** "2026-08-06" — the anchor, so an entry is linkable without being a page. */
+const anchor = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+---
+<ol class="devlog">
+  {rendered.map(({ entry, detailHtml }) => (
+    <li class="devlog-entry" id={anchor(entry.data.date)}>
+      <div class="devlog-rail">
+        <span class="devlog-day">Day {dayNumber(entry.data.date)}</span>
+        <time class="devlog-date" datetime={entry.data.date.toISOString()}>
+          {entry.data.date.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          })}
+        </time>
+        {/* Anchors an entry without turning it into its own page. */}
+        <a class="devlog-permalink" href={`/devlog#${anchor(entry.data.date)}`}
+           aria-label={`Link to the entry for ${entry.data.date.toLocaleDateString('en-GB')}`}>#</a>
+      </div>
+
+      <div class="devlog-body">
+        <Heading class="devlog-headline">{entry.data.text}</Heading>
+
+        {detailHtml && (
+          <details class="devlog-detail">
+            <summary>Detail</summary>
+            <div class="devlog-prose" set:html={detailHtml} />
+          </details>
+        )}
+
+        {entry.data.image && (
+          <figure class="devlog-figure">
+            <Image
+              src={entry.data.image}
+              alt={entry.data.imageAlt ?? ''}
+              widths={[480, 960]}
+              sizes="(max-width: 860px) 100vw, 640px"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        )}
+      </div>
+    </li>
+  ))}
+</ol>

@@ -180,6 +180,25 @@ export const NEWSLETTER = {
   buttondownUser: '' as string,
 } as const;
 
+/* ── The devlog ──────────────────────────────────────────────────────────────
+   One page at /devlog holding every entry, never one page per entry. A daily
+   log split across separate URLs is 365 pages of two sentences a year, which
+   is thin content on a site whose whole purpose is being read as one credible
+   entity. One URL that gets deeper and fresher daily is the stronger signal,
+   and anchors keep individual entries linkable.
+
+   It also feeds [the newsletter]: the daily entries are the raw material a
+   monthly issue is edited from, which is what stops "what do I write about"
+   from killing the newsletter.
+   ------------------------------------------------------------------------- */
+export const DEVLOG = {
+  name: 'Devlog',
+  description:
+    'What I shipped, what broke, and what it taught me. One line a day from inside FlashFX, with the long version underneath.',
+  /** How many entries the homepage section shows before linking through. */
+  homepageLimit: 4,
+} as const;
+
 /* ── Image licensing ─────────────────────────────────────────────────────────
    Google's licensable-images feature attaches a "Licensable" badge and a link
    in Google Images, and it needs two properties on every ImageObject: `license`
