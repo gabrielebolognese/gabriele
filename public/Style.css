@@ -2021,20 +2021,106 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     list-style: none;
     margin: 48px 0 0;
     padding: 0;
-    border-top: 1px solid var(--gray-line);
 }
 
 .devlog-entry {
-    display: grid;
-    grid-template-columns: 160px minmax(0, 1fr);
-    gap: 0 40px;
-    padding: 28px 0;
-    border-bottom: 1px solid var(--gray-line);
+    position: relative;
     transition: background var(--dur-slow) var(--ease);
 }
 
 /* Deep-linked entry, so a shared anchor is obvious on arrival. */
 .devlog-entry:target { background: var(--gray-soft); }
+
+/* ── The `list` variant: stacked rows. Used on the homepage, where four
+      entries alternating across a centre line would read as a broken timeline
+      rather than a preview of one. ─────────────────────────────────────────── */
+.devlog-list { border-top: 1px solid var(--gray-line); }
+
+.devlog-list .devlog-entry {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 0 40px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--gray-line);
+}
+
+/* ── The `timeline` variant: a centre line with entries either side ──────────
+      Odd entries take the left column and mirror their alignment; even entries
+      take the right. `.devlog-prose` is deliberately NOT mirrored — running
+      text set right-aligned is materially harder to read, and the alternation
+      is already carried by which side of the line the block sits on.
+      ------------------------------------------------------------------------ */
+.devlog-timeline {
+    position: relative;
+    margin-top: 64px;
+    padding: 8px 0;
+}
+
+/* The line itself. Insets top and bottom so it starts and stops at the first
+   and last markers rather than floating past them. */
+.devlog-timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 12px;
+    bottom: 12px;
+    width: 1px;
+    background: var(--gray-line);
+    transform: translateX(-50%);
+}
+
+.devlog-timeline .devlog-entry {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 72px;
+    padding: 26px 0;
+}
+
+/* Absolutely positioned, so it is out of grid flow and cannot be auto-placed
+   into a column of its own. */
+.devlog-timeline .devlog-entry::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 34px;
+    width: 9px;
+    height: 9px;
+    background: var(--white);
+    border: 1px solid var(--gray-mid);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition:
+        background   var(--dur) var(--ease),
+        border-color var(--dur) var(--ease);
+}
+
+.devlog-timeline .devlog-entry:hover::after,
+.devlog-timeline .devlog-entry:target::after {
+    background: var(--black);
+    border-color: var(--black);
+}
+
+/* `> *` matches the rail and the body only — a universal selector never
+   matches the ::after above. Both land in one column and stack into rows. */
+.devlog-timeline .devlog-entry:nth-child(odd) > * {
+    grid-column: 1;
+    text-align: right;
+}
+
+.devlog-timeline .devlog-entry:nth-child(even) > * {
+    grid-column: 2;
+    text-align: left;
+}
+
+/* The rail is a flex column, so text-align does not reach it. */
+.devlog-timeline .devlog-entry:nth-child(odd) .devlog-rail { align-items: flex-end; }
+.devlog-timeline .devlog-entry:nth-child(even) .devlog-rail { align-items: flex-start; }
+
+/* Prose and figures stay left-aligned on both sides, for readability. */
+.devlog-timeline .devlog-prose,
+.devlog-timeline .devlog-figure { text-align: left; }
+
+.devlog-timeline .devlog-entry:nth-child(odd) .devlog-figure { margin-left: auto; }
 
 .devlog-rail {
     display: flex;
@@ -2075,18 +2161,55 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 /* ── The long form ───────────────────────────────────────────────────────── */
 .devlog-detail { margin-top: 14px; }
 
+/* A real button rather than a line of small grey text. The long form is the
+   substance of an entry, so the way into it should look pressable. */
 .devlog-detail summary {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 16px;
     cursor: pointer;
-    font-size: var(--text-xs);
-    letter-spacing: 0.14em;
+    border: 1px solid var(--gray-line);
+    font-family: var(--font-wide);
+    font-size: 9px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--gray-mid);
-    transition: color var(--dur) var(--ease);
+    color: var(--black);
+    background: var(--white);
+    transition:
+        background   var(--dur) var(--ease),
+        color        var(--dur) var(--ease),
+        border-color var(--dur) var(--ease);
 }
 
-.devlog-detail summary:hover { color: var(--black); }
-.devlog-detail[open] summary { margin-bottom: 14px; }
+/* Both are needed: `list-style` covers Firefox and the modern spec, the
+   pseudo-element covers older WebKit. */
+.devlog-detail summary { list-style: none; }
+.devlog-detail summary::-webkit-details-marker { display: none; }
+
+.devlog-detail summary:hover {
+    background: var(--black);
+    color: var(--white);
+    border-color: var(--black);
+}
+
+/* Chevron, drawn from a rotated border so it needs no asset. */
+.devlog-toggle-icon {
+    width: 6px;
+    height: 6px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform var(--dur) var(--ease);
+}
+
+.devlog-detail[open] .devlog-toggle-icon { transform: translateY(1px) rotate(-135deg); }
+
+.devlog-toggle-hide { display: none; }
+.devlog-detail[open] .devlog-toggle-show { display: none; }
+.devlog-detail[open] .devlog-toggle-hide { display: inline; }
+
+.devlog-detail[open] summary { margin-bottom: 18px; }
 
 .devlog-prose {
     max-width: 62ch;
@@ -2170,7 +2293,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 @media (max-width: 860px) {
-    .devlog-entry { grid-template-columns: 1fr; gap: 10px; }
+    .devlog-list .devlog-entry { grid-template-columns: 1fr; gap: 10px; }
 
     /* Rail above the headline rather than shrunk into a stub. */
     .devlog-rail {
@@ -2178,4 +2301,26 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
         align-items: baseline;
         gap: 12px;
     }
+
+    /* Two columns cannot hold prose at phone width, so the line moves to the
+       left edge and every entry stacks to its right — still a timeline, just
+       a single-sided one. */
+    .devlog-timeline::before { left: 5px; transform: none; }
+
+    .devlog-timeline .devlog-entry {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding-left: 30px;
+    }
+
+    .devlog-timeline .devlog-entry::after { left: 5px; }
+
+    .devlog-timeline .devlog-entry:nth-child(odd) > *,
+    .devlog-timeline .devlog-entry:nth-child(even) > * {
+        grid-column: 1;
+        text-align: left;
+    }
+
+    .devlog-timeline .devlog-entry:nth-child(odd) .devlog-rail { align-items: baseline; }
+    .devlog-timeline .devlog-entry:nth-child(odd) .devlog-figure { margin-left: 0; }
 }
