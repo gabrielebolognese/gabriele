@@ -1,0 +1,64 @@
+---
+/* Buttondown signup. A plain form POST to their endpoint — no JavaScript and no
+ * serverless function, which is what lets a 100% static Netlify build collect
+ * subscribers at all.
+ *
+ * `target="_blank"` rather than an inline fetch: without JS there is no way to
+ * stay on the page, and a form that silently does nothing when a script fails
+ * is worse than one that opens a confirmation tab.
+ *
+ * Renders a disabled placeholder until NEWSLETTER.buttondownUser is filled in,
+ * because a form posting to buttondown.email/api/emails/embed-subscribe/
+ * with no username swallows addresses into a 404.
+ */
+import { NEWSLETTER } from '../data/identity';
+
+interface Props {
+  /** `page` for the standalone block on the archive, `foot` under an issue. */
+  variant?: 'page' | 'foot';
+}
+
+const { variant = 'page' } = Astro.props;
+
+const configured = NEWSLETTER.buttondownUser.length > 0;
+const action = `https://buttondown.email/api/emails/embed-subscribe/${NEWSLETTER.buttondownUser}`;
+
+const heading =
+  variant === 'foot' ? `More like this, by email` : `Subscribe to ${NEWSLETTER.name}`;
+---
+<section class={`subscribe subscribe-${variant}`} aria-labelledby={`sub-h-${variant}`}>
+  <h2 class="subscribe-h" id={`sub-h-${variant}`}>{heading}</h2>
+  <p class="subscribe-desc">{NEWSLETTER.description}</p>
+
+  {configured ? (
+    <form class="subscribe-form" action={action} method="post" target="_blank">
+      <label class="visually-hidden" for={`sub-email-${variant}`}>Email address</label>
+      <input
+        class="subscribe-input"
+        id={`sub-email-${variant}`}
+        type="email"
+        name="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        required
+      />
+      {/* Buttondown reads this to skip its own hosted landing page. */}
+      <input type="hidden" name="embed" value="1" />
+      <button class="subscribe-btn" type="submit">Subscribe</button>
+    </form>
+  ) : (
+    <form class="subscribe-form" aria-disabled="true" onsubmit="return false">
+      <label class="visually-hidden" for={`sub-email-${variant}`}>Email address</label>
+      <input
+        class="subscribe-input"
+        id={`sub-email-${variant}`}
+        type="email"
+        placeholder="Signup opens shortly"
+        disabled
+      />
+      <button class="subscribe-btn" type="submit" disabled>Subscribe</button>
+    </form>
+  )}
+
+  <p class="subscribe-note">{NEWSLETTER.promise}</p>
+</section>

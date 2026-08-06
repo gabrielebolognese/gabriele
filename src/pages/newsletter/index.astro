@@ -1,0 +1,148 @@
+---
+/* The archive. Was /articles, a card grid; now a numbered issue list, because
+   sequence is the thing a publication has and a pile of cards does not.
+   Card.astro is untouched — the homepage still renders the grid. */
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import IssueRow from '../../components/newsletter/IssueRow.astro';
+import SubscribeForm from '../../components/SubscribeForm.astro';
+import { newsletterIndexSchema } from '../../data/schema';
+import { PERSON, NEWSLETTER, absoluteUrl } from '../../data/identity';
+import portrait from '../../assets/gabriele-bolognese-portrait.png';
+
+const issues = await getCollection('newsletter', ({ data }) => !data.draft);
+/* Newest first, by issue number rather than date: two issues can share a date,
+   and the number is the canonical order. */
+const sorted = issues.sort((a, b) => b.data.issue - a.data.issue);
+
+const schema = newsletterIndexSchema({
+    path: Astro.url.pathname,
+    portraitUrl: absoluteUrl(portrait.src, Astro.site),
+    posts: sorted.map(issue => ({
+        title: issue.data.title,
+        description: issue.data.description,
+        path: `/newsletter/${issue.id}`,
+        published: issue.data.date,
+        issue: issue.data.issue,
+    })),
+});
+---
+<Layout
+        title={`${NEWSLETTER.name}, a newsletter by ${PERSON.name}`}
+        description={NEWSLETTER.description}
+        schema={schema}
+>
+
+<nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-name">Gabriele Bolognese</a>
+    <ul class="nav-links">
+        <li><a href="/about">About</a></li>
+        <li><a href="/#projects">Projects</a></li>
+        <li><a href="/newsletter">Newsletter</a></li>
+        <li><a href="/#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<main id="main">
+    <section class="section" aria-labelledby="newsletter-heading">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li aria-current="page">Newsletter</li>
+            </ol>
+        </nav>
+
+        <h1 id="newsletter-heading" class="archive-h1">{NEWSLETTER.name}</h1>
+        <p class="archive-intro">{NEWSLETTER.description}</p>
+
+        <SubscribeForm variant="page" />
+
+        {sorted.length === 0 ? (
+            <p class="archive-intro">Nothing published yet, issue one is on its way.</p>
+        ) : (
+            <div class="issue-list">
+                <h2 class="archive-label">
+                    {sorted.length === 1 ? 'One issue' : `${sorted.length} issues`}
+                </h2>
+                {sorted.map(issue => (
+                    <IssueRow
+                        issue={issue.data.issue}
+                        title={issue.data.title}
+                        description={issue.data.description}
+                        image={issue.data.image}
+                        slug={issue.id}
+                        date={issue.data.date}
+                    />
+                ))}
+            </div>
+        )}
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <span>© 2026 Gabriele Bolognese</span>
+        <span class="dot">·</span>
+        <a href="/license">Image licence</a>
+        <span class="dot">·</span>
+        <a href="/about">About</a>
+        <span class="dot">·</span>
+        <a href="/rss.xml">RSS</a>
+        <span class="dot">·</span>
+        <a href="https://flashfx.app" target="_blank" rel="noopener noreferrer">flashfx.app</a>
+    </div>
+</footer>
+
+</Layout>
+
+<style>
+    .breadcrumb ol {
+        display: flex;
+        gap: 10px;
+        list-style: none;
+        margin: 0 0 32px;
+        padding: 0;
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .breadcrumb li + li::before {
+        content: '/';
+        margin-right: 10px;
+        color: var(--gray-line);
+    }
+
+    .breadcrumb a { color: var(--gray-dark); }
+    .breadcrumb a:hover { color: var(--black); }
+
+    .archive-h1 {
+        font-family: var(--font-display);
+        font-size: clamp(34px, 6vw, 62px);
+        font-weight: 200;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+        color: var(--black);
+        margin-bottom: 20px;
+    }
+
+    .archive-intro {
+        max-width: 620px;
+        font-family: var(--font-serif);
+        font-size: clamp(18px, 2.4vw, 23px);
+        font-style: italic;
+        line-height: 1.6;
+        color: var(--gray-dark);
+    }
+
+    .archive-label {
+        font-family: var(--font-wide);
+        font-size: 9px;
+        font-weight: 400;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+        margin-bottom: 8px;
+    }
+</style>

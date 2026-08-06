@@ -47,8 +47,9 @@ export interface IndexedImage {
 const CAROUSEL = 1440; // index.astro project carousels
 const FIGURE = 960; // about.astro bio figures
 const PORTRAIT = 640; // LifeSection portrait
-export const CARD = 720; // Card.astro article covers on /articles
-export const COVER = 1440; // ArticleLayout hero cover
+export const HOME_CARD = 720; // Card.astro issue covers on the homepage grid
+export const THUMB = 400; // IssueRow.astro thumbnails on /newsletter
+export const COVER = 2080; // IssueLayout hero cover
 
 /** The portrait renders on both routes through LifeSection. Declared on each,
  *  because <image:image> is scoped to the page it sits under. */

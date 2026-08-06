@@ -18,13 +18,8 @@
 import type { APIRoute } from 'astro';
 import { getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { PAGE_IMAGES, CARD, COVER } from '../data/images';
+import { PAGE_IMAGES, HOME_CARD, THUMB, COVER } from '../data/images';
 import { absoluteUrl } from '../data/identity';
-
-interface Entry {
-  page: string;
-  images: string[];
-}
 
 /** Astro's build-time image URLs are plain paths, but the dev server serves
  *  `/_image?href=...&w=...`, and a bare & is not valid XML. */
@@ -37,48 +32,50 @@ function escapeXml(value: string): string {
 }
 
 export const GET: APIRoute = async ({ site }) => {
-  const entries: Entry[] = [];
+  /* Keyed by page URL rather than a flat list: an issue cover appears on three
+     different pages at three different sizes, and the same <loc> must not be
+     emitted twice in one urlset. */
+  const pages = new Map<string, string[]>();
+
+  const add = (page: string, loc: string) => {
+    const key = absoluteUrl(page, site);
+    const list = pages.get(key) ?? [];
+    if (!list.includes(loc)) list.push(loc);
+    pages.set(key, list);
+  };
+
+  const built = async (src: Parameters<typeof getImage>[0]['src'], width: number) =>
+    absoluteUrl((await getImage({ src, width, format: 'webp' })).src, site);
 
   for (const [path, images] of Object.entries(PAGE_IMAGES)) {
-    const locs = await Promise.all(
-      images.map(async ({ src, width }) => {
-        const built = await getImage({ src, width, format: 'webp' });
-        return absoluteUrl(built.src, site);
-      }),
-    );
-    entries.push({ page: absoluteUrl(path, site), images: locs });
+    for (const { src, width } of images) {
+      add(path, await built(src, width));
+    }
   }
 
-  /* Article covers are collection data rather than page imports, so they are
+  /* Issue covers are collection data rather than page imports, so they are
      resolved here instead of in the manifest. Drafts are excluded for the same
-     reason they are excluded from the sitemap and the feed. */
-  const articles = await getCollection('articles', ({ data }) => !data.draft);
-  const cards: string[] = [];
+     reason they are excluded from the sitemap and the feed.
 
-  for (const article of articles) {
-    const cover = await getImage({ src: article.data.image, width: COVER, format: 'webp' });
-    entries.push({
-      page: absoluteUrl(`/articles/${article.id}`, site),
-      images: [absoluteUrl(cover.src, site)],
-    });
+     Each cover is declared at the width the page in question actually renders:
+     the hero on the issue itself, the IssueRow thumbnail on the archive, and
+     the Card on the homepage grid. */
+  const issues = await getCollection('newsletter', ({ data }) => !data.draft);
 
-    // The same cover, at the size Card.astro renders it on the archive hub.
-    const card = await getImage({ src: article.data.image, width: CARD, format: 'webp' });
-    cards.push(absoluteUrl(card.src, site));
-  }
-
-  if (cards.length) {
-    entries.push({ page: absoluteUrl('/articles', site), images: cards });
+  for (const issue of issues) {
+    add(`/newsletter/${issue.id}`, await built(issue.data.image, COVER));
+    add('/newsletter', await built(issue.data.image, THUMB));
+    add('/', await built(issue.data.image, HOME_CARD));
   }
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${entries
+${[...pages]
   .map(
-    (entry) => `  <url>
-    <loc>${escapeXml(entry.page)}</loc>
-${entry.images.map((loc) => `    <image:image><image:loc>${escapeXml(loc)}</image:loc></image:image>`).join('\n')}
+    ([page, images]) => `  <url>
+    <loc>${escapeXml(page)}</loc>
+${images.map((loc) => `    <image:image><image:loc>${escapeXml(loc)}</image:loc></image:image>`).join('\n')}
   </url>`,
   )
   .join('\n')}

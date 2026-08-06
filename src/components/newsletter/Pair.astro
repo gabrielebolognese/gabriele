@@ -1,0 +1,37 @@
+---
+/* Two images in one row, sharing a caption — before/after, or two states of the
+ * same screen. Sits in the `wide` column by default, because two images at the
+ * 680px text measure are 330px each and legible to nobody.
+ *
+ * Counts as ONE figure for the .issue-body counter, which is the right
+ * granularity: "Fig 3, before and after" is one idea, not two.
+ *
+ * Collapses to stacked on narrow screens (see "17. ISSUE PAGE" in Style.css).
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  a: ImageMetadata;
+  altA: string;
+  b: ImageMetadata;
+  altB: string;
+  caption?: string;
+  width?: 'wide' | 'full';
+}
+
+const { a, altA, b, altB, caption, width = 'wide' } = Astro.props;
+
+/* Each image occupies about half the row, so it needs roughly half the width
+   the equivalent single Figure would ask for. */
+const WIDTHS = width === 'full' ? [640, 960, 1440] : [520, 780, 1040];
+const SIZES =
+  width === 'full' ? '(max-width: 860px) 100vw, 50vw' : '(max-width: 860px) 100vw, 520px';
+---
+<figure class={`issue-figure issue-pair fig-${width}`}>
+  <div class="issue-pair-row">
+    <Image src={a} alt={altA} widths={WIDTHS} sizes={SIZES} loading="lazy" decoding="async" />
+    <Image src={b} alt={altB} widths={WIDTHS} sizes={SIZES} loading="lazy" decoding="async" />
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

@@ -18,6 +18,7 @@ import {
   SAME_AS,
   SUBJECT_OF,
   IMAGE_LICENSE,
+  NEWSLETTER,
   absoluteUrl,
 } from './identity';
 
@@ -27,6 +28,10 @@ export const ID = {
   website: `${SITE.url}/#website`,
   org: `${ORGANIZATION.url}/#organization`,
   logo: `${SITE.url}/#logo`,
+  /** The newsletter itself. Stable and absolute, so an issue page can declare
+   *  isPartOf the same Blog entity the archive page defines, rather than each
+   *  page minting a Blog of its own. */
+  blog: `${SITE.url}/newsletter#blog`,
 } as const;
 
 type Node = Record<string, unknown>;
@@ -216,8 +221,14 @@ export function aboutPageSchema(opts: { portraitUrl: string; path: string; faq: 
   ]);
 }
 
-/** Article page: a real BlogPosting, which the site had no equivalent of. */
-export function articleSchema(opts: {
+/** One newsletter issue: a real BlogPosting, which the site had no equivalent of.
+ *
+ *  Stays BlogPosting rather than moving to Periodical/PublicationIssue, which
+ *  is semantically closer to a numbered newsletter. Google has no rich result
+ *  for those types, so the swap would trade a working enhancement for precision
+ *  nothing reads. The issue number rides along as `issueNumber`, which is valid
+ *  on the node and ignored harmlessly where it is not understood. */
+export function issueSchema(opts: {
   title: string;
   description: string;
   path: string;
@@ -225,6 +236,7 @@ export function articleSchema(opts: {
   published: Date;
   modified?: Date;
   wordCount?: number;
+  issue?: number;
   portraitUrl: string;
 }) {
   const url = absoluteUrl(opts.path);
@@ -249,8 +261,9 @@ export function articleSchema(opts: {
       publisher: { '@id': ID.person },
       image: { '@id': imageId },
       mainEntityOfPage: { '@id': `${url}#webpage` },
-      isPartOf: { '@id': ID.website },
+      isPartOf: { '@id': ID.blog },
       inLanguage: 'en',
+      ...(opts.issue ? { issueNumber: opts.issue } : {}),
       ...(opts.wordCount ? { wordCount: opts.wordCount } : {}),
     },
     {
@@ -265,16 +278,24 @@ export function articleSchema(opts: {
     },
     breadcrumbNode(url, [
       { name: 'Home', item: SITE.url },
-      { name: 'Articles', item: absoluteUrl('/articles') },
+      { name: NEWSLETTER.name, item: absoluteUrl('/newsletter') },
       { name: opts.title, item: url },
     ]),
   ]);
 }
 
-/** Articles index: a Blog listing every post. */
-export function blogIndexSchema(opts: {
+/** The archive: a Blog listing every issue. This page DEFINES the Blog entity
+ *  that each issue page references by @id, so its identifier is the shared
+ *  ID.blog rather than one derived from whatever path it happens to sit at. */
+export function newsletterIndexSchema(opts: {
   path: string;
-  posts: Array<{ title: string; description: string; path: string; published: Date }>;
+  posts: Array<{
+    title: string;
+    description: string;
+    path: string;
+    published: Date;
+    issue?: number;
+  }>;
   portraitUrl: string;
 }) {
   const url = absoluteUrl(opts.path);
@@ -283,12 +304,13 @@ export function blogIndexSchema(opts: {
     websiteNode(),
     {
       '@type': 'Blog',
-      '@id': `${url}#blog`,
+      '@id': ID.blog,
       url,
-      name: `Articles, ${PERSON.name}`,
-      description: 'Essays on building FlashFX, motion design, and founding a company solo.',
+      name: NEWSLETTER.name,
+      description: NEWSLETTER.description,
       author: { '@id': ID.person },
       publisher: { '@id': ID.person },
+      isPartOf: { '@id': ID.website },
       inLanguage: 'en',
       blogPost: opts.posts.map((post) => ({
         '@type': 'BlogPosting',
@@ -298,11 +320,12 @@ export function blogIndexSchema(opts: {
         url: absoluteUrl(post.path),
         datePublished: post.published.toISOString(),
         author: { '@id': ID.person },
+        ...(post.issue ? { issueNumber: post.issue } : {}),
       })),
     },
     breadcrumbNode(url, [
       { name: 'Home', item: SITE.url },
-      { name: 'Articles', item: url },
+      { name: NEWSLETTER.name, item: url },
     ]),
   ]);
 }

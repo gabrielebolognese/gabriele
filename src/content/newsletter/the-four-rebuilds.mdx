@@ -1,0 +1,109 @@
+---
+issue: 2
+title: "What Four Rebuilds Actually Cost"
+date: 2026-08-06
+description: "FlashFX exists on the fourth attempt. The first three are the part nobody writes about, so this is that part."
+standfirst: "FlashFX exists on the fourth attempt. The first three are the part nobody writes about, so this is that part."
+image: "../../assets/flashfx-animator-timeline-canvas.png"
+imageAlt: "The FlashFX Animator, timeline and canvas view"
+draft: false
+---
+
+import Figure from '../../components/newsletter/Figure.astro';
+import Pair from '../../components/newsletter/Pair.astro';
+
+import timeline from '../../assets/flashfx-animator-timeline-canvas.png';
+import keyframes from '../../assets/flashfx-animator-keyframe-controls.png';
+import layers from '../../assets/flashfx-animator-layer-panel-effects.png';
+import visionAi from '../../assets/vision-ai-demo-video-editor-2024.png';
+import earlyPivot from '../../assets/flashfx-early-motion-design-interface-2024.png';
+import editorColor from '../../assets/flashfx-editor-color-grading.png';
+
+I wrote my first line of code in January 2024. Three weeks later I lost the whole
+project to a file-path error, and the €200 I had spent on it was borrowed from my
+younger cousin. That is where this starts, and I think it matters more than the
+part where it works.
+
+## The first one
+
+Vision AI Demo was a browser-based video editor built with an AI assistant and
+bolt.new, by someone who had never programmed. It ran. For about six weeks it
+genuinely ran.
+
+<Figure
+  src={visionAi}
+  alt="The Vision AI Demo browser-based video editor, 2024"
+  caption="Vision AI Demo, January 2024. Six weeks old and already doing more than it had any right to."
+  width="wide"
+/>
+
+Then I restructured the files, broke every import in the project at once, and had
+no version control, no backup and no idea what any of those words meant. The
+codebase was unrecoverable. I want to be precise about this, because it is the
+only part of the story people tend to soften: it was not a hard problem. I simply
+did not know the thing that would have saved it.
+
+## The pivot nobody saw
+
+Between the crash and anything resembling FlashFX there were five prototypes and
+none of them shipped. What came out of that stretch was not code. It was the
+realisation that I had been building in the wrong category — timeline video
+editing is crowded and solved, and motion design in the browser was not.
+
+<Pair
+  a={earlyPivot}
+  altA="Early FlashFX motion design interface from the late-2024 pivot"
+  b={layers}
+  altB="FlashFX Animator, layer panel and effects toolbar"
+  caption="Late 2024 against today. The layer model is the one idea that survived every rebuild intact."
+/>
+
+I spent December 2024 to February 2025 doing nothing but studying. JavaScript,
+then TypeScript, then React, building small useless utilities one after another
+until the fundamentals stopped sliding off. All of that came before a single line
+of what became FlashFX.
+
+## What the fourth attempt looks like
+
+The thing that took four tries is not the interface. It is the timeline: the data
+model underneath it, the one that decides whether a keyframe is a value on a
+track or an object with an opinion about its neighbours. I got that wrong three
+times.
+
+<Figure
+  src={timeline}
+  alt="FlashFX Animator interface, timeline and canvas view"
+  caption="The current timeline. The fourth version of this specific screen, and the first one I have not wanted to rewrite."
+  width="full"
+/>
+
+Everything else follows from it. Keyframe easing, the effects stack, the export
+pipeline — all of it is downstream of a decision I could not make correctly until
+I had made it badly three times.
+
+<Figure
+  src={keyframes}
+  alt="FlashFX motion graphics editor with keyframe controls"
+  caption="Keyframe controls, which only became tractable once the underlying model stopped fighting them."
+  width="column"
+/>
+
+## What it actually cost
+
+Two years, roughly 300,000 lines of TypeScript, €400 of borrowed money across two
+loans, and one hackathon I was certain I would win and did not. Against that:
+8,000 people use it, 3,400 are in the Discord, and none of it came from
+advertising.
+
+<Figure
+  src={editorColor}
+  alt="FlashFX Editor color grading tools"
+  caption="The Editor's colour grading, the piece I would have called impossible in 2024."
+  width="wide"
+/>
+
+I am not going to pretend the failures were secretly good. Losing Vision AI Demo
+was just bad, and the debt was real. But the thing I know now that I did not know
+then is which mistakes are recoverable, and that is only learnable one way.
+
+More soon.

@@ -26,7 +26,7 @@
         '.faq-item',
         '.bio-lede', '.bio-figure', '.bio-table-wrap', '.bio-links', '.breadcrumb',
         '.age', '.bio-panel',
-        '.article-cover-img', '.article-h1',
+        '.issue-masthead', '.issue-cover', '.issue-figure', '.issue-row', '.subscribe',
         '.rule'
     ].join(',');
 

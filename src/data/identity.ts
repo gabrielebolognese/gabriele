@@ -156,6 +156,30 @@ export const FACTS = {
   discordLabel: '3,400',
 } as const;
 
+/* ── The newsletter ──────────────────────────────────────────────────────────
+   Lives at /newsletter on this domain rather than on Substack. A Substack
+   author page ranks for "Gabriele Bolognese" and would compete with this site
+   for the same entity, which is exactly what story.html did to the homepage
+   before it was folded into /about. Sending is Buttondown's job; the archive
+   stays here, where every issue is another indexable page on the domain that
+   already carries the entity.
+   ------------------------------------------------------------------------- */
+export const NEWSLETTER = {
+  // TODO: name it yourself. "The Rebuild" is a placeholder taken from the four
+  // rebuilds in your own story — it reads well and it is yours to overrule.
+  name: 'The Rebuild',
+  /** Shown on the archive page and used as the Blog description in JSON-LD. */
+  description:
+    'What I am building, what broke, and what it cost. Written from inside FlashFX, sent when there is something worth saying.',
+  /** Short line beside the signup field. */
+  promise: 'No schedule, no filler. Unsubscribe in one click.',
+
+  // TODO: your Buttondown username — the form posts to
+  // buttondown.email/api/emails/embed-subscribe/<username>. Until this is
+  // real the form renders disabled rather than posting into a void.
+  buttondownUser: '' as string,
+} as const;
+
 /* ── Image licensing ─────────────────────────────────────────────────────────
    Google's licensable-images feature attaches a "Licensable" badge and a link
    in Google Images, and it needs two properties on every ImageObject: `license`

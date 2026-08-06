@@ -21,7 +21,7 @@ npm run astro -- check   # diagnostics — prompts to install @astrojs/check + t
 Requires Node >= 22.12. There is no test suite, linter, or formatter, and neither `@astrojs/check` nor
 `typescript` is installed — do not invent tooling. Deploy is Netlify from `master`; `netlify.toml` sets
 the build command, pins `NODE_VERSION=22`, and defines the cache/security headers. `public/_redirects`
-holds the 301s (the old `/story.html` → `/about`).
+holds the 301s (`/story.html` → `/about`, `/articles/*` → `/newsletter/*`).
 
 ## Architecture
 
@@ -57,7 +57,7 @@ never bundled. `Style.css` opens with a numbered table of contents; 01–04 are 
 one block per component, each owning its media queries (breakpoints 860px and 520px). All design tokens
 — colour, type, spacing, and motion (`--ease`, `--ease-expo`, `--dur`, `--dur-reveal`) — live in the
 single `:root` block. Component-scoped `<style>` blocks exist in `Card.astro`, `Faq.astro`,
-`LifeSection.astro`, `ArticleLayout.astro`, `about.astro`, `articles/index.astro` and `404.astro`; the
+`LifeSection.astro`, `IssueLayout.astro`, `about.astro`, `newsletter/index.astro` and `404.astro`; the
 grids that lay them out stay in `Style.css`.
 
 **The motion layer.** `html.js` is set by an inline head script before first paint, so every
@@ -114,25 +114,38 @@ stamps `license` and `acquireLicensePage` from `IMAGE_LICENSE` in `identity.ts`.
 enhancement if either URL 404s. Rename or remove `src/pages/license.astro` and `IMAGE_LICENSE` has to
 move with it.
 
-**Pages.** `index.astro` (~1250 lines) renders `Layout.astro` like every other page. Articles go
-`articles/[...slug].astro` → `ArticleLayout.astro` → `Layout.astro`. Also `about.astro` (~440 lines, the
-biography, converted from a standalone `public/story.html` that was orphaned and canonicalised to
-flashfx.app), `articles/index.astro` (the archive hub), `404.astro`, `license.astro`, `rss.xml.ts` and
-`image-sitemap.xml.ts`. The footer is hand-duplicated across all five page files plus `ArticleLayout`
-— add a footer link in one and you have added it in none.
+**Pages.** `index.astro` (~1250 lines) renders `Layout.astro` like every other page. Issues go
+`newsletter/[...slug].astro` → `IssueLayout.astro` → `Layout.astro`. Also `about.astro` (~440 lines,
+the biography, converted from a standalone `public/story.html` that was orphaned and canonicalised to
+flashfx.app), `newsletter/index.astro` (the archive), `404.astro`, `license.astro`, `rss.xml.ts` and
+`image-sitemap.xml.ts`. The nav and the footer are hand-duplicated across all six page files plus
+`IssueLayout` — add a link in one and you have added it in none.
 
-`src/content.config.ts` defines the `articles` collection over `src/content/articles/**/*.md`. `date`
-is `z.coerce.date()` — a real Date, so it can be emitted as ISO 8601 for `article:published_time` and
-`datePublished`. `draft: true` removes a post from the homepage, the hub, the sitemap and the feed.
-A new post is just a new `.md` file; the sitemap is generated from the route table.
+**The newsletter is the only writing surface.** `/articles` was folded into it, on the reasoning that
+two thin sections compete for one entity exactly as `story.html` competed with the homepage.
+`public/_redirects` 301s both `/articles` and `/articles/*` across; `NEWSLETTER` in `identity.ts` owns
+the name, description and Buttondown username.
+
+`src/content.config.ts` defines the `newsletter` collection over `src/content/newsletter/**/*.{md,mdx}`.
+`issue` is explicit rather than derived from date order, so back-dating an issue cannot renumber the
+ones after it — and both the archive and the feed sort on it, not on `date`. `draft: true` removes an
+issue from the homepage, the archive, the sitemap and the feed.
+
+**Issues are `.mdx` so the body can place images properly.** `<Figure>` and `<Pair>` in
+`src/components/newsletter/` take a `width` of `column` (680px), `wide` (1040px) or `full`, which maps
+to named columns on the `.issue-body` grid in Style.css — that grid is the entire mechanism, and it
+only reaches the figures because MDX renders them as **direct children of the slot**. Wrap the slot in
+`IssueLayout` and every figure silently snaps back to the text width with nothing failing. Figures
+number themselves with a CSS counter, and `<Pair>` increments it once, not twice.
+
+`@astrojs/mdx` is pinned to `^6.0.3`: version 7 peers `astro@^7` and this project is on Astro 6.
 
 ## Content state
 
-The single article, `how-i-built-flashfx.md`, is titled "How I Built FlashFX From Zero" but its body is
-FlashFX export-system documentation — placeholder text awaiting the real post. The title/description
-promise a founder narrative the body does not deliver, which is a live title-mismatch risk now that
-articles are actually indexable. It is still published (`draft: false`); setting `draft: true` is the
-one-line fix.
+The first issue, `how-i-built-flashfx.mdx`, is `draft: true`. Its title promises a founder narrative
+and its body is still FlashFX export-system documentation. As one post among many that was a title
+mismatch; as issue 001 of a publication it would be the flagship, which is why it is held back rather
+than shipped. `the-four-rebuilds.mdx` is issue 002 and is real.
 
 The figures that used to contradict each other are now settled in `FACTS` and `ORGANIZATION`, confirmed
 2026-07-31: 8,000 users, 3,400 Discord members, FlashFX founded 2024-01-01 (matching the homepage's

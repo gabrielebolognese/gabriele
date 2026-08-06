@@ -1,6 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+// Newsletter issues are .mdx so they can call <Figure> and <Pair>. Plain
+// markdown can only place an image one way, at one width, with no caption.
+// Pinned to 6.x: @astrojs/mdx@7 peers astro ^7 and this project is on 6.
+import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
@@ -14,6 +18,7 @@ export default defineConfig({
   trailingSlash: 'never',
 
   integrations: [
+    mdx(),
     sitemap({
       // Replaces the hand-maintained public/sitemap.xml, which listed two URLs
       // and no articles. This one is generated from the real route table.

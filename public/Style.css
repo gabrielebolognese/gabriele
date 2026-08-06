@@ -16,10 +16,10 @@
    11. Story — chapters
    12. Story — long-form entries
    13. Timeline
-   14. Articles grid            (card internals live in src/components/Card.astro)
+   14. Issue list & articles grid  (card internals live in src/components/Card.astro)
    15. What's next
    16. Footer
-   17. Article page & prose
+   17. Issue page & prose
    18. Life grid
 
    Conventions: each section owns its own media queries; breakpoints are
@@ -148,7 +148,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .timeline-desc a,
 .next-contact a,
 .cd-goal-link,
-.article-body a {
+.issue-body a {
     color: var(--black);
     background-image:
         linear-gradient(var(--black), var(--black)),
@@ -166,7 +166,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .timeline-desc a:hover,
 .next-contact a:hover,
 .cd-goal-link:hover,
-.article-body a:hover { background-size: 100% 1px, 100% 1px; }
+.issue-body a:hover { background-size: 100% 1px, 100% 1px; }
 
 
 /* ── 04. MOTION SYSTEM ───────────────────────────────────────────────────── */
@@ -203,8 +203,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .breadcrumb,
 .js .age,
 .js .bio-panel,
-.js .article-cover-img,
-.js .article-h1 {
+.js .issue-cover,
+.js .issue-masthead,
+.js .issue-figure,
+.js .issue-row,
+.js .subscribe {
     opacity: 0;
     transform: translate3d(0, 22px, 0);
     transition:
@@ -311,8 +314,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .breadcrumb,
     .js .age,
     .js .bio-panel,
-    .js .article-cover-img,
-    .js .article-h1 { opacity: 1; transform: none; }
+    .js .issue-cover,
+    .js .issue-masthead,
+    .js .issue-figure,
+    .js .issue-row,
+    .js .subscribe { opacity: 1; transform: none; }
 
     .js .rule > span { transform: scaleX(1); }
     .scroll-progress { display: none; }
@@ -1292,8 +1298,194 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 
-/* ── 14. ARTICLES GRID ───────────────────────────────────────────────────── */
-/* Card internals are scoped inside src/components/Card.astro. */
+/* ── 14. ISSUE LIST & ARTICLES GRID ──────────────────────────────────────────
+   Two presentations of the same collection. The archive at /newsletter uses the
+   numbered .issue-row list, because sequence is what a publication has and a
+   pile of cards does not. The homepage keeps the card grid, where the issues
+   sit among the other sections and a list would read as an afterthought.
+   Row internals live here; card internals are scoped inside Card.astro.
+   ------------------------------------------------------------------------- */
+.issue-list {
+    margin-top: 72px;
+    border-top: 1px solid var(--gray-line);
+}
+
+.issue-row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr) 200px;
+    gap: 32px;
+    align-items: start;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--gray-line);
+    text-decoration: none;
+}
+
+.issue-row-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: var(--text-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+}
+
+.issue-row-num {
+    font-family: var(--font-wide);
+    letter-spacing: 0.18em;
+    color: var(--black);
+    transition: color var(--dur) var(--ease);
+}
+
+.issue-row-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--black);
+    margin-bottom: 10px;
+}
+
+.issue-row-desc {
+    font-size: var(--text-sm);
+    line-height: 1.8;
+    color: var(--gray-dark);
+    max-width: 54ch;
+}
+
+.issue-row-thumb {
+    overflow: hidden;
+    border: 1px solid var(--gray-line);
+}
+
+.issue-row-thumb img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    filter: grayscale(100%);
+    transition:
+        filter    var(--dur) var(--ease),
+        transform var(--dur) var(--ease);
+}
+
+/* The whole row is the link, so the hover state belongs to the row. */
+.issue-row:hover .issue-row-thumb img { filter: grayscale(0%); transform: scale(1.03); }
+.issue-row:hover .issue-row-num { color: var(--gray-mid); }
+.issue-row:hover .issue-row-title { text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 860px) {
+    .issue-row {
+        grid-template-columns: minmax(0, 1fr) 120px;
+        gap: 20px;
+    }
+
+    /* The rail moves above the title rather than shrinking into a stub. */
+    .issue-row-rail {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 520px) {
+    .issue-row { grid-template-columns: minmax(0, 1fr); }
+    .issue-row-thumb { display: none; }
+}
+
+/* ── Subscribe ───────────────────────────────────────────────────────────────
+   Posts straight to Buttondown with no JavaScript, so it keeps working on a
+   fully static build. Renders disabled until the username is configured.
+   ------------------------------------------------------------------------- */
+.subscribe {
+    margin: 64px 0;
+    padding: 40px 0;
+    border-top: 1px solid var(--gray-line);
+    border-bottom: 1px solid var(--gray-line);
+}
+
+.subscribe-h {
+    font-family: var(--font-wide);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    margin-bottom: 16px;
+}
+
+.subscribe-desc {
+    max-width: 52ch;
+    font-size: var(--text-sm);
+    line-height: 1.8;
+    color: var(--gray-dark);
+    margin-bottom: 24px;
+}
+
+.subscribe-form {
+    display: flex;
+    gap: 12px;
+    max-width: 480px;
+}
+
+.subscribe-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--black);
+    background: transparent;
+    border: 1px solid var(--gray-line);
+    padding: 12px 14px;
+    transition: border-color var(--dur) var(--ease);
+}
+
+.subscribe-input:focus {
+    outline: none;
+    border-color: var(--black);
+}
+
+.subscribe-input::placeholder { color: var(--gray-mid); }
+
+.subscribe-btn {
+    flex: 0 0 auto;
+    font-family: var(--font-wide);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--black);
+    border: 1px solid var(--black);
+    padding: 0 22px;
+    cursor: pointer;
+    transition:
+        background var(--dur) var(--ease),
+        color      var(--dur) var(--ease);
+}
+
+.subscribe-btn:hover { background: var(--white); color: var(--black); }
+
+.subscribe-input:disabled,
+.subscribe-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.subscribe-btn:disabled:hover { background: var(--black); color: var(--white); }
+
+.subscribe-note {
+    margin-top: 14px;
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    color: var(--gray-mid);
+}
+
+@media (max-width: 520px) {
+    .subscribe-form { flex-direction: column; }
+    .subscribe-btn { padding: 14px 22px; }
+}
+
+
 .articles-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1379,44 +1571,153 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .footer-inner a:hover { color: var(--black); }
 
 
-/* ── 17. ARTICLE PAGE & PROSE ────────────────────────────────────────────── */
-.article-cover-img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border: 1px solid var(--gray-line);
-    margin-bottom: 40px;
-}
+/* ── 17. ISSUE PAGE & PROSE ────────────────────────────────────────────── */
+/* The issue itself is wider than the text inside it, so the cover and the
+   figures have somewhere to break out to. */
+.issue { max-width: 1040px; margin: 0 auto; }
 
-.article-date {
-    display: block;
+.issue-masthead { margin-bottom: 48px; }
+
+.issue-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
     font-size: var(--text-xs);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--gray-mid);
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
-.article-h1 {
-    font-family: var(--font-display);
-    font-size: clamp(28px, 4vw, 52px);
-    font-weight: 300;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+.issue-num {
+    font-family: var(--font-wide);
     color: var(--black);
-    margin-bottom: 48px;
+    letter-spacing: 0.18em;
 }
 
-.article-body { max-width: 680px; }
+.issue-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 5vw, 60px);
+    font-weight: 200;
+    letter-spacing: -0.03em;
+    line-height: 1.06;
+    color: var(--black);
+    margin-bottom: 24px;
+}
 
-.article-body p {
+.issue-standfirst {
+    max-width: 680px;
+    font-family: var(--font-serif);
+    font-size: clamp(18px, 2.4vw, 24px);
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--gray-dark);
+}
+
+.issue-cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: 1px solid var(--gray-line);
+    margin-bottom: 56px;
+}
+
+/* ── Figures ─────────────────────────────────────────────────────────────────
+   Numbered by counter rather than by hand, so inserting one mid-issue
+   renumbers the rest for free. <Pair> increments once, not twice: "Fig 3,
+   before and after" is one idea. */
+.issue-figure {
+    counter-increment: issue-figure;
+    margin: 44px 0;
+}
+
+.issue-figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid var(--gray-line);
+}
+
+.issue-figure figcaption {
+    margin-top: 12px;
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+    color: var(--gray-mid);
+}
+
+.issue-figure figcaption::before {
+    content: 'Fig ' counter(issue-figure) '. ';
+    font-family: var(--font-wide);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gray-dark);
+}
+
+.issue-pair-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 620px) {
+    .issue-pair-row { grid-template-columns: 1fr; }
+}
+
+/* ── Foot of an issue ────────────────────────────────────────────────────── */
+.issue-foot {
+    max-width: 680px;
+    margin: 88px auto 0;
+}
+
+.issue-back {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--gray-line);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* The prose column is a named grid rather than a max-width box. That is the
+   whole mechanism behind <Figure width="wide">: every child lands in `column`
+   by default, and a figure opts into `wide` or `full` by class alone, with no
+   negative margins and nothing to recompute when the measure changes.
+
+   MDX content renders as DIRECT children of .issue-body, which is what makes
+   the column assignment reach the figures. Wrap the slot in IssueLayout and
+   every figure silently snaps back to the text width. */
+.issue-body {
+    display: grid;
+    grid-template-columns:
+        [full-start] minmax(0, 1fr)
+        [wide-start] minmax(0, 180px)
+        [column-start] min(680px, 100%) [column-end]
+        minmax(0, 180px) [wide-end]
+        minmax(0, 1fr) [full-end];
+    counter-reset: issue-figure;
+}
+
+.issue-body > *          { grid-column: column; }
+.issue-body > .fig-wide  { grid-column: wide; }
+.issue-body > .fig-full  { grid-column: full; }
+
+@media (max-width: 860px) {
+    /* Below the tablet breakpoint the side gutters are gone, so wide and full
+       have nothing left to break into and collapse to the text column. */
+    .issue-body > .fig-wide,
+    .issue-body > .fig-full { grid-column: column; }
+}
+
+.issue-body p {
     font-size: var(--text-base);
     color: var(--gray-dark);
     line-height: 1.95;
     margin-bottom: 22px;
 }
 
-.article-body h1 {
+.issue-body h1 {
     font-family: var(--font-display);
     font-size: var(--text-3xl);
     font-weight: 300;
@@ -1426,7 +1727,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     margin: 64px 0 20px;
 }
 
-.article-body h2 {
+.issue-body h2 {
     font-family: var(--font-display);
     font-size: var(--text-2xl);
     font-weight: 400;
@@ -1434,7 +1735,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     margin: 56px 0 16px;
 }
 
-.article-body h3 {
+.issue-body h3 {
     font-family: var(--font-display);
     font-size: var(--text-xl);
     font-weight: 400;
@@ -1442,7 +1743,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     margin: 40px 0 12px;
 }
 
-.article-body h4 {
+.issue-body h4 {
     font-family: var(--font-wide);
     font-size: var(--text-xs);
     font-weight: 400;
@@ -1452,20 +1753,20 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     margin: 32px 0 12px;
 }
 
-.article-body ul,
-.article-body ol {
+.issue-body ul,
+.issue-body ol {
     margin: 0 0 22px 4px;
     color: var(--gray-dark);
 }
 
-.article-body li {
+.issue-body li {
     position: relative;
     padding-left: 22px;
     margin-bottom: 10px;
     line-height: 1.9;
 }
 
-.article-body ul > li::before {
+.issue-body ul > li::before {
     content: '';
     position: absolute;
     left: 0;
@@ -1475,11 +1776,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     background: var(--gray-mid);
 }
 
-.article-body ol { counter-reset: prose-counter; }
+.issue-body ol { counter-reset: prose-counter; }
 
-.article-body ol > li { counter-increment: prose-counter; }
+.issue-body ol > li { counter-increment: prose-counter; }
 
-.article-body ol > li::before {
+.issue-body ol > li::before {
     content: counter(prose-counter) '.';
     position: absolute;
     left: 0;
@@ -1488,7 +1789,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     color: var(--gray-mid);
 }
 
-.article-body blockquote {
+.issue-body blockquote {
     font-family: var(--font-display);
     font-size: var(--text-lg);
     font-style: italic;
@@ -1500,7 +1801,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     margin: 32px 0;
 }
 
-.article-body :not(pre) > code {
+.issue-body :not(pre) > code {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.86em;
     background: var(--gray-soft);
@@ -1509,7 +1810,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     color: var(--black);
 }
 
-.article-body pre {
+.issue-body pre {
     font-size: var(--text-sm);
     line-height: 1.7;
     border: 1px solid var(--gray-line);
@@ -1519,33 +1820,33 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     tab-size: 2;
 }
 
-.article-body img {
+.issue-body img {
     width: 100%;
     border: 1px solid var(--gray-line);
     margin: 32px 0;
 }
 
-.article-body hr {
+.issue-body hr {
     border: none;
     border-top: 1px solid var(--gray-line);
     margin: 48px 0;
 }
 
-.article-body table {
+.issue-body table {
     width: 100%;
     border-collapse: collapse;
     font-size: var(--text-sm);
     margin: 28px 0;
 }
 
-.article-body th,
-.article-body td {
+.issue-body th,
+.issue-body td {
     border: 1px solid var(--gray-line);
     padding: 10px 14px;
     text-align: left;
 }
 
-.article-body th {
+.issue-body th {
     font-weight: 400;
     font-size: var(--text-xs);
     letter-spacing: 0.1em;
