@@ -12,17 +12,24 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# These two are served verbatim from public/ with stable names, so they get a
-# short TTL plus revalidation rather than an immutable one.
+# These two are served verbatim from public/ with STABLE names — no content hash
+# — so a cached copy can never be invalidated by the URL changing. max-age=3600
+# meant a style change was invisible for up to an hour after deploy, with the
+# browser serving the old file without even asking. That is an hour of looking
+# at a deploy and reporting bugs that were already fixed.
+#
+# max-age=0 + must-revalidate makes the browser check every time. When nothing
+# changed the answer is a 304 with no body, which costs a round trip and no
+# bytes. Cheap insurance against debugging a stale stylesheet.
 [[headers]]
   for = "/Style.css"
   [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/motion.js"
   [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/*"

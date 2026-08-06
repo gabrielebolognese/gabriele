@@ -18,7 +18,7 @@
 import type { APIRoute } from 'astro';
 import { getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { PAGE_IMAGES, HOME_CARD, THUMB, COVER } from '../data/images';
+import { PAGE_IMAGES, HOME_CARD, COVER } from '../data/images';
 import { absoluteUrl } from '../data/identity';
 
 /** Astro's build-time image URLs are plain paths, but the dev server serves
@@ -58,13 +58,13 @@ export const GET: APIRoute = async ({ site }) => {
      reason they are excluded from the sitemap and the feed.
 
      Each cover is declared at the width the page in question actually renders:
-     the hero on the issue itself, the IssueCard cover on the archive, and
-     the Card on the homepage grid. */
+     the hero on the issue itself and the Card on the homepage grid. The archive
+     is absent on purpose — its cards carry no image, so declaring one there
+     would point at a URL that appears on no page. */
   const issues = await getCollection('newsletter', ({ data }) => !data.draft && !data.noindex);
 
   for (const issue of issues) {
     add(`/newsletter/${issue.id}`, await built(issue.data.image, COVER));
-    add('/newsletter', await built(issue.data.image, THUMB));
     add('/', await built(issue.data.image, HOME_CARD));
   }
 

@@ -1,33 +1,30 @@
 ---
 /* One issue as a square card, two to a row on the archive.
  *
- * Replaces IssueRow, whose 200px thumbnail was rendered at 200 CSS pixels on
- * displays that wanted 400, so every cover was soft.
+ * No cover image, deliberately. The card is a block of the issue's actual
+ * opening prose and nothing else — the cover already appears on the issue page
+ * itself, and inside a square card at this size it took a third of the space
+ * and left the text nowhere to go.
  *
- * Layout inside the card: title full width, cover floated into the top-right at
- * half width and 16:9, body text wrapping around it and then running full width
- * underneath, faded out at the bottom with a mask, and a Read this button below
- * the fade. The float is the point — it is the only way to get text beside AND
- * under an image without splitting the prose into two containers.
+ * The text is masked to a fade at the bottom rather than truncated, so the
+ * cut always lands mid-sentence and reads as "there is more" instead of
+ * "this is short".
  */
-import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
   issue: number;
   title: string;
   body: string;
-  image: ImageMetadata;
-  imageAlt?: string;
   slug: string;
   date: Date;
 }
 
-const { issue, title, body, image, imageAlt, slug, date } = Astro.props;
+const { issue, title, body, slug, date } = Astro.props;
 
-/* The card shows the real opening of the issue, not the description — the ask
-   was "as much text as possible". `body` is raw MDX, so the component syntax
-   has to come out before it can be shown as prose. */
+/* The card shows the real opening of the issue, not the description. `body` is
+   raw MDX, so the component syntax has to come out before it can be shown as
+   prose. */
 function plainText(source: string): string {
   return source
     .replace(/^import\s+.*$/gm, '')          // import lines
@@ -44,8 +41,9 @@ function plainText(source: string): string {
 }
 
 /* Enough to overflow the card at every width, so the fade always has something
-   to fade. Cheaper than measuring, and the mask hides the cut. */
-const PARAGRAPH_BUDGET = 1400;
+   to fade. Cheaper than measuring, and the mask hides the cut. Higher than it
+   was with a cover in the way, because the text now has the whole card. */
+const PARAGRAPH_BUDGET = 1800;
 
 const paragraphs: string[] = [];
 let used = 0;
@@ -76,16 +74,6 @@ const href = `/newsletter/${slug}`;
   <h3 class="issue-card-title"><a href={href}>{title}</a></h3>
 
   <div class="issue-card-text">
-    {/* Floated, so the prose runs beside it and then closes underneath. */}
-    <Image
-      class="issue-card-thumb"
-      src={image}
-      alt={imageAlt ?? ''}
-      widths={[320, 560, 840]}
-      sizes="(max-width: 860px) 44vw, 260px"
-      loading="lazy"
-      decoding="async"
-    />
     {paragraphs.map((para) => <p>{para}</p>)}
   </div>
 
