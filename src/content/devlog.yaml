@@ -114,13 +114,92 @@
       hidden in all cases.
 
 - date: 2026-08-04
-  text: Gave every image a licence in the structured data, which meant building a page for it to point at.
+  text: Rebuilt how this site handles images, folded the articles section into a newsletter, and gave the devlog the page you are reading.
   detail: |
-    Google's licensable-images feature needs `license` and
-    `acquireLicensePage` on the `ImageObject`, and both have to be live
-    URLs — it drops the enhancement silently if either 404s, the same way a
-    dead `sameAs` entry devalues that whole array.
+    Scope of the session: image SEO, publishing surfaces, and this log. 59 files
+    changed, +3795/−568, across 7 commits. 19 files added, 19 renamed, 12 pages
+    now building.
 
-    So `/license` exists now, and `IMAGE_LICENSE` in `identity.ts` points at
-    it. That page existing is a hard dependency of the markup: rename it and
-    the constant has to move with it.
+    **Searching my own name returns three or four images, and one of them is the
+    portrait from this site.**
+
+    - *Number* — 18 assets renamed; before this, every image on the site shipped
+      as `1.png`, `33.png` or `1010.png`.
+    - *Cause* — Astro emits each asset as `<source-basename>.<hash>.webp`, so the
+      filename I choose is the filename Google sees. It is the only keyword
+      signal an image carries besides its alt text, and I was throwing it away
+      for free on all 18.
+    - *Hard part* — the real problem is not naming, it is that exactly one
+      photograph of a human being exists on this entire domain. Everything else
+      is a product screenshot. No amount of renaming fixes an inventory of one.
+
+    **Every screenshot is now declared in an image sitemap.**
+
+    - *Number* — 21 image URLs across 4 routes, all resolved against a clean
+      build to prove none of them 404.
+    - *Hard part* — `@astrojs/sitemap` emits page URLs only and has no
+      `<image:image>` support, so the only path to an image was a crawler
+      parsing a lazy-loaded `<img>` inside a carousel, which is the weakest
+      discovery there is. The sitemap has to ask `getImage()` for the same width
+      the page renders, or it points at a variant that exists in the build but
+      appears on no page and carries none of that page's context.
+
+    **Images now carry a licence in the structured data, and there is a page for
+    it to point at.**
+
+    - *Number* — 4 pages emitting `acquireLicensePage`; 1 new `/license` route.
+    - *Hard part* — Google deprecated `image:license` in sitemaps, so the licence
+      cannot live where the images are declared. It has to ride on the
+      `ImageObject` instead, and both `license` and `acquireLicensePage` must be
+      live URLs or the enhancement is dropped silently, the same way a dead
+      `sameAs` entry devalues that whole array. Nothing fails loudly if you get
+      this wrong.
+
+    **Two images on this site have always been the same picture.**
+
+    - *Number* — `7.png` and `111.png`, byte-identical.
+    - *Cause* — Astro dedupes on content, so they have always collapsed into one
+      emitted file. The homepage captions it "AI features" and `/about` captions
+      the same pixels "the Bolt hackathon prototype". Both cannot be true. Left
+      standing, because fixing it needs a screenshot, not a code change.
+
+    **The articles section is gone; there is a newsletter instead.**
+
+    - *Number* — +1994/−422 in one commit. `/articles` held exactly one post,
+      and that post was placeholder text.
+    - *Cause* — two thin writing surfaces compete for the same entity. That is
+      the mistake `story.html` made against the homepage before it became
+      `/about`, and I was about to make it again with a second section.
+
+    **Issues can finally place an image properly.**
+
+    - *Number* — 3 widths: 680px, 1040px, full bleed. Figures number themselves
+      from a CSS counter.
+    - *Hard part* — the mechanism is a named-column grid, and it only reaches the
+      figures because MDX renders them as direct children of the slot. Wrap that
+      slot in anything and every figure silently snaps back to the text width
+      with nothing failing and no error to notice. `@astrojs/mdx` also had to be
+      pinned to 6.x: version 7 peers `astro@^7` and this project is on 6.4.8, so
+      npm refused the install rather than resolving it.
+
+    **The feed was advertising URLs the rest of the site disagreed with.**
+
+    - *Number* — 1 line, every item.
+    - *Cause* — `@astrojs/rss` joins a bare path onto `site` and appends a
+      trailing slash. This site is `trailingSlash: 'never'`, so every feed item
+      pointed at a URL that contradicted its own canonical and the sitemap.
+
+    **This log exists, on one page.**
+
+    - *Number* — 1 URL, 1 yaml file. Posting is: open the file, add a block at
+      the top, commit.
+    - *Cause* — one page per entry would be 365 pages of two sentences a year,
+      which is thin content on a domain whose whole purpose is being read as one
+      credible entity. One page that deepens daily is the stronger signal, and
+      anchors keep entries linkable.
+    - *Hard part* — the `file()` loader requires an id on every item and does not
+      derive one from array position, which I assumed it did and which failed
+      the first build. The parser returns an object instead of an array so its
+      keys become the ids, keyed by date, so there is no `id:` line to type
+      daily that would only duplicate `date:`. `js-yaml` v5 also has no default
+      export in its ESM build.
