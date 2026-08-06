@@ -40,10 +40,10 @@ function plainText(source: string): string {
     .trim();
 }
 
-/* Enough to overflow the card at every width, so the fade always has something
-   to fade. Cheaper than measuring, and the mask hides the cut. Higher than it
-   was with a cover in the way, because the text now has the whole card. */
-const PARAGRAPH_BUDGET = 1800;
+/* Halved from 1800. Still enough to run past the bottom of the card so the
+   mask has something to fade, but the card now reads as a taste rather than a
+   wall — the previous budget filled the whole square edge to edge. */
+const PARAGRAPH_BUDGET = 900;
 
 const paragraphs: string[] = [];
 let used = 0;

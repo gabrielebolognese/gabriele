@@ -1375,43 +1375,36 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .issue-card-text p { margin-bottom: 11px; }
 
 /* Sits below the mask, so it never fades with the text it follows.
-   Borrows the .link-pill treatment used everywhere else on the site: a bordered
-   pill that fills with ink from the bottom edge on hover. Solid black by
-   default read as a foreign element against a page whose only other buttons
-   are outlined. */
+   Full card width and solid, matching .subscribe-btn — the site's primary
+   action treatment. Two earlier attempts missed: solid-but-small read as
+   cramped, outlined-and-small read as a link. The brief said "big button", and
+   a card CTA that spans its card is the only version that is unambiguously
+   one. */
 .issue-card-btn {
-    position: relative;
-    z-index: 0;              /* contains the ::before fill below the label */
     flex: 0 0 auto;
-    align-self: flex-start;
-    display: inline-flex;
+    align-self: stretch;
+    display: flex;
     align-items: center;
-    gap: 10px;
-    overflow: hidden;
-    margin-top: 18px;
-    padding: 11px 20px;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 15px 22px;
     font-family: var(--font-wide);
-    font-size: 10px;
-    letter-spacing: 0.18em;
+    font-size: 11px;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--black);
-    border: 1px solid var(--black);
-    transition: color var(--dur) var(--ease);
-}
-
-.issue-card-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
+    color: var(--white);
     background: var(--black);
-    transform: scaleY(0);
-    transform-origin: bottom center;
-    transition: transform var(--dur-slow) var(--ease);
+    border: 1px solid var(--black);
+    transition:
+        background var(--dur) var(--ease),
+        color      var(--dur) var(--ease);
 }
 
-.issue-card-btn:hover { color: var(--white); }
-.issue-card-btn:hover::before { transform: scaleY(1); }
+.issue-card-btn:hover {
+    background: var(--white);
+    color: var(--black);
+}
 
 .issue-card-arrow { transition: transform var(--dur) var(--ease); }
 .issue-card-btn:hover .issue-card-arrow { transform: translateX(4px); }
