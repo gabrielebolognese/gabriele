@@ -58,7 +58,7 @@ export const GET: APIRoute = async ({ site }) => {
      reason they are excluded from the sitemap and the feed.
 
      Each cover is declared at the width the page in question actually renders:
-     the hero on the issue itself, the IssueRow thumbnail on the archive, and
+     the hero on the issue itself, the IssueCard cover on the archive, and
      the Card on the homepage grid. */
   const issues = await getCollection('newsletter', ({ data }) => !data.draft && !data.noindex);
 

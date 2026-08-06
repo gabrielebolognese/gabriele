@@ -26,7 +26,7 @@
         '.faq-item',
         '.bio-lede', '.bio-figure', '.bio-table-wrap', '.bio-links', '.breadcrumb',
         '.age', '.bio-panel',
-        '.issue-masthead', '.issue-cover', '.issue-figure', '.issue-row', '.subscribe',
+        '.issue-masthead', '.issue-cover', '.issue-figure', '.issue-card', '.subscribe',
         '.devlog-entry',
         '.rule'
     ].join(',');

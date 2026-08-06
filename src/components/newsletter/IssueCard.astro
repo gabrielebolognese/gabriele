@@ -1,0 +1,97 @@
+---
+/* One issue as a square card, two to a row on the archive.
+ *
+ * Replaces IssueRow, whose 200px thumbnail was rendered at 200 CSS pixels on
+ * displays that wanted 400, so every cover was soft.
+ *
+ * Layout inside the card: title full width, cover floated into the top-right at
+ * half width and 16:9, body text wrapping around it and then running full width
+ * underneath, faded out at the bottom with a mask, and a Read this button below
+ * the fade. The float is the point — it is the only way to get text beside AND
+ * under an image without splitting the prose into two containers.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  issue: number;
+  title: string;
+  body: string;
+  image: ImageMetadata;
+  imageAlt?: string;
+  slug: string;
+  date: Date;
+}
+
+const { issue, title, body, image, imageAlt, slug, date } = Astro.props;
+
+/* The card shows the real opening of the issue, not the description — the ask
+   was "as much text as possible". `body` is raw MDX, so the component syntax
+   has to come out before it can be shown as prose. */
+function plainText(source: string): string {
+  return source
+    .replace(/^import\s+.*$/gm, '')          // import lines
+    .replace(/<[A-Z][\s\S]*?\/>/g, '')       // self-closing components
+    .replace(/^#{1,6}\s+/gm, '')             // heading markers
+    .replace(/\*\*([^*]+)\*\*/g, '$1')       // bold
+    .replace(/\*([^*]+)\*/g, '$1')           // italic
+    .replace(/`([^`]+)`/g, '$1')             // inline code
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links
+    .replace(/^>\s?/gm, '')                  // blockquotes
+    .replace(/^[-*]\s+/gm, '')               // list markers
+    .replace(/\n{2,}/g, '\n\n')
+    .trim();
+}
+
+/* Enough to overflow the card at every width, so the fade always has something
+   to fade. Cheaper than measuring, and the mask hides the cut. */
+const PARAGRAPH_BUDGET = 1400;
+
+const paragraphs: string[] = [];
+let used = 0;
+for (const para of plainText(body).split(/\n{2,}/)) {
+  const text = para.replace(/\s+/g, ' ').trim();
+  if (!text) continue;
+  paragraphs.push(text);
+  used += text.length;
+  if (used > PARAGRAPH_BUDGET) break;
+}
+
+const dateLabel = date.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+
+const issueLabel = String(issue).padStart(3, '0');
+const href = `/newsletter/${slug}`;
+---
+<article class="issue-card">
+  <p class="issue-card-meta">
+    <span class="issue-card-num">№ {issueLabel}</span>
+    <span class="dot">·</span>
+    <time datetime={date.toISOString()}>{dateLabel}</time>
+  </p>
+
+  <h3 class="issue-card-title"><a href={href}>{title}</a></h3>
+
+  <div class="issue-card-text">
+    {/* Floated, so the prose runs beside it and then closes underneath. */}
+    <Image
+      class="issue-card-thumb"
+      src={image}
+      alt={imageAlt ?? ''}
+      widths={[320, 560, 840]}
+      sizes="(max-width: 860px) 44vw, 260px"
+      loading="lazy"
+      decoding="async"
+    />
+    {paragraphs.map((para) => <p>{para}</p>)}
+  </div>
+
+  {/* Outside the faded container, so the button never fades with the text. */}
+  <a class="issue-card-btn" href={href}>
+    Read this
+    <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+</article>

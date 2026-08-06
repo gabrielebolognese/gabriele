@@ -48,7 +48,7 @@ const CAROUSEL = 1440; // index.astro project carousels
 const FIGURE = 960; // about.astro bio figures
 const PORTRAIT = 640; // LifeSection portrait
 export const HOME_CARD = 720; // Card.astro issue covers on the homepage grid
-export const THUMB = 400; // IssueRow.astro thumbnails on /newsletter
+export const THUMB = 840; // IssueCard.astro cover on /newsletter (widest srcset entry)
 export const COVER = 2080; // IssueLayout hero cover
 
 /** The portrait renders on both routes through LifeSection. Declared on each,

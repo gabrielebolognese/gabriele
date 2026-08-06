@@ -4,7 +4,7 @@
    Card.astro is untouched — the homepage still renders the grid. */
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
-import IssueRow from '../../components/newsletter/IssueRow.astro';
+import IssueCard from '../../components/newsletter/IssueCard.astro';
 import SubscribeForm from '../../components/SubscribeForm.astro';
 import { newsletterIndexSchema } from '../../data/schema';
 import { PERSON, NEWSLETTER, absoluteUrl } from '../../data/identity';
@@ -61,21 +61,24 @@ const schema = newsletterIndexSchema({
         {sorted.length === 0 ? (
             <p class="archive-intro">Nothing published yet, issue one is on its way.</p>
         ) : (
-            <div class="issue-list">
+            <Fragment>
                 <h2 class="archive-label">
                     {sorted.length === 1 ? 'One issue' : `${sorted.length} issues`}
                 </h2>
-                {sorted.map(issue => (
-                    <IssueRow
-                        issue={issue.data.issue}
-                        title={issue.data.title}
-                        description={issue.data.description}
-                        image={issue.data.image}
-                        slug={issue.id}
-                        date={issue.data.date}
-                    />
-                ))}
-            </div>
+                <div class="issue-grid">
+                    {sorted.map(issue => (
+                        <IssueCard
+                            issue={issue.data.issue}
+                            title={issue.data.title}
+                            body={issue.body ?? ''}
+                            image={issue.data.image}
+                            imageAlt={issue.data.imageAlt}
+                            slug={issue.id}
+                            date={issue.data.date}
+                        />
+                    ))}
+                </div>
+            </Fragment>
         )}
     </section>
 </main>

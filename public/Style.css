@@ -207,7 +207,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .issue-cover,
 .js .issue-masthead,
 .js .issue-figure,
-.js .issue-row,
+.js .issue-card,
 .js .devlog-entry,
 .js .subscribe {
     opacity: 0;
@@ -319,7 +319,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .issue-cover,
     .js .issue-masthead,
     .js .issue-figure,
-    .js .issue-row,
+    .js .issue-card,
     .js .devlog-entry,
     .js .subscribe { opacity: 1; transform: none; }
 
@@ -1303,97 +1303,130 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 /* ── 14. ISSUE LIST & ARTICLES GRID ──────────────────────────────────────────
    Two presentations of the same collection. The archive at /newsletter uses the
-   numbered .issue-row list, because sequence is what a publication has and a
+   square .issue-card grid, two to a row, because sequence is what a publication has and a
    pile of cards does not. The homepage keeps the card grid, where the issues
    sit among the other sections and a list would read as an afterthought.
    Row internals live here; card internals are scoped inside Card.astro.
    ------------------------------------------------------------------------- */
-.issue-list {
-    margin-top: 72px;
-    border-top: 1px solid var(--gray-line);
-}
-
-.issue-row {
+.issue-grid {
     display: grid;
-    grid-template-columns: 140px minmax(0, 1fr) 200px;
-    gap: 32px;
-    align-items: start;
-    padding: 32px 0;
-    border-bottom: 1px solid var(--gray-line);
-    text-decoration: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    margin-top: 24px;
 }
 
-.issue-row-rail {
+/* Square, per the brief. `overflow: hidden` is what makes the card a fixed
+   frame the text is cut against rather than a box the text grows. */
+.issue-card {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    padding: 30px 32px 28px;
+    border: 1px solid var(--gray-line);
+    transition: border-color var(--dur) var(--ease);
+}
+
+.issue-card:hover { border-color: var(--black); }
+
+.issue-card-meta {
+    flex: 0 0 auto;
     font-size: var(--text-xs);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--gray-mid);
-}
-
-.issue-row-num {
-    font-family: var(--font-wide);
-    letter-spacing: 0.18em;
-    color: var(--black);
-    transition: color var(--dur) var(--ease);
-}
-
-.issue-row-title {
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-    font-weight: 400;
-    line-height: 1.25;
-    color: var(--black);
     margin-bottom: 10px;
 }
 
-.issue-row-desc {
-    font-size: var(--text-sm);
-    line-height: 1.8;
-    color: var(--gray-dark);
-    max-width: 54ch;
+.issue-card-num {
+    font-family: var(--font-wide);
+    letter-spacing: 0.18em;
+    color: var(--black);
 }
 
-.issue-row-thumb {
+/* Full width of the card, above everything else. */
+.issue-card-title {
+    flex: 0 0 auto;
+    font-family: var(--font-display);
+    font-size: clamp(17px, 1.7vw, 22px);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--black);
+    margin-bottom: 14px;
+}
+
+.issue-card-title a { color: inherit; }
+.issue-card:hover .issue-card-title a { text-decoration: underline; text-underline-offset: 3px; }
+
+/* The body. Takes the remaining height and is masked at the bottom, so the
+   text always runs out mid-sentence behind a fade instead of stopping short. */
+.issue-card-text {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow: hidden;
-    border: 1px solid var(--gray-line);
+    font-size: var(--text-sm);
+    line-height: 1.75;
+    color: var(--gray-dark);
+    -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 97%);
+    mask-image: linear-gradient(to bottom, #000 58%, transparent 97%);
 }
 
-.issue-row-thumb img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 10;
+.issue-card-text p { margin-bottom: 11px; }
+
+/* Floated rather than placed in a grid cell: a float is the only thing that
+   gets text BESIDE the image and then closes underneath it at full width. */
+.issue-card-thumb {
+    float: right;
+    width: 50%;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
+    margin: 2px 0 12px 16px;
+    border: 1px solid var(--gray-line);
     filter: grayscale(100%);
-    transition:
-        filter    var(--dur) var(--ease),
-        transform var(--dur) var(--ease);
+    transition: filter var(--dur) var(--ease);
 }
 
-/* The whole row is the link, so the hover state belongs to the row. */
-.issue-row:hover .issue-row-thumb img { filter: grayscale(0%); transform: scale(1.03); }
-.issue-row:hover .issue-row-num { color: var(--gray-mid); }
-.issue-row:hover .issue-row-title { text-decoration: underline; text-underline-offset: 4px; }
+.issue-card:hover .issue-card-thumb { filter: grayscale(0%); }
+
+/* Sits below the mask, so it never fades with the text it follows. */
+.issue-card-btn {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 12px 22px;
+    font-family: var(--font-wide);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--black);
+    border: 1px solid var(--black);
+    transition:
+        background var(--dur) var(--ease),
+        color      var(--dur) var(--ease);
+}
+
+.issue-card-btn:hover { background: var(--white); color: var(--black); }
+
+.issue-card-arrow { transition: transform var(--dur) var(--ease); }
+.issue-card-btn:hover .issue-card-arrow { transform: translateX(4px); }
 
 @media (max-width: 860px) {
-    .issue-row {
-        grid-template-columns: minmax(0, 1fr) 120px;
-        gap: 20px;
-    }
+    .issue-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 
-    /* The rail moves above the title rather than shrinking into a stub. */
-    .issue-row-rail {
-        grid-column: 1 / -1;
-        flex-direction: row;
-        gap: 12px;
-    }
+    /* One per row is already wide, and a square would be enormous — let the
+       card take the height its content needs and drop the mask with it. */
+    .issue-card { aspect-ratio: auto; }
+    .issue-card-text { -webkit-mask-image: none; mask-image: none; }
 }
 
 @media (max-width: 520px) {
-    .issue-row { grid-template-columns: minmax(0, 1fr); }
-    .issue-row-thumb { display: none; }
+    .issue-card { padding: 24px 22px 22px; }
+    .issue-card-thumb { width: 45%; margin-left: 14px; }
 }
 
 /* ── Subscribe ───────────────────────────────────────────────────────────────
