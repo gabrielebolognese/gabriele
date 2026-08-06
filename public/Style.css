@@ -2223,6 +2223,21 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .devlog-prose p { margin-bottom: 14px; }
 .devlog-prose p:last-child { margin-bottom: 0; }
 
+/* A real entry is a run of "what changed" lead-ins, each followed by its own
+   bullets. The lead-in is bold and near-black so the section boundaries are
+   visible while scanning; the *Number* / *Hard part* labels are lighter than
+   the text they introduce, because they are taxonomy rather than content. */
+.devlog-prose strong {
+    color: var(--black);
+    font-weight: 500;
+}
+
+.devlog-prose em { color: var(--gray-mid); }
+
+/* Bind each list to the lead-in above it and open a gap before the next. */
+.devlog-prose p + ul { margin-top: -4px; }
+.devlog-prose ul + p { margin-top: 24px; }
+
 .devlog-prose ul,
 .devlog-prose ol { margin: 0 0 14px; padding: 0; }
 

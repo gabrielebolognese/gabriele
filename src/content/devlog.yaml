@@ -40,22 +40,78 @@
     nothing failing.
 
 - date: 2026-08-05
-  text: Renamed every image asset after what it actually shows, then declared them all in a sitemap.
+  text: A video freeze that turned out to be a hardware decoder limit, plus audio-synced preview and the six fixes that came with it.
   detail: |
-    Astro emits `<source-basename>.<hash>.webp`, so the filename in
-    `src/assets/` is the filename Google sees. Eighteen images were shipping
-    as `1.png`, `33.png`, `1010.png` — the only keyword signal an image
-    carries besides its alt text, thrown away for free.
+    Scope of the session: video playback and audio sync. 14 files changed,
+    +373/−119, with about 392 new lines of engine code across 6 files and 4 Node
+    verification harnesses.
 
-    Two things found while doing it:
+    **Video playback no longer freezes a few seconds in.**
 
-    - `7.png` and `111.png` were byte-identical. Astro dedupes on content,
-      so the homepage's "AI features" screenshot and the `/about` "Bolt
-      hackathon prototype" have always been one file with two contradictory
-      captions.
-    - `@astrojs/sitemap` emits page URLs only, with no `<image:image>`
-      support, so every screenshot was discoverable only by a crawler
-      parsing a lazy-loaded `<img>` inside a carousel.
+    - *Number* — cap of 12 open decoded frames per asset. Before, only a 512MB
+      byte budget bounded it, so around 60 frames could pile up.
+    - *Hard part* — it wasn't a leak or a logic error. A hardware `VideoDecoder`
+      silently stops emitting once too many output frames are held open
+      (~16–24), and a `VideoFrame` that's been transferred still holds its
+      decoder pool slot until `.close()`. The fix is a frame-COUNT cap plus an
+      eviction order that keeps the frames nearest each layer's playhead. Byte
+      accounting alone never touched it.
+
+    **Added a toggle for audio-synced playback, as a button in the preview bar,
+    off by default.**
+
+    - *Number* — 392 lines of new engine code; 3 pure-logic harnesses, 24
+      assertions. Old path unchanged when off.
+    - *Hard part* — none of it runs in the dev environment: no WebAudio,
+      WebCodecs or WebGPU. So the clock, the frame-selection and the
+      audio-scheduling math were pulled out into pure functions and proven in
+      Node instead. Also the picture has to be shown at the clock reading minus
+      output latency, not the raw reading, or it leads the sound by 20–200ms.
+
+    **Video clips that carry sound now play their audio on load, and the level
+    meters move.**
+
+    - *Number* — collapsed onto 1 shared `AudioContext` (was a second, private
+      one).
+    - *Cause* — the second audio context was created in a paused state and never
+      resumed, so clip audio was silent and the meters read zero. This ships
+      whether or not the toggle is on.
+
+    **Pausing, seeking, or crossing a clip boundary no longer produces a click.**
+
+    - *Number* — 8ms gain ramp to zero before every stop.
+    - *Hard part* — a source with a fixed duration ends on its own and fires its
+      `ended` event before the stop path runs, so attaching teardown only in the
+      stop path leaked the audio nodes on the master graph. An adversarial
+      review found it; fixed by attaching teardown when the source is scheduled,
+      not when it's stopped.
+
+    **Deleting one half of a split clip no longer freezes or mutes the other
+    half.**
+
+    - *Number* — +17/−2 in the delete action.
+    - *Hard part* — the texture is per-layer so it's always safe to drop, but the
+      decoder registration and audio element are per-asset: they must only be
+      torn down when no surviving layer still points at that asset, and the
+      release has to be deduped so deleting both halves at once doesn't
+      over-release the audio refcount.
+
+    **Pressing play with the playhead parked mid-clip on a pitch-shifted audio
+    clip now starts at the correct sample.**
+
+    - *Number* — one shared scheduling function now used by preview; export left
+      alone (its bounding is already exact, and a harness proves the two agree).
+    - *Hard part* — pitch shift is a resample, so it changes how fast the buffer
+      is consumed. The resume offset into the buffer has to be scaled by that
+      rate. The old code advanced it unscaled.
+
+    **Field-sampled layers now run at the composition frame rate and show their
+    inspector tab.**
+
+    - *Number* — 2-line type/resolve change; 1-line renderer change; 1-line
+      inspector condition.
+    - *Cause* — the CPU field renderer was fixed at 30fps and the Field tab was
+      hidden in all cases.
 
 - date: 2026-08-04
   text: Gave every image a licence in the structured data, which meant building a page for it to point at.
