@@ -22,7 +22,10 @@ export default defineConfig({
     sitemap({
       // Replaces the hand-maintained public/sitemap.xml, which listed two URLs
       // and no articles. This one is generated from the real route table.
-      filter: (page) => !page.includes('/404'),
+      // Layout props are noindex in the head already; keeping them out of
+      // the sitemap too avoids a "submitted URL marked noindex" warning in
+      // Search Console. Delete the prop issues and this clause together.
+      filter: (page) => !page.includes('/404') && !page.includes('/newsletter/prop-'),
     }),
   ],
 

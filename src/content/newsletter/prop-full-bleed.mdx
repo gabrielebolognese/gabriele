@@ -1,0 +1,42 @@
+---
+issue: 5
+title: "Prop, Full Bleed"
+date: 2026-08-03
+description: "Layout prop. Figures span the full content width, edge to edge."
+image: "../../assets/flashfx-animator-3d-objects-browser.png"
+imageAlt: "Placeholder cover, a FlashFX interface screenshot"
+# Layout prop for verifying the deploy. noindex keeps filler out of the
+# index of a site whose whole point is being indexed correctly.
+# Delete these five files (and the prop- clause in astro.config.mjs)
+# once the layouts check out.
+noindex: true
+---
+
+import Figure from '../../components/newsletter/Figure.astro';
+
+import img4 from '../../assets/flashfx-animator-keyframe-controls.png';
+import img5 from '../../assets/flashfx-animator-3d-objects-browser.png';
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+<Figure
+  src={img4}
+  alt="Placeholder image, a FlashFX interface screenshot"
+  caption="Full width, edge to edge of the content area."
+  width="full"
+/>
+
+## After the break
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+
+<Figure
+  src={img5}
+  alt="Placeholder image, a FlashFX interface screenshot"
+  caption="A second full-bleed figure."
+  width="full"
+/>
+
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.

@@ -25,9 +25,10 @@ interface Props {
   date: Date;
   updated?: Date;
   wordCount?: number;
+  noindex?: boolean;
 }
 
-const { issue, title, description, standfirst, image, imageAlt, date, updated, wordCount } =
+const { issue, title, description, standfirst, image, imageAlt, date, updated, wordCount, noindex } =
   Astro.props;
 
 const dateLabel = date.toLocaleDateString('en-GB', {
@@ -62,6 +63,7 @@ const schema = issueSchema({
     type="article"
     publishedTime={date}
     modifiedTime={updated}
+    noindex={noindex}
     schema={schema}
 >
 

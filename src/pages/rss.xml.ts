@@ -4,7 +4,7 @@ import type { APIContext } from 'astro';
 import { PERSON, SITE, NEWSLETTER, absoluteUrl } from '../data/identity';
 
 export async function GET(context: APIContext) {
-  const issues = await getCollection('newsletter', ({ data }) => !data.draft);
+  const issues = await getCollection('newsletter', ({ data }) => !data.draft && !data.noindex);
   /* By issue number, not date: two issues can share a date and the number is
      the canonical order — same rule the archive sorts by. */
   const sorted = issues.sort((a, b) => b.data.issue - a.data.issue);

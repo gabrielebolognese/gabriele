@@ -60,7 +60,7 @@ export const GET: APIRoute = async ({ site }) => {
      Each cover is declared at the width the page in question actually renders:
      the hero on the issue itself, the IssueRow thumbnail on the archive, and
      the Card on the homepage grid. */
-  const issues = await getCollection('newsletter', ({ data }) => !data.draft);
+  const issues = await getCollection('newsletter', ({ data }) => !data.draft && !data.noindex);
 
   for (const issue of issues) {
     add(`/newsletter/${issue.id}`, await built(issue.data.image, COVER));

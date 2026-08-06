@@ -27,6 +27,11 @@ const newsletter = defineCollection({
       imageAlt: z.string().optional(),
       /** Set true to keep an issue out of the sitemap, the archive and the feed. */
       draft: z.boolean().default(false),
+      /** Renders and is linked, but tells crawlers to stay away. Unlike `draft`
+       *  the page still builds, which is the point: layout props can be checked
+       *  on the live deploy without putting filler into the index of a site
+       *  whose whole purpose is being indexed correctly. */
+      noindex: z.boolean().default(false),
     }),
 });
 
