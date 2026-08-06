@@ -10,6 +10,7 @@
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import Layout from './Layout.astro';
+import Nav from '../components/Nav.astro';
 import SubscribeForm from '../components/SubscribeForm.astro';
 import { issueSchema } from '../data/schema';
 import { NEWSLETTER, absoluteUrl } from '../data/identity';
@@ -67,16 +68,7 @@ const schema = issueSchema({
     schema={schema}
 >
 
-    <nav class="nav" aria-label="Site navigation">
-        <a href="/" class="nav-name">Gabriele Bolognese</a>
-        <ul class="nav-links">
-            <li><a href="/about">About</a></li>
-            <li><a href="/#projects">Projects</a></li>
-            <li><a href="/devlog">Devlog</a></li>
-            <li><a href="/newsletter">Newsletter</a></li>
-            <li><a href="/#contact">Contact</a></li>
-        </ul>
-    </nav>
+    <Nav />
 
     <main id="main">
         <article class="section issue">

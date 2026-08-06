@@ -9,6 +9,7 @@
 
    Indexable on purpose: a noindex page is a weaker licence reference. */
 import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
 import { PERSON, ORGANIZATION, SITE, absoluteUrl } from '../data/identity';
 
 const title = `Image licence, ${PERSON.name}`;
@@ -38,16 +39,7 @@ const schema = {
 ---
 <Layout title={title} description={description} schema={schema}>
 
-<nav class="nav" aria-label="Site navigation">
-    <a href="/" class="nav-name">Gabriele Bolognese</a>
-    <ul class="nav-links">
-        <li><a href="/about">About</a></li>
-        <li><a href="/#projects">Projects</a></li>
-        <li><a href="/devlog">Devlog</a></li>
-        <li><a href="/newsletter">Newsletter</a></li>
-        <li><a href="/#contact">Contact</a></li>
-    </ul>
-</nav>
+<Nav />
 
 <main id="main">
     <article class="section licence">

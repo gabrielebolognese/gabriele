@@ -1,0 +1,40 @@
+---
+/* The site nav, in ONE place.
+ *
+ * It was hand-copied into seven files, and the result was exactly what that
+ * always produces: /devlog and /newsletter shipped without Story or Timeline
+ * while the homepage had both, and nothing anywhere said they had diverged.
+ * CLAUDE.md warned about this in prose; the warning did not help. One
+ * component does.
+ *
+ * Section anchors resolve against the homepage from every other route. On the
+ * homepage itself they stay bare, so the browser scrolls to the section
+ * instead of reloading the page to reach it.
+ */
+const path = Astro.url.pathname;
+const isHome = path === '/' || path === '';
+
+/** `#projects` at home, `/#projects` everywhere else. */
+const to = (hash: string) => (isHome ? hash : `/${hash}`);
+---
+<nav class="nav" aria-label="Site navigation">
+  {isHome ? (
+    <span class="nav-name">Gabriele Bolognese</span>
+  ) : (
+    <a href="/" class="nav-name">Gabriele Bolognese</a>
+  )}
+
+  <ul class="nav-links">
+    {/* Only off the homepage — a Home link on the homepage is noise. */}
+    {!isHome && (
+      <li><a href="/">Home</a></li>
+    )}
+    <li><a href="/about">About</a></li>
+    <li><a href={to('#projects')}>Projects</a></li>
+    <li><a href={to('#story')}>Story</a></li>
+    <li><a href={to('#timeline')}>Timeline</a></li>
+    <li><a href="/devlog">Devlog</a></li>
+    <li><a href="/newsletter">Newsletter</a></li>
+    <li><a href={to('#contact')}>Contact</a></li>
+  </ul>
+</nav>

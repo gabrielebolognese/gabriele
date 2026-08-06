@@ -411,7 +411,8 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 .nav:hover .nav-name { letter-spacing: 0.05em; }
 
-.nav-links { display: flex; gap: 36px; }
+/* Wraps, and a tighter gap: the nav carries eight items now, not five. */
+.nav-links { display: flex; flex-wrap: wrap; gap: 26px; }
 
 .nav-links a {
     position: relative;

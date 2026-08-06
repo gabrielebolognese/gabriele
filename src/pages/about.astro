@@ -5,6 +5,7 @@
    self-canonical, styled, and linked from the nav and footer. */
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
 import Faq from '../components/Faq.astro';
 import LifeSection from '../components/LifeSection.astro';
 import { aboutPageSchema } from '../data/schema';
@@ -58,16 +59,7 @@ const ventures = [
 ---
 <Layout title={title} description={description} type="profile" schema={schema}>
 
-<nav class="nav" aria-label="Site navigation">
-    <a href="/" class="nav-name">Gabriele Bolognese</a>
-    <ul class="nav-links">
-        <li><a href="/about">About</a></li>
-        <li><a href="/#projects">Projects</a></li>
-        <li><a href="/devlog">Devlog</a></li>
-        <li><a href="/newsletter">Newsletter</a></li>
-        <li><a href="/#contact">Contact</a></li>
-    </ul>
-</nav>
+<Nav />
 
 <main id="main">
     <article class="section bio">

@@ -5,6 +5,7 @@
    day is the stronger signal, and entries stay linkable through anchors. */
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
 import DevlogTimeline from '../components/DevlogTimeline.astro';
 import { PERSON, DEVLOG, absoluteUrl } from '../data/identity';
 import { devlogSchema } from '../data/schema';
@@ -33,16 +34,7 @@ const schema = devlogSchema({
 ---
 <Layout title={`${DEVLOG.name}, ${PERSON.name}`} description={DEVLOG.description} schema={schema}>
 
-<nav class="nav" aria-label="Site navigation">
-    <a href="/" class="nav-name">Gabriele Bolognese</a>
-    <ul class="nav-links">
-        <li><a href="/about">About</a></li>
-        <li><a href="/#projects">Projects</a></li>
-        <li><a href="/devlog">Devlog</a></li>
-        <li><a href="/newsletter">Newsletter</a></li>
-        <li><a href="/#contact">Contact</a></li>
-    </ul>
-</nav>
+<Nav />
 
 <main id="main">
     <section class="section" aria-labelledby="devlog-heading">

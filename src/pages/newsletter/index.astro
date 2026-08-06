@@ -4,6 +4,7 @@
    Card.astro is untouched — the homepage still renders the grid. */
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
 import IssueCard from '../../components/newsletter/IssueCard.astro';
 import SubscribeForm from '../../components/SubscribeForm.astro';
 import { newsletterIndexSchema } from '../../data/schema';
@@ -33,16 +34,7 @@ const schema = newsletterIndexSchema({
         schema={schema}
 >
 
-<nav class="nav" aria-label="Site navigation">
-    <a href="/" class="nav-name">Gabriele Bolognese</a>
-    <ul class="nav-links">
-        <li><a href="/about">About</a></li>
-        <li><a href="/#projects">Projects</a></li>
-        <li><a href="/devlog">Devlog</a></li>
-        <li><a href="/newsletter">Newsletter</a></li>
-        <li><a href="/#contact">Contact</a></li>
-    </ul>
-</nav>
+<Nav />
 
 <main id="main">
     <section class="section" aria-labelledby="newsletter-heading">

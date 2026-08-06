@@ -2,6 +2,7 @@
 /* Netlify served its generic branded fallback before this existed, which was a
    dead end for anyone landing on a decayed or mistyped URL. */
 import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
 ---
 <Layout
     title="Page not found, Gabriele Bolognese"
@@ -9,16 +10,7 @@ import Layout from '../layouts/Layout.astro';
     noindex={true}
 >
 
-<nav class="nav" aria-label="Site navigation">
-    <a href="/" class="nav-name">Gabriele Bolognese</a>
-    <ul class="nav-links">
-        <li><a href="/about">About</a></li>
-        <li><a href="/#projects">Projects</a></li>
-        <li><a href="/devlog">Devlog</a></li>
-        <li><a href="/newsletter">Newsletter</a></li>
-        <li><a href="/#contact">Contact</a></li>
-    </ul>
-</nav>
+<Nav />
 
 <main id="main">
     <section class="section notfound">

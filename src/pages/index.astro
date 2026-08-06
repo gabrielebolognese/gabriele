@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
 import {getCollection} from 'astro:content';
 import Card from '../components/Card.astro';
 import Faq from '../components/Faq.astro';
@@ -48,18 +49,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
 >
 
 <!-- ─── NAV ─── -->
-<nav class="nav" aria-label="Site navigation">
-    <span class="nav-name">Gabriele Bolognese</span>
-    <ul class="nav-links">
-        <li><a href="/about">About</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#story">Story</a></li>
-        <li><a href="#timeline">Timeline</a></li>
-        <li><a href="/devlog">Devlog</a></li>
-        <li><a href="/newsletter">Newsletter</a></li>
-        <li><a href="#contact">Contact</a></li>
-    </ul>
-</nav>
+<Nav />
 
 <main id="main">
 
