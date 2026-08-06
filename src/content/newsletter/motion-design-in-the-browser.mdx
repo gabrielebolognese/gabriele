@@ -1,0 +1,114 @@
+---
+issue: 7
+title: "Photoshop Became Canva. After Effects Becomes FlashFX."
+date: 2026-08-06
+description: "Every creative category has moved to the browser except one. Motion design is the last holdout, and the reasons it held out are gone."
+standfirst: "The argument for desktop motion design used to be performance. That argument expired and most people have not noticed yet."
+image: "../../assets/flashfx-animator-timeline-canvas.png"
+imageAlt: "The FlashFX Animator, timeline and canvas view in the browser"
+---
+
+import Figure from '../../components/newsletter/Figure.astro';
+import Pair from '../../components/newsletter/Pair.astro';
+
+import animator from '../../assets/flashfx-animator-timeline-canvas.png';
+import layers from '../../assets/flashfx-animator-layer-panel-effects.png';
+import objects3d from '../../assets/flashfx-animator-3d-objects-browser.png';
+import ai from '../../assets/flashfx-animator-ai-animation-tools.png';
+
+Photoshop became Canva. Premiere became CapCut. Illustrator became Figma, more
+or less, and nobody argues about it any more.
+
+Motion design did not move. After Effects is still a desktop install, still a
+subscription, still an interface that takes months before you can make something
+move the way you meant. It is the last major creative category where the browser
+version does not exist.
+
+I have spent two years on the assumption that this is a timing problem rather
+than a category problem.
+
+<Figure
+  src={animator}
+  alt="The FlashFX Animator interface, timeline and canvas"
+  caption="A layer system, compositing and effects, running in a tab with no install."
+  width="full"
+/>
+
+## Why it held out
+
+The honest answer is that motion design was genuinely too heavy. Compositing is
+expensive, effects stacks are expensive, and for most of the web's life the
+browser had no serious access to the GPU. You could not have built this in 2016.
+People who tried built toys.
+
+So the category kept a real technical justification for staying on the desktop
+long after the others lost theirs. Photoshop moved when raster editing got cheap
+enough. Video editing moved when codecs landed. Motion design was waiting on
+GPU compute and low-level media access, and those arrived quietly and recently.
+
+That justification is now expired. Most people working in the field have not
+updated on it, because the last time they checked, it was true.
+
+<Pair
+  a={layers}
+  altA="FlashFX Animator layer panel and effects toolbar"
+  b={objects3d}
+  altB="FlashFX 3D object integration in the browser"
+  caption="Layers, effects and 3D. The parts that were supposed to be impossible in a tab."
+  width="wide"
+/>
+
+## What actually changes
+
+Not the features. That is the mistake I made for a year — assuming the pitch was
+"same thing, in a browser". Nobody switches tools for parity.
+
+What changes is who gets to start.
+
+An install is a filter. A licence is a filter. A three-month learning curve is a
+filter. Each one quietly removes the people who were curious but not yet
+committed, which is almost everyone who would eventually be good at this. The
+kid on a school laptop who wants to make a title sequence move does not have
+€60 a month and cannot install anything.
+
+I know that specifically because I was that person, editing on a machine that
+could barely handle Shotcut.
+
+## The number that convinced me
+
+8,000 people use FlashFX. None of that came from advertising — not one euro. It
+is entirely organic, which for a tool in a category with an entrenched
+incumbent is the signal I care about most.
+
+People do not find a browser motion design tool by accident. They go looking,
+which means the demand was already there and unserved.
+
+<Figure
+  src={ai}
+  alt="FlashFX AI features and smart animation tools"
+  caption="The newer surface. Lowering the floor further, which is the same bet made twice."
+  width="wide"
+/>
+
+## What I am not claiming
+
+FlashFX is not better than After Effects. It is not close, and anyone telling
+you their two-year-old browser tool beats a thirty-year-old industry standard is
+selling something.
+
+The claim is narrower and I think more defensible: **the ceiling matters less
+than the floor.** After Effects wins on ceiling and will keep winning on ceiling
+for a long time. But most motion design that gets made is nowhere near that
+ceiling, and the people making it are being filtered out by install, price and
+complexity rather than by capability.
+
+Canva did not beat Photoshop on capability either.
+
+## The bet
+
+That professional motion design belongs in the browser, free of installs and
+licences, in reach of anyone with a laptop.
+
+That is the sentence that survived four complete rebuilds. Everything else about
+the product changed — twice into a different category — and that did not. It is
+the only part I have never had reason to revise.

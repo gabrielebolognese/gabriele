@@ -1,0 +1,98 @@
+---
+issue: 6
+title: "I Lost My First Project to a File Path"
+date: 2026-08-06
+description: "January 2024, three weeks into writing code, I restructured a folder and destroyed everything I had built. The money was not even mine."
+standfirst: "It was not a hard problem. It was a thing I did not know, and there is a difference that took me a long time to accept."
+image: "../../assets/vision-ai-demo-video-editor-2024.png"
+imageAlt: "Vision AI Demo, the browser-based video editor from January 2024"
+---
+
+import Figure from '../../components/newsletter/Figure.astro';
+
+import visionAi from '../../assets/vision-ai-demo-video-editor-2024.png';
+import early from '../../assets/flashfx-early-motion-design-interface-2024.png';
+
+I wrote my first line of code on 3 January 2024. I was fifteen. I had never
+programmed, I did not know what a repository was, and I was building a
+browser-based video editor because I did not know that was an unreasonable thing
+to start with.
+
+It was called Vision AI Demo. For about six weeks it ran.
+
+<Figure
+  src={visionAi}
+  alt="The Vision AI Demo browser-based video editor, 2024"
+  caption="Vision AI Demo, early 2024. Six weeks old and doing more than it had any right to."
+  width="full"
+/>
+
+## What happened
+
+I reorganised the files. That is the whole story.
+
+I moved things into folders that made more sense to me, which broke every import
+in the project simultaneously. I did not know how to trace an import error. I
+did not know how to undo it, because I had no version control — I did not know
+what version control was. There was no backup, because it had not occurred to me
+that there might need to be one.
+
+The codebase was unrecoverable. Not corrupted, not lost from disk. Just in a
+state I did not have the knowledge to reverse, which from where I was standing
+is the same thing.
+
+## The part that actually hurt
+
+It cost €200, and the €200 was not mine. I had borrowed it from my younger
+cousin.
+
+I want to be exact about that because it is the detail people skip when they
+tell this kind of story, and it is the detail that made it real. Losing your own
+money is a lesson. Losing money you took from a family member who is younger
+than you, on a thing you were sure about, is something else. I had to go and
+say it out loud to him.
+
+## What I got wrong about it afterwards
+
+For a long time I told myself this was a hard problem that beat me. It was not.
+It was an easy problem I did not have the tools for, and those are completely
+different failures.
+
+The distinction matters because they have different remedies. A hard problem
+means you need to get smarter. A missing tool means you need to find out what
+already exists. I lost that project to the second thing while treating it like
+the first, which is why the next attempt was not much better.
+
+There were five more prototypes across 2024. None of them shipped.
+
+<Figure
+  src={early}
+  alt="Early FlashFX motion design interface from the late-2024 pivot"
+  caption="Late 2024. The point where I stopped starting over and began studying instead."
+  width="wide"
+/>
+
+## What changed
+
+Between December 2024 and early 2025 I stopped building and studied. JavaScript,
+then TypeScript, then React, building small useless utilities one after another
+until the fundamentals stopped sliding off. All of that came before a single
+line of what became FlashFX.
+
+That period is the least interesting part of the story and it is the one that
+actually mattered. The prototypes were exciting and produced nothing. Three
+months of deliberately unglamorous practice produced everything after.
+
+## Why I keep telling it
+
+Not because failure is secretly good. It is not — I lost real money that
+belonged to someone else, and the year I spent flailing is a year I do not get
+back.
+
+I tell it because the version of this story that gets told publicly usually
+starts at the part where it works. Four rebuilds, 300,000 lines of TypeScript,
+8,000 people using it. That version is true and it is useless to anyone standing
+where I was standing in January 2024.
+
+The useful part is that the thing which stopped me was not talent or difficulty.
+It was not knowing that `git init` existed.

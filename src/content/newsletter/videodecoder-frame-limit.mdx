@@ -1,0 +1,106 @@
+---
+issue: 3
+title: "The WebCodecs Frame Limit Nobody Documents"
+date: 2026-08-06
+description: "A hardware VideoDecoder silently stops emitting once too many output frames are held open. No error, no event. Here is what actually bounds it."
+standfirst: "Playback froze a few seconds in. It was not a leak and it was not a logic error, and no byte budget in the world would have caught it."
+image: "../../assets/flashfx-editor-timeline-multitrack.png"
+imageAlt: "The FlashFX Editor timeline, showing multi-track video playback"
+---
+
+import Figure from '../../components/newsletter/Figure.astro';
+
+import timeline from '../../assets/flashfx-editor-timeline-multitrack.png';
+import canvas from '../../assets/flashfx-animator-timeline-canvas.png';
+
+Video playback in FlashFX froze a few seconds in. Not a stutter, not a dropped
+frame. It played, and then it stopped, and nothing in the console had anything
+to say about it.
+
+I want to write this one down because I lost real time to it, and because
+almost nothing on the open web describes the actual failure mode.
+
+## What it looked like
+
+Decode a video, hold the frames, draw them as the playhead moves. Standard. The
+decoder was configured correctly, the chunks were going in, and for a few
+seconds the frames came out.
+
+Then the output callback simply stopped firing. No error. No `dequeue` event. No
+state change on the decoder. It sat there in `configured`, accepting chunks,
+emitting nothing.
+
+<Figure
+  src={timeline}
+  alt="The FlashFX Editor timeline with multiple video tracks"
+  caption="Multi-track playback. Every track holds its own decoded frames, which is exactly how you run out of something you did not know was finite."
+  width="wide"
+/>
+
+## What I assumed
+
+Memory. Obviously memory. I had a byte budget of 512MB across decoded frames,
+and my first instinct was that the budget was wrong, or that something was
+retaining frames past their eviction.
+
+So I went looking for a leak. There wasn't one. The budget was being respected.
+At the moment playback froze, I was comfortably under it.
+
+That is the part worth sitting with: **every measurement I had said the system
+was healthy.** The thing that was actually saturated was not being measured at
+all.
+
+## What it actually is
+
+A hardware `VideoDecoder` has a pool of output frames. It is not documented as a
+number you can query, and in practice it is small — somewhere around 16 to 24
+open frames, depending on the platform and the codec.
+
+Once you are holding that many, the decoder stops emitting. It does not error.
+It waits for you to give something back.
+
+And here is the part that makes it hard to see: **a `VideoFrame` that has been
+transferred still holds its slot in the decoder pool until you call
+`.close()`.** Transferring it to a worker does not release it. Drawing it does
+not release it. Dropping your last reference does not release it, because
+`VideoFrame` is not garbage-collected in a way you can rely on for this. Only
+`.close()` gives the slot back.
+
+So my byte accounting was measuring the wrong resource entirely. Frames are
+small in bytes and expensive in slots, and I had built a budget in the unit that
+did not matter.
+
+## The fix
+
+Two parts.
+
+First, a cap on the **count** of open decoded frames per asset, not on their
+size. I set it at 12 — deliberately below the platform floor, because the real
+limit is not knowable and being wrong here means a silent freeze rather than a
+warning.
+
+Second, an eviction order that matters. When you are over the cap you have to
+close something, and closing the wrong frame means decoding it again a moment
+later. The frames worth keeping are the ones nearest each layer's playhead, so
+eviction works outward from there rather than by age. Age is the obvious
+heuristic and it is wrong on a timeline, where the user can be anywhere.
+
+<Figure
+  src={canvas}
+  alt="The FlashFX Animator timeline and canvas"
+  caption="Eviction runs outward from each layer's playhead. Oldest-first is the intuitive rule and the wrong one when the user can seek anywhere."
+  width="wide"
+/>
+
+## What I would tell myself
+
+If a decoder stops emitting and nothing errors, stop looking for a leak. You are
+not out of memory, you are out of slots, and those are different resources with
+different units.
+
+More generally: I had instrumentation, and the instrumentation said everything
+was fine. That is not evidence that everything was fine. It is evidence that I
+was measuring the thing I had thought to measure. The bug lived in the gap
+between what I had chosen to count and what the system actually rationed.
+
+Byte accounting alone never touched it.

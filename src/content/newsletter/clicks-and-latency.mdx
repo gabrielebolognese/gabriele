@@ -1,0 +1,112 @@
+---
+issue: 5
+title: "Why Your Picture Leads Your Sound"
+date: 2026-08-06
+description: "Output latency, an 8ms ramp, and an ended event that fires before your teardown does. Three small audio bugs that each cost more than they look like."
+standfirst: "Nobody can tell you the audio is 60ms early. They can only tell you it feels wrong, which is much harder to act on."
+image: "../../assets/flashfx-editor-color-grading.png"
+imageAlt: "The FlashFX Editor, showing the playback and grading surface"
+---
+
+import Figure from '../../components/newsletter/Figure.astro';
+
+import grading from '../../assets/flashfx-editor-color-grading.png';
+import multitrack from '../../assets/flashfx-editor-timeline-multitrack.png';
+
+Audio bugs do not get reported as audio bugs. They get reported as "it feels
+laggy" or "something is off" or, most often, not at all — the user just quietly
+decides the tool is cheap.
+
+Three of these came out of one session. None of them is complicated. All three
+are the kind of thing you only find if you go looking.
+
+## The picture is early
+
+Schedule a sound to play now and it does not play now. Audio hardware has a
+pipeline: a buffer, a driver, the device itself. The sound you schedule is heard
+some milliseconds later, and how many depends on the machine.
+
+So if you read your clock and draw the frame for that reading, the picture is
+ahead of the sound by exactly that pipeline. On a good desktop that might be 20
+milliseconds. On a laptop with Bluetooth headphones it can be 200.
+
+The fix is to draw the frame for the clock reading **minus the output latency**,
+not the raw reading. The browser will tell you what that latency is. The
+temptation is to treat the clock as truth; it is not, it is truth about sound
+that has not happened yet.
+
+<Figure
+  src={grading}
+  alt="The FlashFX Editor playback surface"
+  caption="The clock says one thing and the speakers say another. The gap is the output latency, and it varies per device."
+  width="wide"
+/>
+
+## The click
+
+Stop an audio source abruptly and you get a click. This is not a bug in the
+browser, it is physics — you have taken a waveform that was at some non-zero
+amplitude and dropped it to zero in one sample. That discontinuity is a click,
+and the ear is extremely good at hearing it.
+
+Pausing produced one. Seeking produced one. Crossing a clip boundary produced
+one, which meant a timeline of ten clips clicked ten times on a single playthrough.
+
+The fix is an 8 millisecond gain ramp to zero before every stop. Short enough
+that nobody perceives a fade, long enough that there is no discontinuity. Every
+stop path goes through it — not just the pause button, because the boundary
+crossings were the ones doing the real damage.
+
+## The one that got away
+
+This is the one I want to record properly, because it was found by review rather
+than by me.
+
+A source with a fixed duration ends on its own. You schedule it, it plays, it
+finishes, and it fires its `ended` event. That happens **before** any stop path
+of yours runs, because no stop was ever requested — the source just reached its
+end.
+
+I had attached teardown to the stop path. Which meant: every clip that played
+all the way through, rather than being interrupted, leaked its audio nodes onto
+the master graph. Play a timeline through once and you have accumulated a node
+per clip, permanently, for the life of the context.
+
+Nothing sounds wrong. Nothing errors. The graph just grows.
+
+<Figure
+  src={multitrack}
+  alt="The FlashFX Editor timeline with multiple tracks"
+  caption="Every clip that finishes normally is a clip that never took the stop path. Ten tracks playing through is ten leaked node chains."
+  width="wide"
+/>
+
+The fix is to attach teardown when the source is **scheduled**, not when it is
+stopped. Scheduling always happens. Stopping is conditional, and building
+cleanup on a conditional path means cleanup is conditional too.
+
+An adversarial review caught this. I would not have — from the outside
+everything worked, and the failure mode is invisible until you go looking at the
+graph.
+
+## The silent one
+
+One more, smaller. Video clips carrying sound played nothing, and the level
+meters read zero.
+
+The cause was not in the audio path at all. A second, private `AudioContext` had
+been created in a paused state and never resumed. Browsers start contexts
+suspended until a user gesture, and this one never got resumed because nothing
+knew it existed. Collapsing everything onto one shared context fixed it.
+
+Two audio contexts is nearly always a mistake. The second one is the one nobody
+remembers to resume.
+
+## The through-line
+
+None of these are hard problems. Each is a few lines. What they share is that
+the system reports success in every case — no errors, no warnings, correct
+logs — while producing a result that is subtly wrong to a human.
+
+That is the category of bug worth building habits around, because your tooling
+will not raise its hand. You have to go and check.

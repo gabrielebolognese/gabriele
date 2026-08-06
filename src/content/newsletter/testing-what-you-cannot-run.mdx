@@ -1,0 +1,106 @@
+---
+issue: 4
+title: "Testing Code Your Dev Environment Cannot Run"
+date: 2026-08-06
+description: "No WebAudio, no WebCodecs, no WebGPU where I develop. So the clock, the frame selection and the audio scheduling got pulled out and proven in Node instead."
+standfirst: "You cannot run it, so you cannot test it, so you ship it and hope. That is the trap, and the way out is smaller than it looks."
+image: "../../assets/flashfx-animator-keyframe-controls.png"
+imageAlt: "FlashFX keyframe controls, the timing surface of the animator"
+---
+
+import Figure from '../../components/newsletter/Figure.astro';
+import Pair from '../../components/newsletter/Pair.astro';
+
+import keyframes from '../../assets/flashfx-animator-keyframe-controls.png';
+import timeline from '../../assets/flashfx-animator-timeline-canvas.png';
+import editor from '../../assets/flashfx-editor-timeline-multitrack.png';
+
+Audio-synced playback is the kind of feature that either works or is
+embarrassing. There is no middle state. Twenty milliseconds of drift and
+everybody feels it even if nobody can name it.
+
+It is also, in my setup, completely untestable. Where I develop there is no
+WebAudio, no WebCodecs, no WebGPU. Not "flaky in CI" untestable — the APIs are
+simply not there.
+
+## The trap
+
+The obvious response is to write the feature, push it, open the app, and look at
+it. Then change something, push, look again. I have built things this way and it
+is miserable. Every iteration costs a full round trip, you cannot check edge
+cases, and you end up asserting correctness with your eyes on a case you
+happened to try.
+
+For sync work specifically that is hopeless. "Does the audio lead the video" is
+not something you can eyeball reliably at 40ms.
+
+<Figure
+  src={keyframes}
+  alt="FlashFX keyframe controls"
+  caption="Timing is the whole feature. It is also the part you cannot see well enough to check by looking."
+  width="wide"
+/>
+
+## What I did instead
+
+The realisation is that almost none of the hard part actually needs the browser.
+
+A clock that maps wall time to composition time is arithmetic. Choosing which
+frame should be on screen at a given time is arithmetic. Deciding when a buffer
+should be scheduled, at what offset, with what rate — arithmetic. None of it
+needs an `AudioContext`. It just happened to be written inside things that did.
+
+So I pulled the math out into pure functions. No context, no decoder, no canvas.
+Inputs in, numbers out. Then I proved those in Node.
+
+Three harnesses, 24 assertions. They run in about a second and they run
+anywhere.
+
+<Pair
+  a={timeline}
+  altA="The FlashFX Animator timeline"
+  b={editor}
+  altB="The FlashFX Editor multi-track timeline"
+  caption="Two surfaces, one set of timing rules underneath. Once the rules are pure functions, both are testable without either being open."
+  width="wide"
+/>
+
+## The part that separates it out
+
+The test for "is this the right frame at this time" does not need a frame. It
+needs a list of timestamps and a time, and it needs to tell you which timestamp
+wins. That is a function you can call ten thousand times in a loop.
+
+Same for scheduling. Given a clip that starts at some point, a playhead parked
+somewhere inside it, and a rate, where in the buffer do you begin? That is one
+expression. It is also, as it turns out, the thing I had wrong for pitch-shifted
+clips — pitch shift is a resample, so it changes how fast the buffer is
+consumed, and the resume offset has to be scaled by that rate. The old code
+advanced it unscaled.
+
+I did not find that by looking at the app. I found it by writing down what the
+answer should be and watching the function disagree.
+
+## What the harnesses do not cover
+
+Being honest about the boundary matters, because a green test suite is a claim
+and an overclaim is worse than no claim.
+
+The harnesses prove the arithmetic. They say nothing about whether the
+`AudioContext` actually resumed, whether the decoder emitted, whether the canvas
+drew. Those are still eyes-on-the-app problems, and they always will be.
+
+What changed is the ratio. The parts that were subtle and invisible are now
+proven. The parts that are left are the parts you can actually see — the ones
+where "it plays" or "it does not" is a fair test.
+
+## One thing I would not have guessed
+
+Even with the math correct, the picture has to be shown at the clock reading
+**minus the output latency**, not at the raw reading. Audio hardware has a
+pipeline, and the sound you schedule now is not the sound you hear now. Show the
+frame at the raw clock and the picture leads the sound by 20 to 200 milliseconds
+depending on the device.
+
+That is not a bug you find by testing your own function against your own
+expectation, because your expectation is wrong too. That one needs the world.
