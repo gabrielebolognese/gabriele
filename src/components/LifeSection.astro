@@ -69,9 +69,12 @@ function ageAt(now: Date) {
 const age = ageAt(NOW);
 const pad = (n: number) => String(n).padStart(2, '0');
 
+/* Whole days, not a millisecond division — same DST reason as calendarDays
+   above, and it has to match milestoneWeek() exactly or a marked week and the
+   lived/unlived boundary can disagree by one square. */
 const weeksLived = Math.min(
   TOTAL_WEEKS,
-  Math.max(0, Math.floor((NOW.getTime() - BIRTH.getTime()) / 604_800_000)),
+  Math.max(0, Math.floor(calendarDays(BIRTH, NOW) / 7)),
 );
 const livedPercent = ((weeksLived / TOTAL_WEEKS) * 100).toFixed(1);
 
@@ -195,7 +198,8 @@ const PILLS: Array<{ url: string; label: string }> = [
         its children from assistive tech, so the events are also listed here as
         real text, which is what a crawler and an answer engine will read. */}
     <details class="life-events">
-      <summary>{MILESTONES.length} marked weeks</summary>
+      {/* "events", not "weeks" — an entry can span several squares now. */}
+      <summary>{MILESTONES.length} marked events</summary>
       <ol>
         {MILESTONES.map((m) => (
           <li>

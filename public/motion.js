@@ -351,7 +351,16 @@
         var built = parseInt(grid.getAttribute('data-lived'), 10);
         if (isNaN(built)) built = 0;
 
-        var lived = Math.floor((Date.now() - birth.getTime()) / 604800000);
+        // Whole calendar days, matching milestoneWeek() in milestones.ts. A
+        // millisecond division drifts by the DST hour and can hand back a
+        // different week than the build did, which would move the "this week"
+        // square on load.
+        var today = new Date();
+        var days = Math.round(
+            (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+                - Date.UTC(birth.getFullYear(), birth.getMonth(), birth.getDate())) / 86400000);
+
+        var lived = Math.floor(days / 7);
         if (lived < 0) lived = 0;
         if (lived > total) lived = total;
 

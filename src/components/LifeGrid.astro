@@ -42,9 +42,10 @@ const percent = ((weeksLived / totalWeeks) * 100).toFixed(1);
    two same-week entries apart. */
 const events = new Map<number, { kind: MilestoneKind; title: string }>();
 for (const m of MILESTONES) {
-  const week = milestoneWeek(m.month, birthDate);
-  if (week >= 0 && week < totalWeeks) {
-    events.set(week, { kind: m.kind, title: `${milestoneLabel(m.month)}, ${m.label}` });
+  const start = milestoneWeek(m.month, birthDate);
+  const title = `${milestoneLabel(m.month)}, ${m.label}`;
+  for (let week = start; week < start + (m.weeks ?? 1); week++) {
+    if (week >= 0 && week < totalWeeks) events.set(week, { kind: m.kind, title });
   }
 }
 
