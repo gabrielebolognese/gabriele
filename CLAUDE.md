@@ -100,6 +100,14 @@ byte-identical sources collapse into one emitted file under one of the two names
 `111.png` were the same picture, which is why the homepage's "AI features" screenshot and `/about`'s
 "Bolt hackathon prototype" still resolve to a single file.
 
+**Phone photos need their rotation baked in before they land here.** Astro's sharp service does not
+auto-orient, so a JPEG with EXIF `Orientation: 6` — every portrait shot from a phone — ships on its
+side, with `width`/`height` attributes describing an aspect ratio the picture does not have. Rotate
+with `sharp().rotate()` (no argument applies the tag), re-encode, and drop the tag. Issue covers want
+the same treatment for a second reason: `.issue-cover` is `aspect-ratio: 16/9; object-fit: cover` and
+the file is also the `og:image`, so a portrait cover pays for rows the layout discards and hands
+social cards a crop nobody chose. Crop covers to 16:9 at the source.
+
 **Image discovery and licensing.** `@astrojs/sitemap` emits page URLs only, so `<image:image>`
 declarations live in `src/pages/image-sitemap.xml.ts`, built from the manifest in `src/data/images.ts`
 and listed in `robots.txt` alongside `sitemap-index.xml`. The manifest **mirrors** what pages import —
@@ -165,6 +173,11 @@ The first issue, `how-i-built-flashfx.mdx`, is `draft: true`. Its title promises
 and its body is still FlashFX export-system documentation. As one post among many that was a title
 mismatch; as issue 001 of a publication it would be the flagship, which is why it is held back rather
 than shipped. `the-four-rebuilds.mdx` is issue 002 and is real.
+
+`launch-day.mdx` is issue 009 and is a **scaffold, not a draft of anything** — headings and a note,
+written for the site owner to fill in after launch happens. It is `draft: true`, so no page is built
+for it at all (`[...slug].astro` filters drafts out of `getStaticPaths`, unlike `noindex`, which still
+builds). Issue 008, `my-worst-setback.mdx`, is live and is the one it continues from.
 
 The figures that used to contradict each other are now settled in `FACTS` and `ORGANIZATION`, confirmed
 2026-07-31: 8,000 users, 3,400 Discord members, FlashFX founded 2024-01-01 (matching the homepage's
