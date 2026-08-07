@@ -193,6 +193,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .entry-pull,
 .js .entry-wide,
 .js .timeline-item,
+.js .timeline-end,
 .js .next-paragraph,
 .js .next-contact,
 .js .faq-item,
@@ -304,6 +305,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .entry-pull,
     .js .entry-wide,
     .js .timeline-item,
+    .js .timeline-end,
     .js .next-paragraph,
     .js .next-contact,
     .js .faq-item,
@@ -1293,6 +1295,91 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     line-height: 1.85;
 }
 
+/* ── End of the timeline ──────────────────────────────────────────────────
+   The list used to stop at the newest entry with nothing saying whether that
+   was the current end or the whole story. This says which.
+
+   The typing reveal is a clip-path in steps() rather than an animated width.
+   A width animation has to be measured in `ch`, which is wrong for a
+   proportional face, wrong again at every clamp() breakpoint, and wrong a
+   third time if the wording changes. clip-path is a percentage of the
+   element's own box, so it is correct at any size, in any font, for any
+   string. The steps() count is the character count, which is the only thing
+   here that needs updating if the words change. */
+.timeline-end {
+    margin-top: 60px;
+    padding-top: 44px;
+    border-top: 1px solid var(--gray-line);
+}
+
+.timeline-end-line {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 5.4vw, 58px);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    color: var(--black);
+}
+
+/* inline-block so the clip box is the text, not the line. */
+.timeline-end-type {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.timeline-end-dots i { font-style: normal; }
+
+/* Everything below is gated on `.js`: with scripting off there is no
+   IntersectionObserver to add `.is-in`, so the text and all three dots have
+   to render finished. */
+.js .timeline-end-type { clip-path: inset(0 100% 0 0); }
+.js .timeline-end-dots i { opacity: 0; }
+
+.js .timeline-end.is-in .timeline-end-type {
+    /* 15 steps for the 15 characters of "To be continued". */
+    animation: timeline-type 1.05s steps(15, end) 320ms both;
+}
+
+@keyframes timeline-type {
+    from { clip-path: inset(0 100% 0 0); }
+    /* Negative on the right: a hairline of the last glyph's overhang would
+       otherwise stay clipped at 0. */
+    to   { clip-path: inset(0 -0.12em 0 0); }
+}
+
+/* Starts once the typing lands, then loops: in one by one, out one by one,
+   a beat, again. */
+.js .timeline-end.is-in .timeline-end-dots i {
+    animation: timeline-dot 2.4s var(--ease-soft) infinite;
+}
+
+.js .timeline-end.is-in .timeline-end-dots i:nth-child(1) { animation-delay: 1.45s; }
+.js .timeline-end.is-in .timeline-end-dots i:nth-child(2) { animation-delay: 1.70s; }
+.js .timeline-end.is-in .timeline-end-dots i:nth-child(3) { animation-delay: 1.95s; }
+
+@keyframes timeline-dot {
+    0%        { opacity: 0; }
+    12%, 55%  { opacity: 1; }
+    70%, 100% { opacity: 0; }
+}
+
+.timeline-end-note {
+    margin-top: 20px;
+    max-width: 560px;
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.7;
+    color: var(--gray-mid);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js .timeline-end-type { clip-path: none; }
+    .js .timeline-end.is-in .timeline-end-type { animation: none; }
+    .js .timeline-end-dots i { opacity: 1; }
+    .js .timeline-end.is-in .timeline-end-dots i { animation: none; }
+}
+
 @media (max-width: 860px) {
     .timeline-item { grid-template-columns: 1fr; gap: 8px; }
     .timeline-date { grid-column: 1; grid-row: 2; text-align: left; }
@@ -1550,27 +1637,12 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
    the homepage newsletter section replaced with IssueCard; the component is
    deleted and so is its CSS.
 
-   .articles-more stays. Despite the name it is no longer the newsletter's
-   link out, which is .issue-grid-btn now; the devlog section on the homepage
-   uses it for "Every entry". Deleting it with the rest silently unstyled that
-   link, which is why this comment is here rather than nothing. */
-.articles-more {
-    margin-top: 32px;
-    font-size: var(--text-xs);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-
-.articles-more a {
-    color: var(--gray-dark);
-    border-bottom: 1px solid var(--gray-line);
-    padding-bottom: 3px;
-    transition:
-        color        var(--dur) var(--ease),
-        border-color var(--dur) var(--ease);
-}
-
-.articles-more a:hover { color: var(--black); border-color: var(--black); }
+   .articles-more went one commit later. It survived that first cut because
+   the devlog section was still using it for "Every entry", which the class
+   name gave no hint of; that link is .issue-grid-btn now, so it has no
+   callers left. Both deletions were checked against the built HTML rather
+   than against the class name, which is the only check that would have
+   caught the first one. */
 
 
 /* ── 15. WHAT'S NEXT ─────────────────────────────────────────────────────── */

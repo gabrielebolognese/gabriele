@@ -1254,6 +1254,16 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
             </li>
 
         </ol>
+
+        {/* The dots are decorative and animate on a loop, so they are hidden
+            from assistive tech; "To be continued" already says the thing. */}
+        <div class="timeline-end">
+            <p class="timeline-end-line"><span class="timeline-end-type">To be continued</span><span
+                    class="timeline-end-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></p>
+            <p class="timeline-end-note">
+                The timeline is updated for every major event, usually once a month.
+            </p>
+        </div>
     </section>
 
     <div class="rule"></div>
@@ -1267,9 +1277,14 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         <h2 id="home-devlog-heading" class="section-label">Devlog</h2>
         <p class="section-intro">{DEVLOG.description}</p>
         <DevlogTimeline limit={DEVLOG.homepageLimit} headingLevel="h3" />
-        <p class="articles-more">
-            <a href="/devlog">Every entry &#8594;</a>
-        </p>
+
+        {/* Same control as the newsletter's link out, deliberately: they are
+            the same kind of thing, and the small underlined link this replaced
+            read as a footnote next to a section it is supposed to open. */}
+        <a class="issue-grid-btn" href="/devlog">
+            Every entry
+            <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
+        </a>
     </section>
 
     <div class="rule"></div>

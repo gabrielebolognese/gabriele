@@ -20,7 +20,7 @@
         '.cd-label', '.cd-display', '.cd-deadline', '.cd-goal',
         '.project-card',
         '.story-chapter', '.chapter-header', '.entry', '.entry-pull', '.entry-wide',
-        '.timeline-item',
+        '.timeline-item', '.timeline-end',
         '.next-paragraph', '.next-contact',
         '.faq-item',
         '.bio-lede', '.bio-figure', '.bio-table-wrap', '.bio-links', '.breadcrumb',

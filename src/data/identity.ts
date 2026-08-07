@@ -195,8 +195,10 @@ export const DEVLOG = {
   name: 'Devlog',
   description:
     'What I shipped, what broke, and what it taught me. One line a day from inside FlashFX, with the long version underneath.',
-  /** How many entries the homepage section shows before linking through. */
-  homepageLimit: 4,
+  /** How many entries the homepage section shows before linking through.
+   *  Three, so the section stays a sample of the newest days rather than a
+   *  second copy of /devlog that grows every time an entry is added. */
+  homepageLimit: 3,
 } as const;
 
 /* ── Image licensing ─────────────────────────────────────────────────────────
