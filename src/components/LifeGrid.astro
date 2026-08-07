@@ -19,7 +19,7 @@
  * visitors and right on first paint; initLifeGrid() in motion.js then
  * reconciles the weeks elapsed since the last deploy.
  */
-import { MILESTONES, milestoneWeek, type MilestoneKind } from '../data/milestones';
+import { MILESTONES, milestoneWeek, milestoneLabel, type MilestoneKind } from '../data/milestones';
 
 interface Props {
   /** Local-time birth timestamp, e.g. "2008-12-06T00:00:00". */
@@ -35,12 +35,17 @@ const birthDate = new Date(birth);
 const rows = Math.ceil(totalWeeks / columns);
 const percent = ((weeksLived / totalWeeks) * 100).toFixed(1);
 
-/* week index -> the event that falls in it. A month maps to one week, so
-   collisions are only possible for events in the same month; last wins. */
-const events = new Map<number, { kind: MilestoneKind; label: string }>();
+/* week index -> the event that falls in it. Two entries can still collide if
+   they fall in the same week, in which case the later one wins — date an entry
+   to the day in milestones.ts to separate them. The title is built here rather
+   than looked up later: finding a milestone back by its week index cannot tell
+   two same-week entries apart. */
+const events = new Map<number, { kind: MilestoneKind; title: string }>();
 for (const m of MILESTONES) {
   const week = milestoneWeek(m.month, birthDate);
-  if (week >= 0 && week < totalWeeks) events.set(week, { kind: m.kind, label: m.label });
+  if (week >= 0 && week < totalWeeks) {
+    events.set(week, { kind: m.kind, title: `${milestoneLabel(m.month)}, ${m.label}` });
+  }
 }
 
 function cellClass(i: number): string | undefined {
@@ -51,14 +56,7 @@ function cellClass(i: number): string | undefined {
 }
 
 function cellTitle(i: number): string | undefined {
-  const event = events.get(i);
-  if (!event) return undefined;
-  const [y, m] = MILESTONES.find((x) => milestoneWeek(x.month, birthDate) === i)!.month.split('-');
-  const name = new Date(Number(y), Number(m) - 1, 1).toLocaleDateString('en-GB', {
-    month: 'long',
-    year: 'numeric',
-  });
-  return `${name}, ${event.label}`;
+  return events.get(i)?.title;
 }
 ---
 {/* role="img" with a label: 4,680 empty cells would otherwise be announced one

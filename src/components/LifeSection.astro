@@ -14,7 +14,7 @@
 import { Image } from 'astro:assets';
 import LifeGrid from './LifeGrid.astro';
 import { PERSON, SAME_AS, ORGANIZATION } from '../data/identity';
-import { MILESTONES } from '../data/milestones';
+import { MILESTONES, milestoneLabel } from '../data/milestones';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 
 interface Props {
@@ -74,12 +74,6 @@ const weeksLived = Math.min(
   Math.max(0, Math.floor((NOW.getTime() - BIRTH.getTime()) / 604_800_000)),
 );
 const livedPercent = ((weeksLived / TOTAL_WEEKS) * 100).toFixed(1);
-
-/** "2024-03" -> "March 2024". */
-function monthLabel(month: string): string {
-  const [y, m] = month.split('-').map(Number);
-  return new Date(y, m - 1, 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-}
 
 function labelFor(url: string): string {
   const host = new URL(url).hostname.replace(/^www\./, '');
@@ -206,7 +200,7 @@ const PILLS: Array<{ url: string; label: string }> = [
         {MILESTONES.map((m) => (
           <li>
             <i class={`ev-${m.kind}`} aria-hidden="true"></i>
-            <time datetime={m.month}>{monthLabel(m.month)}</time>
+            <time datetime={m.month}>{milestoneLabel(m.month)}</time>
             <span>{m.label}</span>
           </li>
         ))}

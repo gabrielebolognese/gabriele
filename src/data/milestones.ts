@@ -7,14 +7,18 @@
    grid will highlight the wrong week. (Unifying them is worth doing: it would
    delete ~280 lines of repetitive markup from index.astro.)
 
-   Only a year and month are recorded, matching the timeline's granularity.
-   Each is placed on the week containing the 15th — the middle of that month.
+   Most entries record only a year and month, matching the timeline's usual
+   granularity, and land on the week containing the 15th — the middle of that
+   month. An entry may instead give a full YYYY-MM-DD when the exact week
+   matters: two events in the same month would otherwise collide on one square
+   and the later one would silently win, and a late-month event would be pushed
+   two weeks back to mid-month. Both apply to July 2026.
    ========================================================================= */
 
 export type MilestoneKind = 'setback' | 'personal' | 'flashfx';
 
 export interface Milestone {
-  /** YYYY-MM, as shown on the timeline. */
+  /** YYYY-MM as shown on the timeline, or YYYY-MM-DD when the day matters. */
   month: string;
   label: string;
   kind: MilestoneKind;
@@ -51,12 +55,30 @@ export const MILESTONES: Milestone[] = [
   { month: '2025-12', kind: 'flashfx',  label: 'FlashFX reaches 5,000 users · turned 17' },
   { month: '2026-01', kind: 'flashfx',  label: 'Aziz joins as co-founder, Camille hired' },
   { month: '2026-02', kind: 'flashfx',  label: 'FlashFX v1.2, AI animation tier' },
-  { month: '2026-04', kind: 'flashfx',  label: 'Y Combinator interview invitation' },
+  { month: '2026-04',    kind: 'flashfx',  label: 'Y Combinator interview invitation' },
+  { month: '2026-07-10', kind: 'personal', label: 'Two weeks in Dublin, first English-speaking country' },
+  { month: '2026-07-25', kind: 'setback',  label: 'Twelve days lost in the run-up to launch' },
 ];
 
-/** Week index from `birth` for the middle of a milestone's month. */
+/** Splits either granularity. `d` is null for a month-only entry. */
+function parts(month: string): { y: number; m: number; d: number | null } {
+  const [y, m, d] = month.split('-').map(Number);
+  return { y, m: m - 1, d: Number.isFinite(d) ? d : null };
+}
+
+/** Week index from `birth`. Month-only entries land mid-month. */
 export function milestoneWeek(month: string, birth: Date): number {
-  const [y, m] = month.split('-').map(Number);
-  const mid = new Date(y, m - 1, 15);
-  return Math.floor((mid.getTime() - birth.getTime()) / 604_800_000);
+  const { y, m, d } = parts(month);
+  return Math.floor((new Date(y, m, d ?? 15).getTime() - birth.getTime()) / 604_800_000);
+}
+
+/** "2024-03" -> "March 2024". "2026-07-10" -> "10 July 2026". */
+export function milestoneLabel(month: string): string {
+  const { y, m, d } = parts(month);
+  return new Date(y, m, d ?? 1).toLocaleDateString(
+    'en-GB',
+    d === null
+      ? { month: 'long', year: 'numeric' }
+      : { day: 'numeric', month: 'long', year: 'numeric' },
+  );
 }
