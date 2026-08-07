@@ -1,0 +1,196 @@
+---
+issue: 10
+title: "A Hundred Commits, and Almost No Decisions"
+date: 2026-08-07
+description: "Launch day, nine milestones of vector editing, and the only hundred-commit day I have had. What made it survivable was not effort. It was that almost nothing in it required a decision."
+standfirst: "The hardest day I have worked was also the day I decided the least. Those two facts are the same fact, and it took me a hundred commits to see it."
+image: "../../assets/flashfx-animator-layer-panel-effects.png"
+imageAlt: "The FlashFX Animator layer panel, showing per-layer properties and effects"
+draft: false
+---
+
+import Figure from '../../components/newsletter/Figure.astro';
+
+import roadmap from '../../assets/flashfx-roadmap-page.png';
+import keyframes from '../../assets/flashfx-animator-keyframe-controls.png';
+
+Today FlashFX opened to the public and became a company, which I have written
+about separately in [Launch Day, and the Company Underneath
+It](/newsletter/launch-day). This is about the other thing that happened today,
+which is that I made a hundred commits.
+
+I have never done that before and I do not expect to do it often. It is worth
+writing down while the details are still exact, because a day like this looks,
+from the outside, like a story about effort. It is not. The effort was the least
+interesting input.
+
+## The day, measured
+
+Nine milestones shipped: M1 through M10, with M1 landing late the night before
+and M2 through M10 across today. Eight of the hundred commits are the milestone
+commits, the ones named in [the devlog](/devlog); the other ninety-odd are the
+work underneath them.
+
+Eight new verification harnesses: transform HUD, measurement, equal-gap, nudge,
+fuzzy search, tangent, bend, path cleanup. Typecheck held at 0 errors and lint
+at its 127 baseline through every single commit.
+
+The work itself was rounded rectangle corners, boolean operations, a transform
+readout, measurement and equal-gap snapping, nudge and align and distribute, a
+command palette, power duplicate, editable paths with tangent handles, a bend
+tool, and anchor deletion with the curve healed across the gap.
+
+## Why it was hard, and it was not the hours
+
+Long days are not made hard by their length. Sixteen hours of something you have
+done before is tiring, not hard.
+
+What made today hard is that nearly every item on that list is geometry with an
+interface on top, and geometry has a specific property that most work does not:
+there is always a version that runs, produces output, and is wrong. Deleting an
+anchor point and reconnecting its neighbours produces a curve. It is just the
+wrong curve, and it will look approximately correct in every screenshot you take
+of it. The bend tool applied to the live handles instead of the pre-drag handles
+still bends. It just compounds, and you will not see that until someone drags
+slowly.
+
+That is the real cost. Not the difficulty of getting something to work, but the
+impossibility of trusting that it worked without a separate mechanism that says
+so.
+
+## What actually held the day together
+
+Six things. None of them happened today, which is the point.
+
+### 1. The decomposition was done before the day started
+
+M1 to M10 existed as a list before I opened the editor. At no point in sixteen
+hours did I face the question "what should I work on now", because the answer was
+always the next number.
+
+<Figure
+  src={roadmap}
+  alt="The FlashFX roadmap page, listing planned features as numbered milestones"
+  caption="The roadmap. M1 to M10 were written down before the day began, which is most of why the day worked at all."
+/>
+
+Deciding what to do next is the single most expensive thing you can ask a tired
+person to do, and it is the one thing people leave to the moment. Doing it in
+advance costs an hour once. Doing it live costs you the same hour, in fragments,
+every time you finish something.
+
+### 2. A commit is a place you are allowed to stop
+
+A hundred commits means the average unit of work was small enough to close. That
+is not a statistic about productivity; it is what makes a long day possible at
+all.
+
+If the only stopping point is "the feature is done", then every interruption is a
+loss and you cannot rest without paying for it. If the stopping point is fifteen
+minutes away, you can stop at any time and the cost is nothing. Long days do not
+break because you run out of energy. They break because you run out of energy at
+a moment when stopping would be expensive.
+
+### 3. Hold a baseline instead of fixing it
+
+Lint sat at 127 through every commit. Not zero. 127.
+
+That number is a decision I made once and did not revisit: those 127 are a
+different day's work, and today's only obligation is to not add a hundred and
+twenty eighth. A held baseline turns a vague standard ("keep the code clean")
+into a single integer you can check in two seconds. Typecheck is the same idea at
+zero.
+
+Both are worth more at hour fourteen than at hour two, because they are checks
+that do not require judgment, and judgment is the first thing to go.
+
+### 4. Automate the verdict, not the work
+
+This is the one I would defend hardest. Eight harnesses today, and they exist for
+a reason that has nothing to do with correctness in the abstract.
+
+Fatigue does not primarily make you slower. It makes you worse at evaluating your
+own output, while leaving your confidence about it roughly intact. So the last
+thing you want at hour twelve is a process where you decide whether the thing is
+right. You want a process where something else decides and you read the answer.
+
+`verify:tangent` caught that `normalizeAngle(-360)` returns `-0`, which fails
+`deepEqual` against `0` because that comparison runs through `Object.is`. I would
+not have found that by looking. Nobody finds that by looking.
+
+### 5. Batch what you cannot automate
+
+Some of today cannot be proven in Node at all. Anything driven by pointer input
+or running on WebGPU needs a browser and, more than that, needs a human to feel
+whether it is right. Snapping that fights the cursor passes every assertion you
+can write about it.
+
+So those parts are verified structurally, and each commit carries its own
+manual-check list to run in the browser later. The alternative is switching to a
+browser a hundred times, which does not cost you the two minutes it looks like;
+it costs you the state you were holding.
+
+Separate what can be proven from what has to be felt, prove the first
+continuously, and queue the second.
+
+### 6. When you know the cheap version is wrong, it is not a shortcut
+
+The last milestone was deleting an anchor point and healing the curve across the
+gap. My first implementation passed the new curve through the point where the
+deleted anchor used to be. That is cheap, it is obvious, and it kinks, because it
+changes the tangent directions at both ends.
+
+The correct fix is a least squares refit in the shape Schneider described in
+1990: hold the two endpoints and their tangent directions fixed, then solve only
+for the two handle lengths that best fit the original two-curve span. I replaced
+the cheap version with it before shipping.
+
+The general form: a version you already know is wrong is not a shortcut, it is a
+second job scheduled for later, and you will do it while remembering less about
+the problem than you know right now.
+
+<Figure
+  src={keyframes}
+  alt="FlashFX keyframe controls, the timing surface of the animator"
+  caption="Rounded corners took a day of work and no new engine: borderRadius was already an animatable property, so the milestone was exposure, not capability."
+/>
+
+## What not to take from this
+
+I want to be careful here, because this is the point where a day like today gets
+turned into a method, and it is not one.
+
+Six weeks ago I was averaging thirteen hours a day on my phone and there were
+days I did not open the repository. I wrote that down [in the previous
+issue](/newsletter/my-worst-setback), including the part where I said I am back
+on track but not recovered, and that March remains my reference point for what
+full throttle actually feels like.
+
+One day does not change that assessment. A spike is not a trend, and the specific
+error I would be making is the one I described six weeks ago: rounding up. If I
+let today stand as evidence that I am back to March, I get to stop paying
+attention, and not paying attention is the entire mechanism of how the last six
+weeks happened.
+
+So: today was an outlier, produced by a deadline that could not move, on the one
+day of the year where the deadline was the whole point. The six things above are
+the parts that generalise. The sixteen hours are not.
+
+## The short version
+
+1. **Decide what to do before the day, never during it.** The cost is the same
+   and you pay it once.
+2. **Make the unit of work small enough to stop inside.** Long days end at a bad
+   moment, not at a natural one.
+3. **Hold a baseline rather than chase a standard.** 127 is checkable; "clean" is
+   not.
+4. **Automate the verdict.** Fatigue takes your judgment before it takes your
+   speed, and it does not take your confidence with it.
+5. **Queue what needs a human, do not interleave it.** The switch costs state, not
+   minutes.
+6. **Never ship the version you already know is wrong.** It is a second job with
+   worse context.
+
+None of that is about working harder, and I would not have got through today on
+working harder. It is about arranging things so that a tired person can keep
+going without needing to be trusted.
