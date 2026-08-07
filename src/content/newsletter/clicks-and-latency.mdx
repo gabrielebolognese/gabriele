@@ -14,7 +14,7 @@ import grading from '../../assets/flashfx-editor-color-grading.png';
 import multitrack from '../../assets/flashfx-editor-timeline-multitrack.png';
 
 Audio bugs do not get reported as audio bugs. They get reported as "it feels
-laggy" or "something is off" or, most often, not at all — the user just quietly
+laggy" or "something is off" or, most often, not at all; the user just quietly
 decides the tool is cheap.
 
 Three of these came out of one session. None of them is complicated. All three
@@ -45,7 +45,7 @@ that has not happened yet.
 ## The click
 
 Stop an audio source abruptly and you get a click. This is not a bug in the
-browser, it is physics — you have taken a waveform that was at some non-zero
+browser, it is physics: you have taken a waveform that was at some non-zero
 amplitude and dropped it to zero in one sample. That discontinuity is a click,
 and the ear is extremely good at hearing it.
 
@@ -54,7 +54,7 @@ one, which meant a timeline of ten clips clicked ten times on a single playthrou
 
 The fix is an 8 millisecond gain ramp to zero before every stop. Short enough
 that nobody perceives a fade, long enough that there is no discontinuity. Every
-stop path goes through it — not just the pause button, because the boundary
+stop path goes through it, not just the pause button, because the boundary
 crossings were the ones doing the real damage.
 
 ## The one that got away
@@ -64,7 +64,7 @@ than by me.
 
 A source with a fixed duration ends on its own. You schedule it, it plays, it
 finishes, and it fires its `ended` event. That happens **before** any stop path
-of yours runs, because no stop was ever requested — the source just reached its
+of yours runs, because no stop was ever requested; the source just reached its
 end.
 
 I had attached teardown to the stop path. Which meant: every clip that played
@@ -85,7 +85,7 @@ The fix is to attach teardown when the source is **scheduled**, not when it is
 stopped. Scheduling always happens. Stopping is conditional, and building
 cleanup on a conditional path means cleanup is conditional too.
 
-An adversarial review caught this. I would not have — from the outside
+An adversarial review caught this. I would not have; from the outside
 everything worked, and the failure mode is invisible until you go looking at the
 graph.
 
@@ -105,8 +105,8 @@ remembers to resume.
 ## The through-line
 
 None of these are hard problems. Each is a few lines. What they share is that
-the system reports success in every case — no errors, no warnings, correct
-logs — while producing a result that is subtly wrong to a human.
+the system reports success in every case (no errors, no warnings, correct
+logs) while producing a result that is subtly wrong to a human.
 
 That is the category of bug worth building habits around, because your tooling
 will not raise its hand. You have to go and check.

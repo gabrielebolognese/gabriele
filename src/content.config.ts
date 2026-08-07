@@ -3,7 +3,7 @@ import { glob, file } from 'astro/loaders';
 import { load as loadYaml } from 'js-yaml';
 
 /* Was `articles`. Folded into one publication because two thin writing
-   surfaces compete with each other — the same mistake story.html made against
+   surfaces compete with each other, the same mistake story.html made against
    the homepage. Issues are .mdx so the body can call <Figure> and <Pair>;
    plain .md still loads, it just cannot place an image more than one way. */
 const newsletter = defineCollection({
@@ -37,13 +37,13 @@ const newsletter = defineCollection({
 });
 
 /* The devlog. `file()` rather than `glob()`: every entry lives in ONE yaml
-   file, so publishing is "add a block at the top and commit" — doable from a
+   file, so publishing is "add a block at the top and commit", doable from a
    phone in under a minute, which is the only reason a daily log survives.
 
    The custom parser exists because file() requires an id on every item and
    does NOT derive one from array position. Returning an object rather than an
    array makes its keys the ids, so the yaml stays free of an `id:` line that
-   would only ever duplicate `date:` — one less thing to type, and one less
+   would only ever duplicate `date:`, one less thing to type, and one less
    thing to get wrong, every single day. */
 const devlog = defineCollection({
   loader: file('./src/content/devlog.yaml', {

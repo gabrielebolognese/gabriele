@@ -15,7 +15,7 @@ const { Content } = await render(issue);
 
 // Feeds BlogPosting.wordCount and the reading-time estimate. `body` is the raw
 // source, which is close enough for a signal that only needs to be
-// approximately right — though on .mdx it also counts import lines and JSX
+// approximately right, though on .mdx it also counts import lines and JSX
 // attributes, so it reads slightly long on image-heavy issues.
 const wordCount = issue.body?.trim().split(/\s+/).length ?? 0;
 ---

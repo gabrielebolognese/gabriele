@@ -20,7 +20,7 @@ embarrassing. There is no middle state. Twenty milliseconds of drift and
 everybody feels it even if nobody can name it.
 
 It is also, in my setup, completely untestable. Where I develop there is no
-WebAudio, no WebCodecs, no WebGPU. Not "flaky in CI" untestable — the APIs are
+WebAudio, no WebCodecs, no WebGPU. Not "flaky in CI" untestable; the APIs are
 simply not there.
 
 ## The trap
@@ -47,7 +47,7 @@ The realisation is that almost none of the hard part actually needs the browser.
 
 A clock that maps wall time to composition time is arithmetic. Choosing which
 frame should be on screen at a given time is arithmetic. Deciding when a buffer
-should be scheduled, at what offset, with what rate — arithmetic. None of it
+should be scheduled, at what offset, with what rate: arithmetic. None of it
 needs an `AudioContext`. It just happened to be written inside things that did.
 
 So I pulled the math out into pure functions. No context, no decoder, no canvas.
@@ -74,7 +74,7 @@ wins. That is a function you can call ten thousand times in a loop.
 Same for scheduling. Given a clip that starts at some point, a playhead parked
 somewhere inside it, and a rate, where in the buffer do you begin? That is one
 expression. It is also, as it turns out, the thing I had wrong for pitch-shifted
-clips — pitch shift is a resample, so it changes how fast the buffer is
+clips: pitch shift is a resample, so it changes how fast the buffer is
 consumed, and the resume offset has to be scaled by that rate. The old code
 advanced it unscaled.
 
@@ -91,7 +91,7 @@ The harnesses prove the arithmetic. They say nothing about whether the
 drew. Those are still eyes-on-the-app problems, and they always will be.
 
 What changed is the ratio. The parts that were subtle and invisible are now
-proven. The parts that are left are the parts you can actually see — the ones
+proven. The parts that are left are the parts you can actually see, the ones
 where "it plays" or "it does not" is a fair test.
 
 ## One thing I would not have guessed

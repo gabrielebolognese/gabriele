@@ -1,7 +1,8 @@
 ---
-/* The archive. Was /articles, a card grid; now a numbered issue list, because
-   sequence is the thing a publication has and a pile of cards does not.
-   Card.astro is untouched — the homepage still renders the grid. */
+/* The archive. Was /articles, a card grid; now numbered issue cards, because
+   sequence is the thing a publication has and a pile of cards does not. The
+   homepage newsletter section renders the same IssueCard, differing only in
+   where the button points. */
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';

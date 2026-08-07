@@ -53,7 +53,7 @@ all.
 ## What it actually is
 
 A hardware `VideoDecoder` has a pool of output frames. It is not documented as a
-number you can query, and in practice it is small — somewhere around 16 to 24
+number you can query, and in practice it is small, somewhere around 16 to 24
 open frames, depending on the platform and the codec.
 
 Once you are holding that many, the decoder stops emitting. It does not error.
@@ -75,7 +75,7 @@ did not matter.
 Two parts.
 
 First, a cap on the **count** of open decoded frames per asset, not on their
-size. I set it at 12 — deliberately below the platform floor, because the real
+size. I set it at 12, deliberately below the platform floor, because the real
 limit is not knowable and being wrong here means a silent freeze rather than a
 warning.
 

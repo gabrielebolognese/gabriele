@@ -1,6 +1,6 @@
 ---
 /* Replaces public/story.html, which was indexable, orphaned, entirely unstyled,
-   and canonicalised to flashfx.app — telling Google to credit another domain for
+   and canonicalised to flashfx.app, telling Google to credit another domain for
    1,000 words of biography hosted here. Same prose, now a first-class page:
    self-canonical, styled, and linked from the nav and footer. */
 import { Image } from 'astro:assets';
@@ -28,7 +28,7 @@ const schema = aboutPageSchema({
     // No FAQPage node here on purpose: the homepage already owns that entity,
     // and the same FAQPage on two indexable URLs is what made story.html and
     // the homepage compete with each other in the first place. The questions
-    // are still rendered below — useful to readers and to answer engines,
+    // are still rendered below, useful to readers and to answer engines,
     // which extract visible Q&A regardless of markup.
     faq: [],
 });

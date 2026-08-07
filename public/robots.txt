@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-# Answer engines / AI crawlers — explicit opt-in.
+# Answer engines / AI crawlers, explicit opt-in.
 # These already crawl under the wildcard above; naming them is the clear signal
 # for a site whose whole purpose is answering "who is Gabriele Bolognese".
 User-agent: GPTBot
@@ -49,5 +49,5 @@ Allow: /
 Sitemap: https://gabrielebolognese.blog/sitemap-index.xml
 
 # Image discovery. @astrojs/sitemap emits page URLs only, so the <image:image>
-# declarations live in their own file — see src/pages/image-sitemap.xml.ts.
+# declarations live in their own file, see src/pages/image-sitemap.xml.ts.
 Sitemap: https://gabrielebolognese.blog/image-sitemap.xml

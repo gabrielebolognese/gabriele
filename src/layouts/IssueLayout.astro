@@ -4,7 +4,7 @@
  * The body is a named-column grid rather than a 680px box, which is what lets a
  * <Figure width="wide"> break past the text without negative margins. MDX
  * content lands as direct children of the slot, so figures are direct grid
- * children and the column assignment in Style.css applies to them directly —
+ * children and the column assignment in Style.css applies to them directly,
  * wrap the slot in anything and that stops working.
  */
 import type { ImageMetadata } from 'astro';
@@ -109,7 +109,7 @@ const schema = issueSchema({
                 decoding="async"
             />
 
-            {/* Direct children of the grid — do not wrap the slot. */}
+            {/* Direct children of the grid, do not wrap the slot. */}
             <div class="issue-body">
                 <slot />
             </div>

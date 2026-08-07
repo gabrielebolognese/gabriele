@@ -1,5 +1,5 @@
 /* ============================================================================
-   motion.js — site-wide motion layer
+   motion.js: site-wide motion layer
    Served statically from /public, loaded with `defer` by index.astro and
    src/layouts/Layout.astro. Every module below is a no-op when its markup is
    absent, so the same file drives the homepage and the article pages.
@@ -395,7 +395,7 @@
     /* ── Shared ──────────────────────────────────────────────────────────── */
 
     /* Both clocks call retick(), which forces a synchronous reflow. Doing that
-       once a second forever — scrolled out of view, or in a background tab — is
+       once a second forever, scrolled out of view, or in a background tab, is
        pure main-thread cost and shows up as INP. So a clock only runs while it
        is actually on screen. Returns a function that stops it for good. */
     function tickWhileVisible(section, onTick) {

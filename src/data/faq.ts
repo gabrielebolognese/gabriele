@@ -1,5 +1,5 @@
 /* ============================================================================
-   faq.ts — Q&A rendered BOTH as visible page content and as FAQPage JSON-LD.
+   faq.ts: Q&A rendered BOTH as visible page content and as FAQPage JSON-LD.
 
    The previous FAQ schema described three questions that appeared nowhere on
    the page. Google requires FAQ structured data to match visible content, and

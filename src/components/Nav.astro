@@ -25,7 +25,7 @@ const to = (hash: string) => (isHome ? hash : `/${hash}`);
   )}
 
   <ul class="nav-links">
-    {/* Only off the homepage — a Home link on the homepage is noise. */}
+    {/* Only off the homepage, a Home link on the homepage is noise. */}
     {!isHome && (
       <li><a href="/">Home</a></li>
     )}

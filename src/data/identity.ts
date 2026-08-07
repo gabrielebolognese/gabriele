@@ -1,15 +1,15 @@
 /* ============================================================================
-   identity.ts — the single source of truth for who this site is about.
+   identity.ts: the single source of truth for who this site is about.
 
    Every meta tag, every JSON-LD block, and every social link on the site reads
    from this file. Before it existed, index.astro, Layout.astro and story.html
    each carried their own copy and they had drifted into four contradictory
-   sets — two different GitHub accounts, three spellings of the LinkedIn URL,
+   sets, two different GitHub accounts, three spellings of the LinkedIn URL,
    and three different X handles. `sameAs` is the primary signal Google and the
    answer engines use to reconcile a person entity, so contradictions there
    don't just waste the signal, they actively suppress it.
 
-   ⚠️  EVERY LINE MARKED `TODO:` IS UNVERIFIED — it is the best guess taken from
+   ⚠️  EVERY LINE MARKED `TODO:` IS UNVERIFIED, it is the best guess taken from
    the old markup. A `sameAs` URL that 404s devalues the whole array, so please
    confirm or correct each one, then delete the TODO comment.
    ========================================================================= */
@@ -39,13 +39,13 @@ export const PERSON = {
     'Gabriele Bolognese is an Italian founder and self-taught developer, and the creator of FlashFX, a browser-based motion graphics and video editing platform used by more than 8,000 people. He built it solo across four complete rebuilds.',
 
   /** Confirmed 2026-07-31. Also drives the live age counter and the life grid
-   *  on /about, so the age is derived everywhere rather than asserted — the
+   *  on /about, so the age is derived everywhere rather than asserted, the
    *  hardcoded "17-year-old" in the old copy went stale on its own. */
   birthDate: '2008-12-06' as string | null,
   /** Local midnight, for the counter. No birth time on record. */
   birthDateTime: '2008-12-06T00:00:00',
 
-  // TODO: confirm — the footer says Rovigo, Italy.
+  // TODO: confirm, the footer says Rovigo, Italy.
   address: {
     locality: 'Rovigo',
     region: 'Veneto',
@@ -85,8 +85,8 @@ export const ORGANIZATION = {
   description:
     'FlashFX is a browser-based motion graphics and video editing platform, offering an alternative to After Effects and Premiere Pro.',
   /** Confirmed 2026-07-31: the idea was formed and formalised on day one of
-   *  2024. Note the /about narrative separately dates Vision AI Demo — a
-   *  different, earlier project — to 3 January 2024. */
+   *  2024. Note the /about narrative separately dates Vision AI Demo, a
+   *  different, earlier project, to 3 January 2024. */
   foundingDate: '2024-01-01',
   // TODO: a real logo URL. Organization.logo is required for the logo rich result.
   logo: 'https://flashfx.app/logo.png',
@@ -99,7 +99,7 @@ export const ORGANIZATION = {
   ] as string[],
 } as const;
 
-/* ── sameAs — the entity reconciliation array ────────────────────────────────
+/* ── sameAs, the entity reconciliation array ────────────────────────────────
    Order matters a little (strongest identity signals first), accuracy matters
    enormously. Use the exact URL as it appears in your browser address bar:
    www vs no-www and trailing slashes count as different strings.
@@ -109,7 +109,7 @@ export const ORGANIZATION = {
 export const SAME_AS: string[] = [
   // Confirmed exact, 2026-07-31. Three variants existed in the old markup;
   // this is the one that matches the address bar. Do not "tidy" the www or the
-  // trailing slash — sameAs matching is string-exact.
+  // trailing slash, sameAs matching is string-exact.
   'https://www.linkedin.com/in/gabriele-bolognese/',
 
   'https://github.com/gabrielebolognese',
@@ -120,11 +120,11 @@ export const SAME_AS: string[] = [
   'https://www.connectively.us/p/gabriele-bolognese',
 
   // Deliberately absent:
-  //   x.com/FlashFXeditor        — company account, lives on ORGANIZATION.sameAs
-  //   crunchbase.com/person/...  — was in the old schema, unconfirmed, removed
-  //   dev.to/gabrielebolognese   — was in the old schema, unconfirmed, removed
-  //   youtube.com/@playmoj_      — the hijacked 2022 channel, not an asset
-  //   youtube.com/@emeralsrp     — a former client's channel, not yours
+  //   x.com/FlashFXeditor       , company account, lives on ORGANIZATION.sameAs
+  //   crunchbase.com/person/... , was in the old schema, unconfirmed, removed
+  //   dev.to/gabrielebolognese  , was in the old schema, unconfirmed, removed
+  //   youtube.com/@playmoj_     , the hijacked 2022 channel, not an asset
+  //   youtube.com/@emeralsrp    , a former client's channel, not yours
   //
   // Worth adding when they exist, roughly in order of weight:
   //   Wikidata item (by far the strongest), Wellfound/AngelList, F6S,
@@ -132,7 +132,7 @@ export const SAME_AS: string[] = [
   //   Substack, Stack Overflow, Behance, Vimeo, Gravatar, about.me, ORCID.
 ];
 
-/** Press, interviews, podcasts. These are `subjectOf`, NOT `sameAs` — they are
+/** Press, interviews, podcasts. These are `subjectOf`, NOT `sameAs`, they are
  *  pages ABOUT you rather than profiles OWNED by you, and mixing the two
  *  weakens both. */
 export const SUBJECT_OF: Array<{ name: string; url: string; publisher?: string }> = [
@@ -166,7 +166,7 @@ export const FACTS = {
    ------------------------------------------------------------------------- */
 export const NEWSLETTER = {
   // TODO: name it yourself. "The Rebuild" is a placeholder taken from the four
-  // rebuilds in your own story — it reads well and it is yours to overrule.
+  // rebuilds in your own story, it reads well and it is yours to overrule.
   name: 'The Rebuild',
   /** Shown on the archive page and used as the Blog description in JSON-LD. */
   description:
@@ -174,7 +174,7 @@ export const NEWSLETTER = {
   /** Short line beside the signup field. */
   promise: 'No schedule, no filler. Unsubscribe in one click.',
 
-  // TODO: your Buttondown username — the form posts to
+  // TODO: your Buttondown username, the form posts to
   // buttondown.email/api/emails/embed-subscribe/<username>. Until this is
   // real the form renders disabled rather than posting into a void.
   buttondownUser: '' as string,
@@ -202,7 +202,7 @@ export const DEVLOG = {
 /* ── Image licensing ─────────────────────────────────────────────────────────
    Google's licensable-images feature attaches a "Licensable" badge and a link
    in Google Images, and it needs two properties on every ImageObject: `license`
-   (the terms) and `acquireLicensePage` (where to ask). BOTH MUST BE LIVE URLS —
+   (the terms) and `acquireLicensePage` (where to ask). BOTH MUST BE LIVE URLS,
    pointing either at a 404 forfeits the enhancement, the same way a dead sameAs
    entry devalues that array. They resolve to src/pages/license.astro.
 
@@ -216,7 +216,7 @@ export const IMAGE_LICENSE = {
   copyrightNotice: `© ${PERSON.name}`,
 } as const;
 
-/** Absolute URL helper — every canonical/OG URL on the site goes through this.
+/** Absolute URL helper, every canonical/OG URL on the site goes through this.
  *  Normalises to the slash-less form (matching `trailingSlash: 'never'` and
  *  Netlify's Pretty URLs), except for the root, which keeps its slash. */
 export function absoluteUrl(path: string, site?: URL): string {

@@ -1,8 +1,9 @@
 ---
-/* One issue as a square card, two to a row on the archive.
+/* One issue as a square card, two to a row. Used by both the archive and the
+ * homepage section, so the two cannot drift.
  *
  * No cover image, deliberately. The card is a block of the issue's actual
- * opening prose and nothing else — the cover already appears on the issue page
+ * opening prose and nothing else: the cover already appears on the issue page
  * itself, and inside a square card at this size it took a third of the space
  * and left the text nowhere to go.
  *
@@ -10,17 +11,22 @@
  * cut always lands mid-sentence and reads as "there is more" instead of
  * "this is short".
  */
-import type { ImageMetadata } from 'astro';
-
 interface Props {
   issue: number;
   title: string;
   body: string;
   slug: string;
   date: Date;
+  /** Button text. The archive says "Read this"; the homepage sends everyone to
+   *  the archive instead, so it says so. */
+  ctaLabel?: string;
+  /** Button target. Defaults to this issue. The homepage overrides it with
+   *  /newsletter so every card's button goes to the same place, whichever
+   *  issue it belongs to. The title still links to the issue either way. */
+  ctaHref?: string;
 }
 
-const { issue, title, body, slug, date } = Astro.props;
+const { issue, title, body, slug, date, ctaLabel, ctaHref } = Astro.props;
 
 /* The card shows the real opening of the issue, not the description. `body` is
    raw MDX, so the component syntax has to come out before it can be shown as
@@ -42,7 +48,7 @@ function plainText(source: string): string {
 
 /* Halved from 1800. Still enough to run past the bottom of the card so the
    mask has something to fade, but the card now reads as a taste rather than a
-   wall — the previous budget filled the whole square edge to edge. */
+   wall, the previous budget filled the whole square edge to edge. */
 const PARAGRAPH_BUDGET = 900;
 
 const paragraphs: string[] = [];
@@ -63,6 +69,8 @@ const dateLabel = date.toLocaleDateString('en-GB', {
 
 const issueLabel = String(issue).padStart(3, '0');
 const href = `/newsletter/${slug}`;
+const buttonHref = ctaHref ?? href;
+const buttonLabel = ctaLabel ?? 'Read this';
 ---
 <article class="issue-card">
   <p class="issue-card-meta">
@@ -78,8 +86,8 @@ const href = `/newsletter/${slug}`;
   </div>
 
   {/* Outside the faded container, so the button never fades with the text. */}
-  <a class="issue-card-btn" href={href}>
-    Read this
+  <a class="issue-card-btn" href={buttonHref}>
+    {buttonLabel}
     <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
   </a>
 </article>

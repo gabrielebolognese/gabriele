@@ -1,5 +1,5 @@
 /* ============================================================================
-   milestones.ts — the life events marked on the /about week grid.
+   milestones.ts: the life events marked on the /about week grid.
 
    ⚠️  These mirror the timeline in src/pages/index.astro. That timeline is
    hand-written HTML with long descriptions, so the two are not yet a single
@@ -8,7 +8,7 @@
    delete ~280 lines of repetitive markup from index.astro.)
 
    Most entries record only a year and month, matching the timeline's usual
-   granularity, and land on the week containing the 15th — the middle of that
+   granularity, and land on the week containing the 15th, the middle of that
    month. An entry may instead give a full YYYY-MM-DD when the exact week
    matters: two events in the same month would otherwise collide on one square
    and the later one would silently win, and a late-month event would be pushed
@@ -25,7 +25,7 @@ export interface Milestone {
   /**
    * How many consecutive squares this covers, starting with the week that
    * contains `month`. Defaults to 1. A stretch that lasted a month is one
-   * entry with a span, not five entries — otherwise the event list below the
+   * entry with a span, not five entries, otherwise the event list below the
    * grid fills up with five rows that all say the same thing.
    */
   weeks?: number;
@@ -67,7 +67,7 @@ export const MILESTONES: Milestone[] = [
   /* Grid weeks run Saturday to Friday from the birth date, so these anchors
      are chosen against those boundaries rather than against calendar months:
      30 May–10 July as one unbroken setback, the trip sitting exactly on its
-     two full weeks, then the week back. The week of 1 August is left alone —
+     two full weeks, then the week back. The week of 1 August is left alone,
      it is both the recovery week and the current one, and an event square
      loses the "this week" ring. */
   { month: '2026-06-01', weeks: 6, kind: 'setback',  label: 'Co-founder left, and the whole of June went with him' },
@@ -87,7 +87,7 @@ function parts(month: string): { y: number; m: number; d: number | null } {
  *
  * Counted in whole calendar days rather than by dividing milliseconds. Local
  * midnight in July is an hour off local midnight in December, so a millisecond
- * division comes up one hour short of a whole number of weeks all summer — and
+ * division comes up one hour short of a whole number of weeks all summer, and
  * an anchor dated to the exact Saturday a week begins floors to the week
  * before. That is not theoretical: it put the Dublin trip on the week it was
  * supposed to be marking the end of.

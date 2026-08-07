@@ -1,5 +1,5 @@
 /* ============================================================================
-   images.ts — the manifest behind /image-sitemap.xml.
+   images.ts: the manifest behind /image-sitemap.xml.
 
    @astrojs/sitemap emits page URLs only; it has no <image:image> support. That
    left every screenshot on this site discoverable only by Googlebot parsing a
@@ -7,7 +7,7 @@
    there is. This file declares what each static route renders so the image
    sitemap can state it outright.
 
-   ⚠️  This MIRRORS the imports in the pages — the same drift hazard as
+   ⚠️  This MIRRORS the imports in the pages, the same drift hazard as
    milestones.ts. Add an <Image> to a page and add it here too, or it stays
    undeclared.
 
@@ -47,8 +47,8 @@ export interface IndexedImage {
 const CAROUSEL = 1440; // index.astro project carousels
 const FIGURE = 960; // about.astro bio figures
 const PORTRAIT = 640; // LifeSection portrait
-export const HOME_CARD = 720; // Card.astro issue covers on the homepage grid
-// No THUMB: the archive cards carry no image (see IssueCard.astro).
+// No card width of any kind: both the archive and the homepage newsletter
+// section render IssueCard, which carries no image (see IssueCard.astro).
 export const COVER = 2080; // IssueLayout hero cover
 
 /** The portrait renders on both routes through LifeSection. Declared on each,

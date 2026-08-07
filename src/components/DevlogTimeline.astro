@@ -4,7 +4,7 @@
  * once did.
  *
  * Each entry is a one-sentence headline plus an optional long form in a
- * <details>. Both ship in the HTML — collapsed content is still indexed, and
+ * <details>. Both ship in the HTML, collapsed content is still indexed, and
  * it is the long version that carries the substance worth indexing. Same
  * pattern as `.life-events` on /about, for the same reason.
  *
@@ -21,7 +21,7 @@ interface Props {
   limit?: number;
   /** Heading level inside each entry, so each page keeps a sane outline. */
   headingLevel?: 'h2' | 'h3';
-  /** `timeline` alternates entries either side of a centre line — the full
+  /** `timeline` alternates entries either side of a centre line, the full
    *  /devlog view. `list` is the stacked rail-and-body row the homepage uses,
    *  where four entries alternating across a centre line would read as a
    *  broken timeline rather than a preview of one. */
@@ -56,7 +56,7 @@ const rendered = await Promise.all(
 
 const Heading = headingLevel;
 
-/** "2026-08-06" — the anchor, so an entry is linkable without being a page. */
+/** "2026-08-06", the anchor, so an entry is linkable without being a page. */
 const anchor = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 ---

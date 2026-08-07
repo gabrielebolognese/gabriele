@@ -6,7 +6,7 @@
  * Two structural decisions worth knowing:
  *
  * 1. NO scoped <style> here. Astro stamps a data-astro-cid-* attribute on every
- *    element of any component that defines one — matched by a selector or not —
+ *    element of any component that defines one, matched by a selector or not,
  *    and across 4,680 cells that was 131 KB of raw HTML. The styles live under
  *    "18. LIFE GRID" in public/Style.css instead.
  *
@@ -36,7 +36,7 @@ const rows = Math.ceil(totalWeeks / columns);
 const percent = ((weeksLived / totalWeeks) * 100).toFixed(1);
 
 /* week index -> the event that falls in it. Two entries can still collide if
-   they fall in the same week, in which case the later one wins — date an entry
+   they fall in the same week, in which case the later one wins, date an entry
    to the day in milestones.ts to separate them. The title is built here rather
    than looked up later: finding a milestone back by its week index cannot tell
    two same-week entries apart. */

@@ -1,5 +1,5 @@
 # ============================================================================
-# devlog.yaml — every entry, in one file.
+# devlog.yaml: every entry, in one file.
 #
 # ONE file on purpose. Publishing is: open this, add a block at the top,
 # commit. That works from GitHub's mobile web editor in about thirty seconds,
@@ -11,7 +11,7 @@
 #
 # Fields
 #   date    required, YYYY-MM-DD. Day numbers count from the oldest entry.
-#   text    required, ONE sentence. This is the timeline headline — keep it
+#   text    required, ONE sentence. This is the timeline headline; keep it
 #           short enough to scan a hundred of them.
 #   detail  optional, the long version. Markdown: paragraphs, lists, `code`,
 #           links. This is where the commit-level substance goes.
@@ -34,7 +34,7 @@
 
     Issues are `.mdx` so the body can call real components. `<Figure>` takes
     a width of `column`, `wide` or `full`, which maps to named columns on a
-    CSS grid — that grid is the entire mechanism, and it only reaches the
+    CSS grid; that grid is the entire mechanism, and it only reaches the
     figures because MDX renders them as direct children of the slot. Wrap
     that slot and every figure silently snaps back to the text width with
     nothing failing.
@@ -48,9 +48,9 @@
 
     **Video playback no longer freezes a few seconds in.**
 
-    - *Number* — cap of 12 open decoded frames per asset. Before, only a 512MB
+    - *Number*: cap of 12 open decoded frames per asset. Before, only a 512MB
       byte budget bounded it, so around 60 frames could pile up.
-    - *Hard part* — it wasn't a leak or a logic error. A hardware `VideoDecoder`
+    - *Hard part*: it wasn't a leak or a logic error. A hardware `VideoDecoder`
       silently stops emitting once too many output frames are held open
       (~16–24), and a `VideoFrame` that's been transferred still holds its
       decoder pool slot until `.close()`. The fix is a frame-COUNT cap plus an
@@ -60,9 +60,9 @@
     **Added a toggle for audio-synced playback, as a button in the preview bar,
     off by default.**
 
-    - *Number* — 392 lines of new engine code; 3 pure-logic harnesses, 24
+    - *Number*: 392 lines of new engine code; 3 pure-logic harnesses, 24
       assertions. Old path unchanged when off.
-    - *Hard part* — none of it runs in the dev environment: no WebAudio,
+    - *Hard part*: none of it runs in the dev environment: no WebAudio,
       WebCodecs or WebGPU. So the clock, the frame-selection and the
       audio-scheduling math were pulled out into pure functions and proven in
       Node instead. Also the picture has to be shown at the clock reading minus
@@ -71,16 +71,16 @@
     **Video clips that carry sound now play their audio on load, and the level
     meters move.**
 
-    - *Number* — collapsed onto 1 shared `AudioContext` (was a second, private
+    - *Number*: collapsed onto 1 shared `AudioContext` (was a second, private
       one).
-    - *Cause* — the second audio context was created in a paused state and never
+    - *Cause*: the second audio context was created in a paused state and never
       resumed, so clip audio was silent and the meters read zero. This ships
       whether or not the toggle is on.
 
     **Pausing, seeking, or crossing a clip boundary no longer produces a click.**
 
-    - *Number* — 8ms gain ramp to zero before every stop.
-    - *Hard part* — a source with a fixed duration ends on its own and fires its
+    - *Number*: 8ms gain ramp to zero before every stop.
+    - *Hard part*: a source with a fixed duration ends on its own and fires its
       `ended` event before the stop path runs, so attaching teardown only in the
       stop path leaked the audio nodes on the master graph. An adversarial
       review found it; fixed by attaching teardown when the source is scheduled,
@@ -89,8 +89,8 @@
     **Deleting one half of a split clip no longer freezes or mutes the other
     half.**
 
-    - *Number* — +17/−2 in the delete action.
-    - *Hard part* — the texture is per-layer so it's always safe to drop, but the
+    - *Number*: +17/−2 in the delete action.
+    - *Hard part*: the texture is per-layer so it's always safe to drop, but the
       decoder registration and audio element are per-asset: they must only be
       torn down when no surviving layer still points at that asset, and the
       release has to be deduped so deleting both halves at once doesn't
@@ -99,18 +99,18 @@
     **Pressing play with the playhead parked mid-clip on a pitch-shifted audio
     clip now starts at the correct sample.**
 
-    - *Number* — one shared scheduling function now used by preview; export left
+    - *Number*: one shared scheduling function now used by preview; export left
       alone (its bounding is already exact, and a harness proves the two agree).
-    - *Hard part* — pitch shift is a resample, so it changes how fast the buffer
+    - *Hard part*: pitch shift is a resample, so it changes how fast the buffer
       is consumed. The resume offset into the buffer has to be scaled by that
       rate. The old code advanced it unscaled.
 
     **Field-sampled layers now run at the composition frame rate and show their
     inspector tab.**
 
-    - *Number* — 2-line type/resolve change; 1-line renderer change; 1-line
+    - *Number*: 2-line type/resolve change; 1-line renderer change; 1-line
       inspector condition.
-    - *Cause* — the CPU field renderer was fixed at 30fps and the Field tab was
+    - *Cause*: the CPU field renderer was fixed at 30fps and the Field tab was
       hidden in all cases.
 
 - date: 2026-08-04
@@ -123,21 +123,21 @@
     **Searching my own name returns three or four images, and one of them is the
     portrait from this site.**
 
-    - *Number* — 18 assets renamed; before this, every image on the site shipped
+    - *Number*: 18 assets renamed; before this, every image on the site shipped
       as `1.png`, `33.png` or `1010.png`.
-    - *Cause* — Astro emits each asset as `<source-basename>.<hash>.webp`, so the
+    - *Cause*: Astro emits each asset as `<source-basename>.<hash>.webp`, so the
       filename I choose is the filename Google sees. It is the only keyword
       signal an image carries besides its alt text, and I was throwing it away
       for free on all 18.
-    - *Hard part* — the real problem is not naming, it is that exactly one
+    - *Hard part*: the real problem is not naming, it is that exactly one
       photograph of a human being exists on this entire domain. Everything else
       is a product screenshot. No amount of renaming fixes an inventory of one.
 
     **Every screenshot is now declared in an image sitemap.**
 
-    - *Number* — 21 image URLs across 4 routes, all resolved against a clean
+    - *Number*: 21 image URLs across 4 routes, all resolved against a clean
       build to prove none of them 404.
-    - *Hard part* — `@astrojs/sitemap` emits page URLs only and has no
+    - *Hard part*: `@astrojs/sitemap` emits page URLs only and has no
       `<image:image>` support, so the only path to an image was a crawler
       parsing a lazy-loaded `<img>` inside a carousel, which is the weakest
       discovery there is. The sitemap has to ask `getImage()` for the same width
@@ -147,8 +147,8 @@
     **Images now carry a licence in the structured data, and there is a page for
     it to point at.**
 
-    - *Number* — 4 pages emitting `acquireLicensePage`; 1 new `/license` route.
-    - *Hard part* — Google deprecated `image:license` in sitemaps, so the licence
+    - *Number*: 4 pages emitting `acquireLicensePage`; 1 new `/license` route.
+    - *Hard part*: Google deprecated `image:license` in sitemaps, so the licence
       cannot live where the images are declared. It has to ride on the
       `ImageObject` instead, and both `license` and `acquireLicensePage` must be
       live URLs or the enhancement is dropped silently, the same way a dead
@@ -157,25 +157,25 @@
 
     **Two images on this site have always been the same picture.**
 
-    - *Number* — `7.png` and `111.png`, byte-identical.
-    - *Cause* — Astro dedupes on content, so they have always collapsed into one
+    - *Number*: `7.png` and `111.png`, byte-identical.
+    - *Cause*: Astro dedupes on content, so they have always collapsed into one
       emitted file. The homepage captions it "AI features" and `/about` captions
       the same pixels "the Bolt hackathon prototype". Both cannot be true. Left
       standing, because fixing it needs a screenshot, not a code change.
 
     **The articles section is gone; there is a newsletter instead.**
 
-    - *Number* — +1994/−422 in one commit. `/articles` held exactly one post,
+    - *Number*: +1994/−422 in one commit. `/articles` held exactly one post,
       and that post was placeholder text.
-    - *Cause* — two thin writing surfaces compete for the same entity. That is
+    - *Cause*: two thin writing surfaces compete for the same entity. That is
       the mistake `story.html` made against the homepage before it became
       `/about`, and I was about to make it again with a second section.
 
     **Issues can finally place an image properly.**
 
-    - *Number* — 3 widths: 680px, 1040px, full bleed. Figures number themselves
+    - *Number*: 3 widths: 680px, 1040px, full bleed. Figures number themselves
       from a CSS counter.
-    - *Hard part* — the mechanism is a named-column grid, and it only reaches the
+    - *Hard part*: the mechanism is a named-column grid, and it only reaches the
       figures because MDX renders them as direct children of the slot. Wrap that
       slot in anything and every figure silently snaps back to the text width
       with nothing failing and no error to notice. `@astrojs/mdx` also had to be
@@ -184,20 +184,20 @@
 
     **The feed was advertising URLs the rest of the site disagreed with.**
 
-    - *Number* — 1 line, every item.
-    - *Cause* — `@astrojs/rss` joins a bare path onto `site` and appends a
+    - *Number*: 1 line, every item.
+    - *Cause*: `@astrojs/rss` joins a bare path onto `site` and appends a
       trailing slash. This site is `trailingSlash: 'never'`, so every feed item
       pointed at a URL that contradicted its own canonical and the sitemap.
 
     **This log exists, on one page.**
 
-    - *Number* — 1 URL, 1 yaml file. Posting is: open the file, add a block at
+    - *Number*: 1 URL, 1 yaml file. Posting is: open the file, add a block at
       the top, commit.
-    - *Cause* — one page per entry would be 365 pages of two sentences a year,
+    - *Cause*: one page per entry would be 365 pages of two sentences a year,
       which is thin content on a domain whose whole purpose is being read as one
       credible entity. One page that deepens daily is the stronger signal, and
       anchors keep entries linkable.
-    - *Hard part* — the `file()` loader requires an id on every item and does not
+    - *Hard part*: the `file()` loader requires an id on every item and does not
       derive one from array position, which I assumed it did and which failed
       the first build. The parser returns an object instead of an array so its
       keys become the ids, keyed by date, so there is no `id:` line to type

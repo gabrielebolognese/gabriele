@@ -69,7 +69,7 @@ function ageAt(now: Date) {
 const age = ageAt(NOW);
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/* Whole days, not a millisecond division — same DST reason as calendarDays
+/* Whole days, not a millisecond division, same DST reason as calendarDays
    above, and it has to match milestoneWeek() exactly or a marked week and the
    lived/unlived boundary can disagree by one square. */
 const weeksLived = Math.min(
@@ -110,8 +110,8 @@ const PILLS: Array<{ url: string; label: string }> = [
 <div class="age" data-birth={PERSON.birthDateTime}>
   <span class="age-label">Alive for</span>
 
-  {/* Reads as a sentence across two lines — "17 years old / and 243 days,
-      14 hours" — rather than as three stacked numeric units. The ids are what
+  {/* Reads as a sentence across two lines, "17 years old / and 243 days,
+      14 hours", rather than as three stacked numeric units. The ids are what
       initAgeCount() in motion.js writes to; renaming one silently stops the
       counter without failing anything. */}
   <p class="age-line">
@@ -198,7 +198,7 @@ const PILLS: Array<{ url: string; label: string }> = [
         its children from assistive tech, so the events are also listed here as
         real text, which is what a crawler and an answer engine will read. */}
     <details class="life-events">
-      {/* "events", not "weeks" — an entry can span several squares now. */}
+      {/* "events", not "weeks", an entry can span several squares now. */}
       <summary>{MILESTONES.length} marked events</summary>
       <ol>
         {MILESTONES.map((m) => (

@@ -1,6 +1,6 @@
 /* ============================================================================
-   gabrielebolognese.blog — global stylesheet
-   Served as a static file from /public — Astro does not process this.
+   gabrielebolognese.blog, global stylesheet
+   Served as a static file from /public, Astro does not process this.
 
    CONTENTS
    01. Fonts
@@ -13,8 +13,8 @@
    08. About / intro
    09. Countdown
    10. Projects & carousel
-   11. Story — chapters
-   12. Story — long-form entries
+   11. Story: chapters
+   12. Story: long-form entries
    13. Timeline
    14. Issue list & articles grid  (card internals live in src/components/Card.astro)
    15. What's next
@@ -37,7 +37,7 @@
    is discovered immediately and fetched in parallel.
 
    Families in use: Cormorant Garamond, DM Sans, Lexend, Unbounded. If you drop
-   a family or a weight from the design, drop it from that <link> too — four
+   a family or a weight from the design, drop it from that <link> too, four
    families at fifteen variants is a lot of bytes for one site. */
 
 
@@ -74,7 +74,7 @@
     --section-gap: 100px;
     --nav-h:       61px;
 
-    /* Motion — one vocabulary for the whole site */
+    /* Motion : one vocabulary for the whole site */
     --ease:      cubic-bezier(0.22, 1, 0.36, 1);   /* out-quint: UI states     */
     --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);    /* out-expo: entrances      */
     --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);     /* symmetric: transforms    */
@@ -142,7 +142,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; color: 
 /* Anchor targets clear the sticky nav */
 section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
-/* Underline that grows from the left — used by every inline prose link */
+/* Underline that grows from the left, used by every inline prose link */
 .intro-text a:not(.link-pill),
 .project-desc a,
 .chapter-body a,
@@ -173,7 +173,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 /* ── 04. MOTION SYSTEM ───────────────────────────────────────────────────── */
 /*
    `html.js` is set by an inline script in <head>, so elements are only ever
-   hidden when JavaScript is running — no-JS visitors get the full page.
+   hidden when JavaScript is running, no-JS visitors get the full page.
    The reveal script observes exactly the selector list below and adds `.is-in`;
    keep the two lists in sync when adding a section.
 */
@@ -220,7 +220,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 /* The class is doubled deliberately. Any entry in the list above that ends in an
-   element selector — `.intro-text p` — scores (0,2,1), which outranks a plain
+   element selector, `.intro-text p`, scores (0,2,1), which outranks a plain
    `.js .is-in` at (0,2,0), so those elements received `is-in` and stayed
    invisible anyway. Doubling takes the reveal to (0,3,0) so it always wins,
    including for any element-selector entry added later. */
@@ -251,7 +251,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     to   { opacity: 1; }
 }
 
-/* Digit roll — deliberately shallow, it fires once a second */
+/* Digit roll, deliberately shallow, it fires once a second */
 @keyframes tick-in {
     from { opacity: 0.18; transform: translate3d(0, -0.12em, 0); }
     to   { opacity: 1; transform: none; }
@@ -598,7 +598,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     text-align: center;
 }
 
-/* An <h2> since the section needs a real heading for its aria-labelledby —
+/* An <h2> since the section needs a real heading for its aria-labelledby,
    font-weight is reset so it keeps the fine, wide label look. */
 .cd-label {
     font-family: var(--font-wide);
@@ -633,7 +633,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     font-variant-numeric: tabular-nums;
 }
 
-/* Each digit change re-runs this — the script toggles the class */
+/* Each digit change re-runs this, the script toggles the class */
 .cd-num.is-tick { animation: tick-in 520ms var(--ease-expo) both; }
 
 .cd-unit-label {
@@ -930,7 +930,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 
-/* ── 11. STORY — CHAPTERS ────────────────────────────────────────────────── */
+/* ── 11. STORY: CHAPTERS ────────────────────────────────────────────────── */
 .story-chapters {
     display: flex;
     flex-direction: column;
@@ -1031,7 +1031,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 
-/* ── 12. STORY — LONG-FORM ENTRIES ───────────────────────────────────────── */
+/* ── 12. STORY: LONG-FORM ENTRIES ───────────────────────────────────────── */
 .story-section {
     max-width: var(--content-max);
     margin: 0 auto;
@@ -1376,7 +1376,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .issue-card-text p { margin-bottom: 11px; }
 
 /* Sits below the mask, so it never fades with the text it follows.
-   Full card width and solid, matching .subscribe-btn — the site's primary
+   Full card width and solid, matching .subscribe-btn, the site's primary
    action treatment. Two earlier attempts missed: solid-but-small read as
    cramped, outlined-and-small read as a link. The brief said "big button", and
    a card CTA that spans its card is the only version that is unambiguously
@@ -1413,7 +1413,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 @media (max-width: 860px) {
     .issue-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 
-    /* One per row is already wide, and a square would be enormous — let the
+    /* One per row is already wide, and a square would be enormous, let the
        card take the height its content needs and drop the mask with it. */
     .issue-card { aspect-ratio: auto; }
     .issue-card-text { -webkit-mask-image: none; mask-image: none; }
@@ -1897,9 +1897,9 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 :root {
     --life-lived:    #1d1d1b;   /* near-black, the weeks already spent  */
     --life-ahead:    #c9c9c4;   /* light grey, the weeks still to come  */
-    --life-personal: #2563eb;   /* blue   — personal milestones */
-    --life-setback:  #dc2626;   /* red    — losses and failures */
-    --life-flashfx:  #7c3aed;   /* purple — FlashFX             */
+    --life-personal: #2563eb;   /* blue   : personal milestones */
+    --life-setback:  #dc2626;   /* red    : losses and failures */
+    --life-flashfx:  #7c3aed;   /* purple : FlashFX             */
 }
 
 .life-grid {
@@ -1916,7 +1916,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     gap: 2px;
 }
 
-/* Both halves of the grid are filled now — the weeks ahead carry the grey the
+/* Both halves of the grid are filled now, the weeks ahead carry the grey the
    lived weeks used to, and the lived weeks went near-black. An unfilled cell
    needed a hairline to be visible at all; a filled one does not, and the 2px
    gap already separates them. */
@@ -1933,7 +1933,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 /* The current week sits on the boundary between the filled and empty regions,
-   so it inverts and pulses rather than recolouring — it has to be findable
+   so it inverts and pulses rather than recolouring, it has to be findable
    without spending one of the three event hues on it. */
 .life-row > i.is-now {
     background: var(--white);
@@ -1969,7 +1969,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .life-row > i.ev-setback:not(.is-lived)  { box-shadow: inset 0 0 0 1.5px var(--life-setback); }
 .life-row > i.ev-flashfx:not(.is-lived)  { box-shadow: inset 0 0 0 1.5px var(--life-flashfx); }
 
-/* The current week can also be an event — launch week is both. The hue says
+/* The current week can also be an event, launch week is both. The hue says
    what happened, the black ring says it is happening now. Without this the
    outline rule above paints the hue on itself and the ring disappears, which
    would leave the legend's "This week" swatch describing no square anywhere. */
@@ -2087,7 +2087,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 /* ── The `timeline` variant: a centre line with entries either side ──────────
       Odd entries take the left column and mirror their alignment; even entries
-      take the right. `.devlog-prose` is deliberately NOT mirrored — running
+      take the right. `.devlog-prose` is deliberately NOT mirrored, running
       text set right-aligned is materially harder to read, and the alternation
       is already carried by which side of the line the block sits on.
       ------------------------------------------------------------------------ */
@@ -2141,7 +2141,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     border-color: var(--black);
 }
 
-/* `> *` matches the rail and the body only — a universal selector never
+/* `> *` matches the rail and the body only, a universal selector never
    matches the ::after above. Both land in one column and stack into rows. */
 .devlog-timeline .devlog-entry:nth-child(odd) > * {
     grid-column: 1;
@@ -2359,7 +2359,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     }
 
     /* Two columns cannot hold prose at phone width, so the line moves to the
-       left edge and every entry stacks to its right — still a timeline, just
+       left edge and every entry stacks to its right, still a timeline, just
        a single-sided one. */
     .devlog-timeline::before { left: 5px; transform: none; }
 

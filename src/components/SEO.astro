@@ -1,11 +1,11 @@
 ---
 /* ============================================================================
-   SEO.astro — owns every <head> tag that matters to a crawler.
+   SEO.astro: owns every <head> tag that matters to a crawler.
 
    Replaces two hand-maintained, drifted copies of the head (one in index.astro,
    one in Layout.astro) that disagreed on canonical, Twitter handle, sameAs and
    description. Every URL here is derived from Astro.url, so a page can no
-   longer claim to be a different page — which is what the old hardcoded
+   longer claim to be a different page, which is what the old hardcoded
    canonical did to every article.
    ========================================================================= */
 import type { ImageMetadata } from 'astro';
@@ -15,8 +15,8 @@ import defaultOg from '../assets/gabriele-bolognese-og-card.png';
 interface Props {
   title: string;
   description: string;
-  /** An imported asset (preferred — carries real dimensions) or a root-relative
-   *  path. Absolutised below, because og:image is ignored when relative — which
+  /** An imported asset (preferred, carries real dimensions) or a root-relative
+   *  path. Absolutised below, because og:image is ignored when relative, which
    *  is exactly why every article's preview image used to be dropped. */
   image?: ImageMetadata | string;
   imageAlt?: string;

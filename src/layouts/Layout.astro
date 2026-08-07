@@ -1,6 +1,6 @@
 ---
-/* The shared document shell. Every page — including the homepage, which used
-   to hand-duplicate all of this — renders through here, so canonical, OG and
+/* The shared document shell. Every page, including the homepage, which used
+   to hand-duplicate all of this, renders through here, so canonical, OG and
    JSON-LD have exactly one implementation. */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -18,7 +18,7 @@ import { PERSON } from '../data/identity';
    a changed file is always fetched and an unchanged one still hits cache. */
 function assetVersion(file: string): string {
   try {
-    // Resolved from the project root, not import.meta.url — the latter points
+    // Resolved from the project root, not import.meta.url, the latter points
     // into the compiled output during a build and never finds public/.
     const bytes = readFileSync(join(process.cwd(), 'public', file));
     return createHash('sha256').update(bytes).digest('hex').slice(0, 8);

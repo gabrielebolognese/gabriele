@@ -1,5 +1,5 @@
 /* ============================================================================
-   schema.ts — JSON-LD builders.
+   schema.ts: JSON-LD builders.
 
    The site previously emitted three disconnected schema islands on the homepage
    (Person, SoftwareApplication, FAQPage) plus a fourth, contradictory Person on
@@ -23,7 +23,7 @@ import {
   absoluteUrl,
 } from './identity';
 
-/* Stable node identifiers — these are what make it a graph rather than a pile. */
+/* Stable node identifiers, these are what make it a graph rather than a pile. */
 export const ID = {
   person: `${SITE.url}/#person`,
   website: `${SITE.url}/#website`,
@@ -45,7 +45,7 @@ type Node = Record<string, unknown>;
  *  which is an Organization.logo and has its own requirements.
  *
  *  `creator` credits the Person. If a photograph is ever shot by someone else,
- *  that image's creator is the photographer, not the subject — pass one in
+ *  that image's creator is the photographer, not the subject, pass one in
  *  rather than letting this default stand. */
 function imageObject(opts: { url: string; caption: string; id?: string; creator?: Node }): Node {
   return {
@@ -334,7 +334,7 @@ export function newsletterIndexSchema(opts: {
 /** The devlog page.
  *
  *  A Blog whose posts have no URLs of their own, which is exactly what this
- *  is — entries are anchors on one page, not separate documents. Deliberately
+ *  is, entries are anchors on one page, not separate documents. Deliberately
  *  not LiveBlogPosting: that type is for live coverage of an event, and Google
  *  has no result for it. Each entry is emitted with its date so the page's
  *  freshness and cadence are legible without inventing 365 fake URLs. */
@@ -384,7 +384,7 @@ export function devlogSchema(opts: {
 export type FaqEntry = { question: string; answer: string };
 
 /** FAQPage is only emitted when there are entries, and callers are expected to
- *  render the same Q&As visibly — schema that describes invisible content is a
+ *  render the same Q&As visibly, schema that describes invisible content is a
  *  structured-data-mismatch manual action waiting to happen. */
 function faqNode(faq: FaqEntry[]): Node | null {
   if (!faq.length) return null;

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import {getCollection} from 'astro:content';
-import Card from '../components/Card.astro';
+import IssueCard from '../components/newsletter/IssueCard.astro';
 import Faq from '../components/Faq.astro';
 import LifeSection from '../components/LifeSection.astro';
 import DevlogTimeline from '../components/DevlogTimeline.astro';
@@ -10,7 +10,7 @@ import { Image } from 'astro:assets';
 /* Asset filenames are load-bearing: Astro emits each one as
    `<basename>.<hash>.webp`, so the source basename is the served filename and
    the only keyword signal an image carries besides its alt text. These were
-   `1.png`, `33.png`, `1010.png` — descriptive names cost nothing. Keep the
+   `1.png`, `33.png`, `1010.png`, descriptive names cost nothing. Keep the
    local identifier and the filename describing the same thing. */
 import animatorTimeline from '../assets/flashfx-animator-timeline-canvas.png';
 import animatorKeyframes from '../assets/flashfx-animator-keyframe-controls.png';
@@ -31,7 +31,9 @@ import {homepageSchema} from '../data/schema';
 import {PERSON, ORGANIZATION, FACTS, DEVLOG, absoluteUrl} from '../data/identity';
 
 const articles = await getCollection('newsletter', ({ data }) => !data.draft);
-const sorted = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+/* Newest first by issue NUMBER, matching the archive: two issues can share a
+   date (008 and 009 both do), and the number is the canonical order. */
+const sorted = articles.sort((a, b) => b.data.issue - a.data.issue);
 
 const schema = homepageSchema({
     portraitUrl: absoluteUrl(portrait.src, Astro.site),
@@ -887,7 +889,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 </div>
             </article>
 
-            {/* Chapter 06 — deliberately short. It started today; there is
+            {/* Chapter 06, deliberately short. It started today; there is
                 nothing here yet that is not just the fact of it starting, and
                 a chapter padded out to match the others would be inventing a
                 story that has not happened. It grows as it happens. */}
@@ -1202,7 +1204,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     <p class="timeline-desc">Aziz, official co-founder since January, left. What followed was not a
                         bad week but a bad month: every week of June went the same way, ground lost rather than
                         gained, against a launch date that did not move to make room for it. The run did not end
-                        with June either — it carried through the week before Dublin, and picked back up the day I
+                        with June either; it carried through the week before Dublin, and picked back up the day I
                         returned.</p>
                 </div>
                 <time class="timeline-date" datetime="2026-06">June 2026</time>
@@ -1216,7 +1218,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                         became the thing every day happened in, which taught me more in two weeks than a year of
                         lessons had. Found a calisthenics community training outdoors in the city and trained with
                         them, in a place where nobody knew me or what I was building. The trip was worth taking. The
-                        date was not mine to choose, and it fell in the run-up to launch — the two weeks a launch can
+                        date was not mine to choose, and it fell in the run-up to launch: the two weeks a launch can
                         least afford to lose.</p>
                 </div>
                 <time class="timeline-date" datetime="2026-07-10">10–24 July 2026</time>
@@ -1226,9 +1228,9 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 <div class="timeline-body">
                     <h3 class="timeline-headline">A Major Setback, at the Worst Possible Moment</h3>
                     <p class="timeline-desc">Came home on 24 July to a project that had lost its momentum, and the
-                        twelve days that followed went on recovering ground instead of gaining it — the stretch that
+                        twelve days that followed went on recovering ground instead of gaining it, the stretch that
                         was supposed to be the final push before launch. A month already lost, two weeks away, then
-                        twelve days spent catching up — that is the real cost, and it is the honest half of the
+                        twelve days spent catching up: that is the real cost, and it is the honest half of the
                         trip. It broke on 5 August. Everything since then is in the devlog.</p>
                 </div>
                 <time class="timeline-date" datetime="2026-07-25">25 July – 5 August 2026</time>
@@ -1241,7 +1243,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                         released in pieces. The same day, the legal structure underneath it started: an Italian
                         S.r.l., the limited-liability form a real company takes here, with a notarial deed, a
                         registration in the Registro delle Imprese and a tax number attached to it. Over €5,000
-                        went into getting to this line — subscriptions, compliance, a business advisor — before a
+                        went into getting to this line (subscriptions, compliance, a business advisor) before a
                         single day of trading. Two years of building end here, and the part with a balance sheet
                         starts.</p>
                 </div>
@@ -1272,21 +1274,25 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <section class="section" id="newsletter" aria-labelledby="newsletter-heading">
         <h2 id="newsletter-heading" class="section-label">Newsletter</h2>
         <p class="section-intro">What I am building, what broke, and what it cost. Sent when there is something worth saying.</p>
-        <div class="articles-grid">
+        {/* The same IssueCard the archive uses, so the two sections cannot
+            drift apart the way the nav once did. One difference, passed in:
+            every button here goes to /newsletter rather than to its own issue,
+            because the job of this section is to send people to the
+            publication, not to scatter them across eight of its pages. The
+            titles still link to the issues. */}
+        <div class="issue-grid">
             {sorted.map(article => (
-                    <Card
+                    <IssueCard
+                            issue={article.data.issue}
                             title={article.data.title}
-                            description={article.data.description}
-                            image={article.data.image}
-                            imageAlt={article.data.imageAlt}
+                            body={article.body ?? ''}
                             slug={article.id}
                             date={article.data.date}
+                            ctaLabel="Go to newsletter"
+                            ctaHref="/newsletter"
                     />
             ))}
         </div>
-        <p class="articles-more">
-            <a href="/newsletter">All issues &#8594;</a>
-        </p>
     </section>
 
     <!-- ─── 6. NEXT STEPS ─── -->
