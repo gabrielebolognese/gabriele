@@ -21,7 +21,6 @@
         '.project-card',
         '.story-chapter', '.chapter-header', '.entry', '.entry-pull', '.entry-wide',
         '.timeline-item',
-        '.article-card',
         '.next-paragraph', '.next-contact',
         '.faq-item',
         '.bio-lede', '.bio-figure', '.bio-table-wrap', '.bio-links', '.breadcrumb',

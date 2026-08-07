@@ -16,7 +16,7 @@
    11. Story: chapters
    12. Story: long-form entries
    13. Timeline
-   14. Issue list & articles grid  (card internals live in src/components/Card.astro)
+   14. Issue cards  (component: src/components/newsletter/IssueCard.astro)
    15. What's next
    16. Footer
    17. Issue page & prose
@@ -193,7 +193,6 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .entry-pull,
 .js .entry-wide,
 .js .timeline-item,
-.js .article-card,
 .js .next-paragraph,
 .js .next-contact,
 .js .faq-item,
@@ -305,7 +304,6 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .entry-pull,
     .js .entry-wide,
     .js .timeline-item,
-    .js .article-card,
     .js .next-paragraph,
     .js .next-contact,
     .js .faq-item,
@@ -1302,12 +1300,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 
-/* ── 14. ISSUE LIST & ARTICLES GRID ──────────────────────────────────────────
-   Two presentations of the same collection. The archive at /newsletter uses the
-   square .issue-card grid, two to a row, because sequence is what a publication has and a
-   pile of cards does not. The homepage keeps the card grid, where the issues
-   sit among the other sections and a list would read as an afterthought.
-   Row internals live here; card internals are scoped inside Card.astro.
+/* ── 14. ISSUE CARDS ─────────────────────────────────────────────────────────
+   One presentation of the collection, used twice. Square .issue-card, two to a
+   row, on the archive at /newsletter and in the homepage newsletter section.
+   The homepage shows exactly two of them, one row, with .issue-grid-btn under
+   the pair; the archive shows all of them and has no such button.
    ------------------------------------------------------------------------- */
 .issue-grid {
     display: grid;
@@ -1409,6 +1406,39 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 .issue-card-arrow { transition: transform var(--dur) var(--ease); }
 .issue-card-btn:hover .issue-card-arrow { transform: translateX(4px); }
+
+/* The one link out of the homepage section, sitting under both cards and
+   spanning both of them. Same treatment as the card button so the three read
+   as one control group; only the width tells you it governs the pair rather
+   than a single issue. It is not inside .issue-grid, so the width comes from
+   the section rather than from a grid-column span, and the two stay identical
+   once the grid collapses to one column. */
+.issue-grid-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-top: 28px;
+    padding: 19px 26px;
+    font-family: var(--font-wide);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--black);
+    border: 1px solid var(--black);
+    transition:
+        background var(--dur) var(--ease),
+        color      var(--dur) var(--ease);
+}
+
+.issue-grid-btn:hover {
+    background: var(--white);
+    color: var(--black);
+}
+
+.issue-grid-btn:hover .issue-card-arrow { transform: translateX(4px); }
 
 @media (max-width: 860px) {
     .issue-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
@@ -1516,29 +1546,14 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 
-.articles-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-    margin-top: 48px;
-    background: var(--gray-line);
-    border: 1px solid var(--gray-line);
-}
+/* .articles-grid and .article-card lived here. They styled Card.astro, which
+   the homepage newsletter section replaced with IssueCard; the component is
+   deleted and so is its CSS.
 
-/* The hairlines between cards are the grid's own background showing through the
-   1px gap, so a lone post leaves a large empty grey cell next to it. Collapse to
-   one column until there are at least two. */
-.articles-grid:has(> :only-child) {
-    grid-template-columns: 1fr;
-    max-width: 520px;
-}
-
-@media (max-width: 860px) {
-    .articles-grid { grid-template-columns: 1fr; }
-}
-
-/* Link through to the /articles hub, so the homepage grid is not the only
-   route into the archive. */
+   .articles-more stays. Despite the name it is no longer the newsletter's
+   link out, which is .issue-grid-btn now; the devlog section on the homepage
+   uses it for "Every entry". Deleting it with the rest silently unstyled that
+   link, which is why this comment is here rather than nothing. */
 .articles-more {
     margin-top: 32px;
     font-size: var(--text-xs);

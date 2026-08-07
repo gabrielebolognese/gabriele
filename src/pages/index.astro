@@ -34,6 +34,9 @@ const articles = await getCollection('newsletter', ({ data }) => !data.draft);
 /* Newest first by issue NUMBER, matching the archive: two issues can share a
    date (008 and 009 both do), and the number is the canonical order. */
 const sorted = articles.sort((a, b) => b.data.issue - a.data.issue);
+/* Two, which is exactly one row of .issue-grid. Everything else is one click
+   away under them, and the archive is the place that lists all of it. */
+const latest = sorted.slice(0, 2);
 
 const schema = homepageSchema({
     portraitUrl: absoluteUrl(portrait.src, Astro.site),
@@ -1275,24 +1278,26 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         <h2 id="newsletter-heading" class="section-label">Newsletter</h2>
         <p class="section-intro">What I am building, what broke, and what it cost. Sent when there is something worth saying.</p>
         {/* The same IssueCard the archive uses, so the two sections cannot
-            drift apart the way the nav once did. One difference, passed in:
-            every button here goes to /newsletter rather than to its own issue,
-            because the job of this section is to send people to the
-            publication, not to scatter them across eight of its pages. The
-            titles still link to the issues. */}
+            drift apart the way the nav once did. Exactly two, which is one
+            row: the homepage is a summary of the publication, and the archive
+            is the publication. The one link out sits under both cards rather
+            than being repeated inside each of them. */}
         <div class="issue-grid">
-            {sorted.map(article => (
+            {latest.map(article => (
                     <IssueCard
                             issue={article.data.issue}
                             title={article.data.title}
                             body={article.body ?? ''}
                             slug={article.id}
                             date={article.data.date}
-                            ctaLabel="Go to newsletter"
-                            ctaHref="/newsletter"
                     />
             ))}
         </div>
+
+        <a class="issue-grid-btn" href="/newsletter">
+            View full newsletter
+            <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
+        </a>
     </section>
 
     <!-- ─── 6. NEXT STEPS ─── -->

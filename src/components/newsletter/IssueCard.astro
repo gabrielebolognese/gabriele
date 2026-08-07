@@ -17,16 +17,9 @@ interface Props {
   body: string;
   slug: string;
   date: Date;
-  /** Button text. The archive says "Read this"; the homepage sends everyone to
-   *  the archive instead, so it says so. */
-  ctaLabel?: string;
-  /** Button target. Defaults to this issue. The homepage overrides it with
-   *  /newsletter so every card's button goes to the same place, whichever
-   *  issue it belongs to. The title still links to the issue either way. */
-  ctaHref?: string;
 }
 
-const { issue, title, body, slug, date, ctaLabel, ctaHref } = Astro.props;
+const { issue, title, body, slug, date } = Astro.props;
 
 /* The card shows the real opening of the issue, not the description. `body` is
    raw MDX, so the component syntax has to come out before it can be shown as
@@ -69,8 +62,6 @@ const dateLabel = date.toLocaleDateString('en-GB', {
 
 const issueLabel = String(issue).padStart(3, '0');
 const href = `/newsletter/${slug}`;
-const buttonHref = ctaHref ?? href;
-const buttonLabel = ctaLabel ?? 'Read this';
 ---
 <article class="issue-card">
   <p class="issue-card-meta">
@@ -86,8 +77,8 @@ const buttonLabel = ctaLabel ?? 'Read this';
   </div>
 
   {/* Outside the faded container, so the button never fades with the text. */}
-  <a class="issue-card-btn" href={buttonHref}>
-    {buttonLabel}
+  <a class="issue-card-btn" href={href}>
+    Read this
     <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
   </a>
 </article>
