@@ -79,8 +79,18 @@ so every visible link corroborates a schema claim. `LifeGrid.astro` renders 4,68
 constraints that are easy to undo by accident: it must **not** declare a scoped `<style>` (Astro would
 stamp a `data-astro-cid-*` attribute on every cell, 131 KB of raw HTML, which is why its styles live
 under "18. LIFE GRID" in `Style.css`), and cells stay wrapped in 90 row elements so the fill animation
-can stagger off one `--r` per row instead of 4,680 inline delays. Both the age and the week count are
-computed at build time so there is no layout shift and no-JS visitors get real values.
+can stagger off one `--r` per row instead of 4,680 inline delays. A third of the same kind: **every
+square has a hover label but only the ~50 marked ones carry a `title` from the build** — all 4,680
+would be ~145 KB of HTML, so `initGridTitles()` in `motion.js` labels the rest on first hover through
+one delegated listener. Both the age and the week count are computed at build time so there is no
+layout shift and no-JS visitors get real values.
+
+Birthdays are derived in `LifeGrid.astro`, not listed in `milestones.ts`, and only the lived ones are
+marked: the weeks ahead are a flat grey field on purpose and seventy-odd future rings would make the
+half that has not happened the busiest half. The colour splits at 13 (`BIRTHDAY_SPLIT`), which is when
+the site owner started working online. Year markers sit in a 40px right padding on `.life-grid` rather
+than a 53rd column, counted back from the row being lived now in steps of `YEAR_EVERY` so the current
+year is always labelled, and never on rows ahead.
 
 `milestones.ts` currently **mirrors** the hand-written timeline markup in `index.astro`. Re-date or add
 an event in one and you must do it in the other, or the grid highlights the wrong week. Unifying them

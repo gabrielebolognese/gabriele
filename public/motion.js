@@ -389,6 +389,38 @@
         if (count) count.textContent = lived.toLocaleString();
         var percent = document.getElementById('life-percent');
         if (percent) percent.textContent = pct + '%';
+
+        initGridTitles(grid, cells, birth);
+    }
+
+    /* Every square gets a hover label, but not from the build. A title on all
+       4,680 is around 145 KB of raw HTML, which is the same cost LifeGrid.astro
+       already refuses to pay for its styles. The ~45 marked cells keep the
+       title they were rendered with, since their text carries meaning; the rest
+       are labelled the first time the pointer reaches them and then left alone.
+
+       Delegated to the grid, so this is one listener rather than 4,680. */
+    var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+
+    function initGridTitles(grid, cells, birth) {
+        var start = Date.UTC(birth.getFullYear(), birth.getMonth(), birth.getDate());
+
+        // "Week 2 of July 2026". A grid week can straddle two months, so the
+        // month is the one it starts in; week starts are seven days apart, so
+        // dividing the day of the month by seven gives the ordinal inside it.
+        function label(i) {
+            var d = new Date(start + i * 604800000);
+            return 'Week ' + (Math.floor((d.getUTCDate() - 1) / 7) + 1)
+                + ' of ' + MONTHS[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+        }
+
+        grid.addEventListener('mouseover', function (e) {
+            var cell = e.target;
+            if (!cell || cell.tagName !== 'I' || cell.hasAttribute('title')) return;
+            var i = Array.prototype.indexOf.call(cells, cell);
+            if (i >= 0) cell.setAttribute('title', label(i));
+        });
     }
 
     /* ── Shared ──────────────────────────────────────────────────────────── */

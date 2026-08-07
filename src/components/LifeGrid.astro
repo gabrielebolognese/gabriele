@@ -3,7 +3,7 @@
  * 52 columns by 90 rows, with life events from src/data/milestones.ts marked in
  * colour.
  *
- * Two structural decisions worth knowing:
+ * Three structural decisions worth knowing:
  *
  * 1. NO scoped <style> here. Astro stamps a data-astro-cid-* attribute on every
  *    element of any component that defines one, matched by a selector or not,
@@ -15,11 +15,18 @@
  *    for a staggered delay, where per-cell delays would have meant 4,680 inline
  *    styles.
  *
+ * 3. Only the ~45 marked cells get a `title` here. Every square has a hover
+ *    label ("Week 2 of July 2026"), but attaching all 4,680 at build time is
+ *    ~145 KB of raw HTML, which is the same mistake as (1) in a different
+ *    costume. initLifeGrid() in motion.js fills the rest in on first hover.
+ *    Marked cells keep a build-time title because their text carries meaning a
+ *    no-JS visitor should still get.
+ *
  * Rendered complete and correct at build time, so it is right for no-JS
  * visitors and right on first paint; initLifeGrid() in motion.js then
  * reconciles the weeks elapsed since the last deploy.
  */
-import { MILESTONES, milestoneWeek, milestoneLabel, type MilestoneKind } from '../data/milestones';
+import { MILESTONES, milestoneWeek, type MilestoneKind } from '../data/milestones';
 
 interface Props {
   /** Local-time birth timestamp, e.g. "2008-12-06T00:00:00". */
@@ -35,29 +42,104 @@ const birthDate = new Date(birth);
 const rows = Math.ceil(totalWeeks / columns);
 const percent = ((weeksLived / totalWeeks) * 100).toFixed(1);
 
+/* Week 0 begins on the birth date and every week is exactly seven days after
+   the last. Anchored in UTC for the same reason milestoneWeek() is: local
+   midnight moves by an hour across a DST boundary, and a whole number of weeks
+   from a December date lands an hour short all summer. */
+const WEEK_MS = 604_800_000;
+const GRID_START = Date.UTC(birthDate.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+
+const weekStart = (i: number): Date => new Date(GRID_START + i * WEEK_MS);
+
+/** Week index containing a given calendar date. Matches milestoneWeek(). */
+const weekOf = (y: number, m: number, d: number): number =>
+  Math.floor(Math.round((Date.UTC(y, m, d) - GRID_START) / 86_400_000) / 7);
+
+/**
+ * "Week 2 of July 2026".
+ *
+ * A grid week runs from a fixed weekday and can straddle two months, so the
+ * month is the one the week STARTS in and the ordinal counts week-starts
+ * inside that month. Dividing the day of the month by seven gives that
+ * ordinal for any cadence, because the starts are always seven days apart.
+ */
+function weekLabel(i: number): string {
+  const d = weekStart(i);
+  const month = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)).toLocaleDateString(
+    'en-GB',
+    { month: 'long', timeZone: 'UTC' },
+  );
+  return `Week ${Math.floor((d.getUTCDate() - 1) / 7) + 1} of ${month} ${d.getUTCFullYear()}`;
+}
+
 /* week index -> the event that falls in it. Two entries can still collide if
-   they fall in the same week, in which case the later one wins, date an entry
-   to the day in milestones.ts to separate them. The title is built here rather
-   than looked up later: finding a milestone back by its week index cannot tell
-   two same-week entries apart. */
-const events = new Map<number, { kind: MilestoneKind; title: string }>();
+   they fall in the same week, in which case the later one wins; date an entry
+   to the day in milestones.ts to separate them. */
+const events = new Map<number, { kind: MilestoneKind; label: string }>();
 for (const m of MILESTONES) {
   const start = milestoneWeek(m.month, birthDate);
-  const title = `${milestoneLabel(m.month)}, ${m.label}`;
   for (let week = start; week < start + (m.weeks ?? 1); week++) {
-    if (week >= 0 && week < totalWeeks) events.set(week, { kind: m.kind, title });
+    if (week >= 0 && week < totalWeeks) events.set(week, { kind: m.kind, label: m.label });
   }
 }
 
-function cellClass(i: number): string | undefined {
-  const event = events.get(i);
-  const state = i < weeksLived ? 'is-lived' : i === weeksLived ? 'is-now' : '';
-  if (!event) return state || undefined;
-  return `${state} is-event ev-${event.kind}`.trim();
+/* Birthdays. Only the ones already lived: the weeks ahead are a flat grey
+   field on purpose, and seventy-odd rings across it would turn the half of the
+   grid that has not happened into the busiest half.
+
+   The colour splits at thirteen, which is when the online work started. It is
+   the one age on this grid that means something on its own, so it gets to be
+   the boundary rather than a legend entry nobody reads. */
+const BIRTHDAY_SPLIT = 13;
+const ordinal = (n: number): string => {
+  const rest = n % 100;
+  if (rest >= 11 && rest <= 13) return `${n}th`;
+  return `${n}${['th', 'st', 'nd', 'rd'][n % 10] ?? 'th'}`;
+};
+
+const birthdays = new Map<number, { age: number; label: string }>();
+for (let age = 0; age * 52 < totalWeeks + 52; age++) {
+  const week = weekOf(birthDate.getFullYear() + age, birthDate.getMonth(), birthDate.getDate());
+  if (week < 0 || week >= totalWeeks || week > weeksLived) continue;
+  birthdays.set(week, { age, label: age === 0 ? 'Born' : `${ordinal(age)} birthday` });
 }
 
+function cellClass(i: number): string | undefined {
+  const state = i < weeksLived ? 'is-lived' : i === weeksLived ? 'is-now' : '';
+  const event = events.get(i);
+  if (event) return `${state} is-event ev-${event.kind}`.trim();
+
+  const birthday = birthdays.get(i);
+  if (birthday) {
+    const tone = birthday.age < BIRTHDAY_SPLIT ? 'ev-birthday-early' : 'ev-birthday';
+    return `${state} is-event ${tone}`.trim();
+  }
+
+  return state || undefined;
+}
+
+/** Only for marked cells. motion.js labels the rest on hover. */
 function cellTitle(i: number): string | undefined {
-  return events.get(i)?.title;
+  const event = events.get(i);
+  if (event) return `${weekLabel(i)}: ${event.label}`;
+  const birthday = birthdays.get(i);
+  if (birthday) return `${weekLabel(i)}: ${birthday.label}`;
+  return undefined;
+}
+
+/* A year in the right margin every third row, counted back from the row being
+   lived now so that this year is always one of the labelled ones. Nothing on
+   the rows ahead: they are not a record of anything yet.
+
+   The year is taken from the middle of the row rather than its first week,
+   because a row is 364 days and drifts against the calendar; the midpoint
+   stays inside the intended year for far longer than either edge. */
+const currentRow = Math.floor(weeksLived / columns);
+const YEAR_EVERY = 3;
+
+function yearFor(r: number): string | null {
+  if (r > currentRow || (currentRow - r) % YEAR_EVERY !== 0) return null;
+  return String(weekStart(r * columns + Math.floor(columns / 2)).getUTCFullYear());
 }
 ---
 {/* role="img" with a label: 4,680 empty cells would otherwise be announced one
@@ -72,5 +154,5 @@ function cellTitle(i: number): string | undefined {
   <div class="life-row" style={`--r:${r}`}>{Array.from({ length: columns }, (_, c) => {
     const i = r * columns + c;
     return i < totalWeeks ? <i class={cellClass(i)} title={cellTitle(i)}></i> : null;
-  })}</div>
+  })}{yearFor(r) && <span class="life-year">{yearFor(r)}</span>}</div>
 ))}</div>

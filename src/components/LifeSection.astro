@@ -185,6 +185,8 @@ const PILLS: Array<{ url: string; label: string }> = [
       <strong id="life-percent">{livedPercent}%</strong>
     </p>
 
+    {/* The two birthday entries say what the colour split means, because the
+        split is the point: thirteen is when the online work started. */}
     <ul class="life-key">
       <li><i class="is-lived" aria-hidden="true"></i> Lived</li>
       <li><i class="is-now" aria-hidden="true"></i> This week</li>
@@ -192,6 +194,8 @@ const PILLS: Array<{ url: string; label: string }> = [
       <li><i class="ev-personal" aria-hidden="true"></i> Milestone</li>
       <li><i class="ev-setback" aria-hidden="true"></i> Setback</li>
       <li><i class="ev-flashfx" aria-hidden="true"></i> FlashFX</li>
+      <li><i class="ev-birthday-early" aria-hidden="true"></i> Birthday, before 13</li>
+      <li><i class="ev-birthday" aria-hidden="true"></i> Birthday, 13 on</li>
     </ul>
 
     {/* The coloured cells carry a title attribute, but a role="img" grid hides

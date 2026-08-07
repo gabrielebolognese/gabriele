@@ -1987,7 +1987,15 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     --life-personal: #2563eb;   /* blue   : personal milestones */
     --life-setback:  #dc2626;   /* red    : losses and failures */
     --life-flashfx:  #7c3aed;   /* purple : FlashFX             */
+    --life-bd-early: #eab308;   /* yellow : birthdays before 13 */
+    --life-bd:       #f97316;   /* orange : 13 onward, once the work started */
 }
+
+/* The grid needs room to its right for the year markers, which sit in this
+   padding rather than in a 53rd column: a column would have to be sized
+   against 52 squares at every breakpoint, and the squares would stop being
+   square the moment it was wrong. */
+.life-grid { padding-right: 40px; }
 
 .life-grid {
     display: flex;
@@ -1998,9 +2006,27 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 /* Rows exist so the fill animation can stagger by row index. A flat grid would
    have needed a delay on each of the 4,680 cells. */
 .life-row {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(52, 1fr);
     gap: 2px;
+}
+
+/* Out of flow, so the row stays exactly 52 columns whether it carries a year
+   or not. Left at 100% puts it against the row's right edge, inside the
+   padding reserved above. */
+.life-year {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 11px;
+    font-family: var(--font-wide);
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    color: var(--gray-mid);
+    line-height: 1;
+    pointer-events: none;
 }
 
 /* Both halves of the grid are filled now, the weeks ahead carry the grey the
@@ -2042,9 +2068,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     z-index: 1;
 }
 
-.life-row > i.ev-personal { background: var(--life-personal); }
-.life-row > i.ev-setback  { background: var(--life-setback); }
-.life-row > i.ev-flashfx  { background: var(--life-flashfx); }
+.life-row > i.ev-personal     { background: var(--life-personal); }
+.life-row > i.ev-setback      { background: var(--life-setback); }
+.life-row > i.ev-flashfx      { background: var(--life-flashfx); }
+.life-row > i.ev-birthday-early { background: var(--life-bd-early); }
+.life-row > i.ev-birthday       { background: var(--life-bd); }
 
 /* Future events keep the hue but read as outlines, so "already happened" is
    still legible at a glance. */
@@ -2055,6 +2083,8 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .life-row > i.ev-personal:not(.is-lived) { box-shadow: inset 0 0 0 1.5px var(--life-personal); }
 .life-row > i.ev-setback:not(.is-lived)  { box-shadow: inset 0 0 0 1.5px var(--life-setback); }
 .life-row > i.ev-flashfx:not(.is-lived)  { box-shadow: inset 0 0 0 1.5px var(--life-flashfx); }
+.life-row > i.ev-birthday-early:not(.is-lived) { box-shadow: inset 0 0 0 1.5px var(--life-bd-early); }
+.life-row > i.ev-birthday:not(.is-lived)       { box-shadow: inset 0 0 0 1.5px var(--life-bd); }
 
 /* The current week can also be an event, launch week is both. The hue says
    what happened, the black ring says it is happening now. Without this the
@@ -2123,6 +2153,9 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .life-key i.ev-flashfx,
 .life-events i.ev-flashfx  { background: var(--life-flashfx);  box-shadow: none; }
 
+.life-key i.ev-birthday-early { background: var(--life-bd-early); box-shadow: none; }
+.life-key i.ev-birthday       { background: var(--life-bd);       box-shadow: none; }
+
 @media (prefers-reduced-motion: reduce) {
     .life-row > i.is-now { animation: none; }
     .js .life-row { opacity: 1; }
@@ -2132,6 +2165,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 @media (max-width: 520px) {
     .life-grid,
     .life-row { gap: 1px; }
+
+    /* The squares are already close to a pixel here; a year in the margin
+       costs more width than it earns. */
+    .life-grid { padding-right: 0; }
+    .life-year { display: none; }
 }
 
 
