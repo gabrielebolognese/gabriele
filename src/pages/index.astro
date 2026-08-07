@@ -28,7 +28,8 @@ import portfolioSite from '../assets/video-editing-portfolio-site.png';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 import {HOMEPAGE_FAQ} from '../data/faq';
 import {homepageSchema} from '../data/schema';
-import {PERSON, ORGANIZATION, FACTS, DEVLOG, absoluteUrl} from '../data/identity';
+import {PERSON, ORGANIZATION, FACTS, DEVLOG, SOCIALS, absoluteUrl} from '../data/identity';
+import SocialIcon from '../components/SocialIcon.astro';
 
 const articles = await getCollection('newsletter', ({ data }) => !data.draft);
 /* Newest first by issue NUMBER, matching the archive: two issues can share a
@@ -70,6 +71,24 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 <span class="dot">·</span>
                 <span>Est. 2024</span>
             </div>
+
+            {/* Every profile, one row, above the fold. It used to take a
+                scroll past the whole About block to find out this person is
+                reachable at all. Same SOCIALS list as the cards above the
+                FAQ, so the two cannot disagree about where I am. */}
+            <nav class="hero-socials" aria-label="Profiles">
+                {SOCIALS.map(social => (
+                    <a
+                            class="hero-social"
+                            href={social.url}
+                            target="_blank"
+                            rel={social.key === 'flashfx' ? 'noopener noreferrer' : 'noopener noreferrer me'}
+                    >
+                        <SocialIcon name={social.key} size={16} />
+                        <span>{social.name}</span>
+                    </a>
+                ))}
+            </nav>
         </div>
     </section>
 
@@ -1328,6 +1347,39 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         <p class="next-contact">
             Reach me at <a href="mailto:the.real.gabryy@gmail.com">the.real.gabryy@gmail.com</a>
         </p>
+    </section>
+
+    <div class="rule"></div>
+
+    {/* Sits before the FAQ deliberately: the FAQ is the last thing on the page
+        and answers questions, so the thing that lets someone act on the answer
+        has to come first. Same SOCIALS list as the hero row. */}
+    <section class="section" id="follow" aria-labelledby="follow-heading">
+        <h2 id="follow-heading" class="section-label">Where to find me</h2>
+        <p class="section-intro">Six places, six different reasons. Pick whichever one you actually use.</p>
+
+        <div class="contact-grid">
+            {SOCIALS.map(social => (
+                <article class="contact-card">
+                    <div class="contact-card-head">
+                        <SocialIcon name={social.key} size={22} />
+                        <h3 class="contact-card-name">{social.name}</h3>
+                    </div>
+
+                    <p class="contact-card-desc">{social.description}</p>
+
+                    <a
+                            class="contact-card-btn"
+                            href={social.url}
+                            target="_blank"
+                            rel={social.key === 'flashfx' ? 'noopener noreferrer' : 'noopener noreferrer me'}
+                    >
+                        {social.cta}
+                        <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
+                    </a>
+                </article>
+            ))}
+        </div>
     </section>
 
     <div class="rule"></div>

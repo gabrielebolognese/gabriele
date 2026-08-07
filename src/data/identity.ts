@@ -132,6 +132,87 @@ export const SAME_AS: string[] = [
   //   Substack, Stack Overflow, Behance, Vimeo, Gravatar, about.me, ORCID.
 ];
 
+/* ── The social cards ────────────────────────────────────────────────────────
+   Rendered twice on the homepage: as a row of pills under the hero headline,
+   and as the card grid above the FAQ. One list feeds both, so a profile can
+   never appear in one and be missing from the other.
+
+   Every URL is resolved out of SAME_AS (or ORGANIZATION, for the X account,
+   which is FlashFX's rather than a personal profile). That is the point: a
+   visible link the schema does not also claim is a link Google cannot
+   reconcile back to this person, which is most of what sameAs is for.
+
+   The lookup throws rather than falling back. A missing profile should stop
+   the build, not quietly render a card with no href.
+   ------------------------------------------------------------------------- */
+export type SocialKey = 'linkedin' | 'x' | 'github' | 'youtube' | 'instagram' | 'flashfx';
+
+export interface Social {
+  key: SocialKey;
+  name: string;
+  url: string;
+  /** One or two lines on what actually happens on that account. */
+  description: string;
+  /** Deliberately different on every card. */
+  cta: string;
+}
+
+function fromSameAs(host: string): string {
+  const url = SAME_AS.find((u) => new URL(u).hostname.replace(/^www\./, '') === host);
+  if (!url) throw new Error(`SOCIALS: no SAME_AS entry for ${host}. Add it there first.`);
+  return url;
+}
+
+export const SOCIALS: Social[] = [
+  {
+    key: 'linkedin',
+    name: 'LinkedIn',
+    url: fromSameAs('linkedin.com'),
+    // TODO: these six descriptions are a first draft. They describe what each
+    // account is for, which only you can confirm.
+    description:
+      'Build updates and the reasoning behind product decisions. The fastest growing of my accounts.',
+    cta: 'Connect with me',
+  },
+  {
+    key: 'x',
+    name: 'X',
+    url: `https://x.com/${ORGANIZATION.xHandle}`,
+    description: 'The FlashFX account. Releases, demos, and what broke on the way to them.',
+    cta: 'See the updates',
+  },
+  {
+    key: 'github',
+    name: 'GitHub',
+    url: fromSameAs('github.com'),
+    description: 'Experiments and open work. Most things start here before they are anything.',
+    cta: 'Browse the code',
+  },
+  {
+    key: 'youtube',
+    name: 'YouTube',
+    url: fromSameAs('youtube.com'),
+    description: 'Long form on building FlashFX, for the things worth more than a paragraph.',
+    cta: 'Watch a build',
+  },
+  {
+    key: 'instagram',
+    name: 'Instagram',
+    url: fromSameAs('instagram.com'),
+    description:
+      'The daily side of it: training, studying, and the parts of building that do not screenshot well.',
+    cta: 'Follow the logs',
+  },
+  {
+    key: 'flashfx',
+    name: 'FlashFX',
+    url: ORGANIZATION.url,
+    description:
+      'The product itself. Browser-native motion graphics and video editing, with nothing to install.',
+    cta: 'Try it now',
+  },
+];
+
 /** Press, interviews, podcasts. These are `subjectOf`, NOT `sameAs`, they are
  *  pages ABOUT you rather than profiles OWNED by you, and mixing the two
  *  weakens both. */
