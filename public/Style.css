@@ -1895,7 +1895,8 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
    these three hues carry all of the meaning in the grid and are used nowhere
    else. */
 :root {
-    --life-lived:    #c9c9c4;   /* light grey, the weeks already spent */
+    --life-lived:    #1d1d1b;   /* near-black, the weeks already spent  */
+    --life-ahead:    #c9c9c4;   /* light grey, the weeks still to come  */
     --life-personal: #2563eb;   /* blue   — personal milestones */
     --life-setback:  #dc2626;   /* red    — losses and failures */
     --life-flashfx:  #7c3aed;   /* purple — FlashFX             */
@@ -1915,10 +1916,14 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     gap: 2px;
 }
 
+/* Both halves of the grid are filled now — the weeks ahead carry the grey the
+   lived weeks used to, and the lived weeks went near-black. An unfilled cell
+   needed a hairline to be visible at all; a filled one does not, and the 2px
+   gap already separates them. */
 .life-row > i {
     aspect-ratio: 1;
-    background: var(--white);
-    box-shadow: inset 0 0 0 1px #efefec;
+    background: var(--life-ahead);
+    box-shadow: none;
     border-radius: 1px;
 }
 
@@ -2000,12 +2005,13 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     gap: 8px;
 }
 
+/* The unclassed swatch is "Ahead", so it has to track .life-row > i exactly. */
 .life-key i {
     width: 9px;
     height: 9px;
     border-radius: 1px;
-    background: var(--white);
-    box-shadow: inset 0 0 0 1px var(--gray-line);
+    background: var(--life-ahead);
+    box-shadow: none;
     flex-shrink: 0;
 }
 
