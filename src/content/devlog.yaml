@@ -23,6 +23,114 @@
 # one credible entity. One page that deepens daily is the stronger signal.
 # ============================================================================
 
+- date: 2026-08-07
+  text: Nine milestones of vector and editing work in one day, from draggable corner radii to path healing.
+  detail: |
+    Scope of the session: vector editing and the shortcuts around it. M2 through
+    M10 in 8 commits, plus M1 which landed late the night before. 8 new Node
+    verification harnesses: transform HUD, measurement, equal-gap, nudge, fuzzy
+    search, tangent, bend, path cleanup. Typecheck stayed at 0 errors and lint at
+    its 127 baseline through every commit.
+
+    Anything touching pointer input or WebGPU is verified structurally only,
+    because it needs a browser to feel, so each commit carries its own
+    manual-check list.
+
+    **Rectangle corners can be rounded by dragging, one corner at a time.**
+
+    - *Number*: 4 independent radii per rectangle (M1, shipped late on the 6th).
+    - *Cause*: `borderRadius` was already an animatable property, so this was
+      exposure, not a new engine.
+    - *Hard part*: the drag handle has to live in composition space and read back
+      through the same anchor, rotation and scale math the renderer uses, or the
+      handle drifts off the corner as soon as the layer is rotated.
+
+    **The four boolean operations and Flatten now have keyboard shortcuts.**
+
+    - *Number*: Alt+Shift+U/S/I/E, plus Ctrl+E. Before today 1 of the 4
+      operations had a binding; now all 4 do, and so does flatten.
+    - *Hard part*: subtract was using selection order, so which shape survived
+      depended on the order they were clicked. Fixed to z-order, bottom shape
+      wins, matching Figma. Alt also mangles `e.key` on some layouts, so every
+      Alt combo matches the physical `e.code` instead.
+
+    **A readout of position, size and rotation appears while moving, resizing or
+    rotating a layer.**
+
+    - *Number*: `verify:transformhud`, 13 assertions.
+    - *Hard part*: the numbers have to come out of the exact same transform
+      pipeline the shader uses (scale, then anchor-relative, then rotate, then
+      translate), or the readout disagrees with what is on screen for any layer
+      that has been rotated or scaled.
+
+    **Holding Alt while hovering shows pixel distances to neighbouring objects,
+    and dragging snaps to equal gaps.**
+
+    - *Number*: `verify:measure`, 9 assertions; `verify:equalgap`, 7.
+    - *Hard part*: equal-gap detection is a fuzzy match over the gaps between
+      bounding boxes: find the run of objects that are nearly evenly spaced, then
+      snap to complete it, without the snap fighting the pointer.
+
+    **Arrow-key nudging, align and distribute are wired up, along with several
+    actions that had no shortcut at all.**
+
+    - *Number*: Shift for a larger step, Alt+A/D/W/S/H/V to align, Ctrl+Alt+H/V
+      to distribute. `verify:nudge`, 4 assertions; the nudge amounts are
+      configurable in Settings.
+    - *Hard part*: Alt+S already meant "trim clip down". Resolved by gating the
+      align keys to a selection of 2 or more and ordering them ahead of the trim
+      keys, so Alt+S aligns to the bottom only when it cannot mean trim.
+
+    **A command palette opens on Ctrl+/ or Ctrl+K.**
+
+    - *Number*: `verify:fuzzy`, 10 assertions, covering the palette's matcher.
+    - *Hard part*: the value is the registry, not the popup. Commands had to be
+      described as data (id, label, when-enabled, run) so the palette, and later
+      the menus and the shortcut layer, all read one source instead of each
+      re-deriving state.
+
+    **Alt-dragging duplicates a layer; Ctrl+D duplicates and repeats the last
+    transform.**
+
+    - *Number*: the offset carries, so a second Ctrl+D re-applies the same delta,
+      which builds an array.
+    - *Hard part*: power duplicate means remembering the last move or rotate as a
+      delta and re-applying it on every Ctrl+D, while Alt-drag instead leaves a
+      copy behind at the origin. Two different notions of "the thing that just
+      happened", tracked separately.
+
+    **Pressing Enter converts any shape into an editable path, with full control
+    of the curve handles.**
+
+    - *Number*: `verify:tangent`, 6 assertions. Handle modes are mirrored,
+      angle-only and independent, with Alt to break a tangent for one drag.
+    - *Hard part*: `normalizeAngle(-360)` returned `-0`, which fails `deepEqual`
+      against `0` because that compares with `Object.is`, and it broke the
+      harness; fixed by normalising to `+0`. The handle-mode UI also had to go in
+      `ShapeProperties`, not `InspectorTabContent`: the polygon inspector section
+      lives in a different component than it looks like it does.
+
+    **A point on a segment can be grabbed and dragged to curve it.**
+
+    - *Number*: M9. `verify:bend`, 4 assertions.
+    - *Hard part*: to make a cubic pass through the cursor at parameter `t` you
+      add `d / (3(1-t)t)` to both endpoint handles, and that delta has to be
+      applied to the pre-drag handles on every move, not to the live ones, or it
+      compounds.
+
+    **An anchor point can be deleted and the curve healed across the gap, and
+    paths can be joined or closed.**
+
+    - *Number*: Shift+Delete to heal, Ctrl+J to join or close (M10).
+      `verify:pathcleanup`, 9 assertions.
+    - *Hard part*: healing is the interesting one. Drop an anchor, reconnect the
+      neighbours, and you get a kink. Figma's actual fix is a Schneider (1990)
+      least-squares refit: hold the two endpoints and their tangent directions
+      fixed, then solve only for the two handle lengths that best fit the
+      original two-curve span. My first version just passed the curve through
+      where the point used to be, which is cheaper but changes the tangents and
+      kinks anyway; it was replaced with the least-squares solve before shipping.
+
 - date: 2026-08-06
   text: Folded the articles section into a real newsletter and gave the devlog its own page.
   detail: |
