@@ -1,51 +1,167 @@
 ---
-# DRAFT — Gabriele writes this one. `draft: true` keeps it out of the archive,
-# the homepage, the sitemap and the feed, and stops the page building at all,
-# so nothing below is public. Flip to false when the body is real.
 issue: 9
-title: "Launch Day"
+title: "Launch Day, and the Company Underneath It"
 date: 2026-08-07
-description: "PLACEHOLDER — replace before publishing. What launch day actually looked like, hour by hour."
-standfirst: "PLACEHOLDER — replace before publishing."
+description: "FlashFX is open to the public and finished. The same day, it stopped being a project and became an Italian S.r.l. — here is what that actually involves, and the €5,000 it took before a single day of trading."
+standfirst: "Everything comes down to today. FlashFX is open, complete and usable by anyone. The same day, it stopped being a person with a project and became a company — which turns out to be a much more paperwork-shaped thing than anyone tells you."
 image: "../../assets/flashfx-animator-dashboard-projects.png"
 imageAlt: "The FlashFX Animator dashboard and projects view"
-draft: true
+draft: false
 ---
 
 import Figure from '../../components/newsletter/Figure.astro';
-import Pair from '../../components/newsletter/Pair.astro';
 
-{/* Scaffold only — every heading below is a suggestion, not a structure you owe
-    anything to. Delete what you do not want.
+import editorTimeline from '../../assets/flashfx-editor-timeline-multitrack.png';
+import animator3d from '../../assets/flashfx-animator-3d-objects-browser.png';
 
-    Issue 8 (my-worst-setback) ends on "Launch is next, and it is close. I will
-    write about that one once it has actually happened." This is that one, so it
-    is worth opening somewhere near where that left off.
+Everything comes down to today. FlashFX is open to the public, and it is finished
+in the sense that matters: you can sign up, open it, and do the whole job inside
+it without hitting a wall where the feature you need was on a roadmap.
 
-    Figures: <Figure src={x} alt="" caption="" width="column | wide | full" />
-             <Pair a={x} altA="" b={y} altB="" caption="" />
-    Import each image at the top, next to the component imports. */}
+That is the difference I would draw against every earlier release. Things have
+shipped before. v1.0 went out last November and people used it. But there was
+always a sentence attached — *this part is coming*, *this works but not with
+that*. Today there is no sentence. The product is the product.
 
-## The day itself
+<Figure
+  src={editorTimeline}
+  alt="The FlashFX Editor, timeline and multi-track view"
+  caption="The Editor as it ships today. Two years and four rebuilds to arrive at a screen that needs no disclaimer attached to it."
+  width="wide"
+/>
 
-What happened, in order. Times if you have them.
+## The six weeks before this
 
-## What broke
+I am not going to relitigate them here, because they have their own issue. The
+short version: from late June to the first week of August I drifted — thirteen
+hours a day on my phone, tasks going untracked, six weeks of runway spent on
+nothing, against a launch date that was never going to move. It broke on
+5 August, two days ago.
 
-Something will have. This is the part with the most value in it and the part
-most likely to get cut for being unflattering — issue 8 works because it did not
-get cut.
+If you want the honest version of that, with the causes named and the recovery
+described as the slow, unremarkable thing it actually was, it is in
+[My Worst Setback Was Also My Mildest](/newsletter/my-worst-setback). It is the
+more useful of these two issues. This one is the good news; that one is the
+part that explains why the good news was nearly late.
 
-## The numbers
+## The part that is not the product
 
-First-day signups, traffic, conversion, whatever you actually looked at, and how
-far off your expectation each one was.
+Here is what nobody mentions in a launch post. The largest thing that changed
+today is not in the app at all. It is that there is now a company.
 
-## What the six weeks before it cost
+Until this morning FlashFX was, legally, me. Every user, every euro, every
+liability landed on a seventeen-year-old with a laptop. From today it is an
+**S.r.l.** — *società a responsabilità limitata* — which is the Italian
+limited-liability company, and the form basically every small and mid-sized
+Italian business takes.
 
-The honest link back to issue 8: whether the drift showed up in the launch, and
-how.
+### What an S.r.l. actually is
 
-## What I would do differently
+The whole point is in the name. Liability is limited: the company is a separate
+legal person from the people who own it, and a shareholder's exposure stops at
+what they put in. If the company owes money, the company owes it. That
+separation is the entire product an S.r.l. sells you, and it is worth more than
+it sounds when the thing you are running has thousands of users on it.
 
-Short and specific.
+The ownership is divided into *quote* — quotas — rather than shares in the
+tradeable sense, and they do not trade freely; moving one is a notarised act,
+not a transaction. That is deliberate. An S.r.l. is built for companies whose
+owners are meant to know each other.
+
+### Two versions of it
+
+There are two ways in, and the difference is mostly capital.
+
+The **ordinary S.r.l.** takes a minimum share capital of €10,000. You get a
+statute you can write yourself, which means you can decide how governance works,
+how quotas move, and what happens if someone wants out.
+
+The **S.r.l.s.** — *semplificata* — exists so that the capital requirement stops
+being the reason a company does not exist. Capital can be anything from €1 to
+€9,999.99, and it must be paid in cash, in full, at incorporation. Shareholders
+have to be natural persons, not other companies. In exchange for that, the
+notary's fee and the stamp and registration duties on the incorporation deed are
+waived, which is a real saving. The catch is the statute: you take the standard
+one written by the legislator, and you do not amend the core of it.
+
+### What incorporating involves
+
+Either way, the shape is the same:
+
+1. **A notarial deed.** An Italian notary draws up the *atto costitutivo* and
+   the *statuto*, and the founders sign in front of them. This is not optional
+   and there is no online path around it — the notary is the checkpoint the
+   whole system is built on.
+2. **Registration in the Registro delle Imprese**, the business register held by
+   the Chamber of Commerce. Registration tax runs roughly €150–400 depending on
+   the capital, and there is an annual Chamber fee of about €90.
+3. **A tax identity.** *Partita IVA* for VAT, a **PEC** — certified email, which
+   is legally equivalent to registered post in Italy — and enrolment in the
+   electronic invoicing system, because paper invoices between businesses are
+   simply not a thing here any more.
+
+### What it costs to run
+
+The company pays **IRES** at 24% on its taxable income, plus **IRAP**, the
+regional production tax, ordinarily 3.9% for a company of this type — regions
+can move that, up to 4.82%. Together, call it roughly 28% before anything else.
+
+Then there is the standing cost of merely existing: the accountant, the annual
+filings, the Chamber fee, the PEC. An Italian company is not expensive to keep,
+but it is never free, and it does not care whether you had revenue this year.
+
+<Figure
+  src={animator3d}
+  alt="The FlashFX Animator 3D object browser"
+  caption="None of the above is visible from in here, which is the point of writing it down."
+  width="wide"
+/>
+
+## What it cost me: over €5,000
+
+Not on the product. On being allowed to sell it.
+
+**A business advisor.** The single largest line, and the one I resented most
+before I understood what it was for. Italian company law is not a thing you read
+your way into over a weekend, and doing it wrong is expensive in a way that is
+not obvious until much later.
+
+**Termly**, and compliance generally. Privacy policy, terms of service, cookie
+consent — every document a product with users in Europe has to have, and that I
+could not write myself in a form that would survive being looked at.
+
+**Subscriptions.** The stack a company needs before it has revenue: the tools,
+the infrastructure, the services that quietly annualise into four figures while
+you are thinking about features.
+
+**The formation costs themselves**, on top of all of it.
+
+Over five thousand euros, and not one of those euros made the product better.
+That is the honest accounting, and I am writing it down because two years ago
+I would have flatly refused to believe the number. When I lost my first project
+I was out €200 borrowed from my cousin, and that felt like the end of the world.
+The distance between those two figures is most of what has changed.
+
+## The part I am seventeen for
+
+Worth stating plainly, because it is the one place where my age stops being a
+headline and becomes paperwork.
+
+Under Italian law a minor can hold a stake in a company, but it is treated as an
+act of extraordinary administration: it needs authorisation from the *giudice
+tutelare* and a legal representative acting for them. A minor cannot be a
+director. None of that is a problem to be solved with effort or with a better
+pitch — it is simply the rule, and it applies to me until December.
+
+I mention it because "17-year-old founder" is a nice line and the reality of it
+is a folder of documents that other people had to sign.
+
+## Today
+
+Two years, four rebuilds, €400 of borrowed money in the early ones and €5,000
+of real money in this one, one hackathon lost, one co-founder gone, and six
+weeks I would rather have back. Against that: it is open, it works, and there is
+a company behind it.
+
+That is the whole update. I will write about what the first week actually looked
+like once there is a first week to write about.

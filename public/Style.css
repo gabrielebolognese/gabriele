@@ -1969,6 +1969,14 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .life-row > i.ev-setback:not(.is-lived)  { box-shadow: inset 0 0 0 1.5px var(--life-setback); }
 .life-row > i.ev-flashfx:not(.is-lived)  { box-shadow: inset 0 0 0 1.5px var(--life-flashfx); }
 
+/* The current week can also be an event — launch week is both. The hue says
+   what happened, the black ring says it is happening now. Without this the
+   outline rule above paints the hue on itself and the ring disappears, which
+   would leave the legend's "This week" swatch describing no square anywhere. */
+.life-row > i.is-now.is-event {
+    box-shadow: 0 0 0 1.5px var(--black);
+}
+
 /* ── Fill animation ──────────────────────────────────────────────────────
    Rows sweep in top to bottom once the panel scrolls into view. Gated on
    `.js` so a no-JS visitor gets the finished grid immediately, and on

@@ -73,6 +73,7 @@ export const MILESTONES: Milestone[] = [
   { month: '2026-06-01', weeks: 6, kind: 'setback',  label: 'Co-founder left, and the whole of June went with him' },
   { month: '2026-07-11', weeks: 2, kind: 'personal', label: 'Two weeks in Dublin, first English-speaking country' },
   { month: '2026-07-25',            kind: 'setback',  label: 'Back from Dublin, the worst possible week to lose' },
+  { month: '2026-08-07',            kind: 'flashfx',  label: 'Launch day, and FlashFX becomes a company' },
 ];
 
 /** Splits either granularity. `d` is null for a month-only entry. */
