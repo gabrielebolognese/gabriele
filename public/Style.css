@@ -202,7 +202,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .cd-goal,
 .js .stat-figure,
 .js .contrib,
-.js .repo-item,
+.js .repo-list,
 .js .stats-latest,
 .js .project-card,
 .js .story-disclaimer,
@@ -320,7 +320,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .cd-goal,
     .js .stat-figure,
     .js .contrib,
-    .js .repo-item,
+    .js .repo-list,
     .js .stats-latest,
     .js .project-card,
     .js .story-disclaimer,
@@ -2782,12 +2782,17 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     grid-template-columns: repeat(3, 1fr);
     gap: 0;
     margin-top: 48px;
-    border-top: 1px solid var(--gray-line);
-    border-bottom: 1px solid var(--gray-line);
 }
 
+/* The hairlines belong to the figures, NOT to the container around them.
+   The figures fade in on scroll, so a border on the container stays painted
+   while its contents are still at opacity 0, and the row reads as two rules
+   with an empty band between them for the whole 900ms of the reveal. On the
+   children the line arrives with the number it belongs to. */
 .stat-figure {
     padding: 36px 32px;
+    border-top: 1px solid var(--gray-line);
+    border-bottom: 1px solid var(--gray-line);
     border-left: 1px solid var(--gray-line);
 }
 
@@ -3091,13 +3096,15 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 @media (max-width: 860px) {
     .stat-figures { grid-template-columns: 1fr; }
 
+    /* Stacked, so each figure keeps its top line and only the last one closes
+       the run. Keeping both borders here would double every join. */
     .stat-figure {
         padding: 26px 0;
         border-left: 0;
-        border-top: 1px solid var(--gray-line);
+        border-bottom: 0;
     }
 
-    .stat-figure:first-child { border-top: 0; }
+    .stat-figure:last-child { border-bottom: 1px solid var(--gray-line); }
 
     .stats-split {
         grid-template-columns: 1fr;
