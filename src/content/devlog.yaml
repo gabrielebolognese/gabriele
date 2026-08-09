@@ -23,6 +23,127 @@
 # one credible entity. One page that deepens daily is the stronger signal.
 # ============================================================================
 
+- date: 2026-08-08
+  text: Forty commits across eight fronts, from Figma-style time savers to the first cards positioned in 3D space.
+  detail: |
+    Scope of the session: breadth. 40 commits, +9917/−362, about 253 file
+    changes, across eight areas of work. Typecheck stayed at 0 errors and lint
+    at its 127 baseline through every commit.
+
+    Anything touching GPU rendering or pointer behaviour is verified by
+    structure only, Node harnesses plus guards, so it still needs a browser to
+    confirm by feel.
+
+    **Six more Figma time-saver milestones, M17 through M22.**
+
+    - *Number*: 6 commits. Outline Text (M17) turns a text layer into editable
+      letter shapes that can be moved point by point; batch rename (M19,
+      Ctrl+R) renames a whole multi-selection at once with tokens, numbering
+      and pattern matching; a freehand draw tool (M18, Shift+P); rulers with
+      tick marks and labels, plus snapping to whole pixels while dragging
+      (M20); linked colour styles (M21), so changing a colour once updates
+      every layer using it; and outline stroke with hole-preserving booleans
+      (M22).
+    - *Cause*: shape and text fill and stroke now read the linked style first,
+      before the material overlay is applied.
+    - *Hard part*: preserving holes through a boolean means tracking even-odd
+      winding, not just unioning the outer rings.
+
+    **A tutorial that builds a complete title-card scene by driving the real
+    editor.**
+
+    - *Number*: phases 1 to 5 in 4 commits, chapters 1 to 10, with a spotlight
+      overlay on the interface and a prompt on first open.
+    - *Hard part*: it runs the actual store actions rather than a scripted
+      fake, so every step has to tolerate real state and undo. A canned
+      animation would drift from the editor the first time anything moved.
+
+    **Buttons on the landing page open the editor on a template that plays
+    immediately.**
+
+    - *Number*: 3 commits. `/?template=<id>` loads a fresh project that plays
+      on open and can then be edited; the first one is a tuned particle hero.
+    - *Hard part*: the splash overlays the app while WebGPU warms and pre-rolls
+      about 8 frames before playing, so the heaviest first frames happen behind
+      it. And the seeding has to wait until the async scene load actually swaps
+      the composition reference, or it lands on the wrong document and gets
+      overwritten.
+
+    **"Use this" inserts a working animation at the playhead, timing and motion
+    included, not only the artwork.**
+
+    - *Number*: 9 commits, 24 or more templates. Scenes (beach, forest,
+      night), weather (sunset, rain, city, snow), creative (galaxy, phone chat,
+      pen, clock, fireworks, rocket, coffee, confetti, spinner) and four
+      showcases: Chain Reaction (a Rube Goldberg with 200 balls), Departure
+      Board (split-flap flip wave, parallax planes, rain matte), Bar Chart Race
+      (pre-computed reordering) and Recursive Editor (FlashFX animating a video
+      editor). An "All" button inserts every template one after another.
+      `verify:anim-templates`, 132 checks.
+    - *Hard part*: templates are authored 0-based and rebased to the playhead,
+      rescaled if the composition fps differs from the authoring fps. The
+      Recursive Editor lives or dies on cursor believability, so the cursor
+      engine is a bezier arc plus ballistic velocity, overshoot, dwell,
+      sub-pixel noise and icon swaps. And the bar-race reorder is *baked*,
+      because a live reorder needs a per-frame sort the keyframe model cannot
+      express.
+
+    **An AI chat panel that can be toggled on, in the style of VS Code and
+    Copilot.**
+
+    - *Number*: 2 commits, a mockup. It takes the right 20% of the screen and
+      compresses the layout in every mode except preview. Assistant replies
+      without borders, a loading state while thinking, streaming text and a
+      response timer; the composer buttons (add file, from Drive, image and the
+      rest) are placeholders.
+    - *Cause*: internally there is a `streamResponse()` seam with a canned
+      reply behind it, so a real model drops in later with no change to the UI.
+
+    **A new layer type that draws patterns on the graphics card at full
+    resolution.**
+
+    - *Number*: phases 1 to 3 in 6 commits. `generativePattern` covers 11 types
+      (waves, plasma, kaleidoscope, mosaic and 7 more) with a palette editor,
+      and the layer has bounds, so it moves, resizes and masks like a
+      rectangle, with animatable scale, rotation, warp and contrast, and
+      blending with the layer below. `verify:pattern`, 16 checks.
+    - *Hard part*: the config's type whitelist was still hard-coded to the
+      original 4 types, so every new type silently parsed back to plasma; the
+      harness caught it as `'plasma' !== 'clouds'`. And blend cannot read the
+      scene texture progressively, so each mode is a separate pipeline whose
+      fragment output form is matched to its blend state: 4 variants, normal,
+      add, multiply and screen.
+
+    **The timeline's layer-name column sizes itself to the busiest track.**
+
+    - *Number*: 2 commits. It doubles in width in Edit mode, then grows to fit,
+      up to a limit. Clip counts are computed O(N) through a Map, not
+      per-track-per-render.
+
+    **The start of After Effects style cards positioned in space.**
+
+    - *Number*: M0 to M3 plus M6, with M2 landing last, in 8 commits.
+      `verify:mat4`, 9 checks; `verify:camera3d`, 17; `verify:scene3d`, 5.
+    - *Cause*: built so a 2D project renders byte-identical at every step, with
+      the depth fields defaulting to 0 and the GPU path switched on by an
+      `is3D` flag. M0 is a matrix core plus optional Z position and X/Y
+      rotation on Transform. M1 is a camera layer that resolves to view and
+      projection each frame, and its default frames the composition 1:1 at any
+      zoom, so a single layer switched to 3D does not jump. M3 is the per-layer
+      3D toggle, with X, Y and Z position and rotation rows in the inspector.
+      M2 is the renderer projecting each 3D layer through the camera in the
+      shader (added to the image, shape, text and pattern uniforms) and sorting
+      by depth, far to near, with 2D layers holding their existing order.
+    - *Hard part*: the y-down handedness trap. The default camera was flipping
+      both screen axes against the renderer's y-down convention, and the first
+      harness only checked magnitudes, so it passed anyway. Fixed with a −Y
+      composition-up vector and pinned with signed-parity assertions (top-left
+      lands at (−1,+1), and so on). The GPU projection itself cannot be proven
+      outside a browser, so it is additive and guarded, a zero-initialised
+      `is3D` flag means no 2D layer can be affected, and everything that is
+      actually hard, parity, foreshortening and painter order, is proven in
+      Node.
+
 - date: 2026-08-07
   text: Nine milestones of vector and editing work in one day, from draggable corner radii to path healing.
   detail: |
