@@ -172,17 +172,24 @@ button { cursor: pointer; border: none; background: none; font: inherit; color: 
 /* Anchor targets clear the sticky nav */
 section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
-/* Underline that grows from the left, used by every inline prose link */
+/* Underline that grows from the left, used by every inline prose link.
+
+   Blue, and the resting track is a pale blue rather than --gray-line. These
+   were black text over a grey hairline, which is invisible in a body of black
+   text: the story alone carries 20-odd links to old prototypes and live builds
+   that nobody could see were links without running a cursor over the
+   paragraph. Colour is the cheapest fix and it is the convention every reader
+   already knows. */
 .intro-text a:not(.link-pill),
 .project-desc a,
 .chapter-body a,
 .timeline-desc a,
 .next-contact a,
 .issue-body a {
-    color: var(--black);
+    color: var(--blue);
     background-image:
-        linear-gradient(var(--black), var(--black)),
-        linear-gradient(var(--gray-line), var(--gray-line));
+        linear-gradient(var(--blue), var(--blue)),
+        linear-gradient(var(--blue-soft), var(--blue-soft));
     background-repeat: no-repeat;
     background-position: 0 100%, 0 100%;
     background-size: 0 1px, 100% 1px;
@@ -1189,6 +1196,29 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 .chapter-body:last-child { margin-bottom: 0; }
+
+/* The pull quotes are the loudest line in each chapter, so the one that is
+   also the thesis of a whole newsletter issue gets a way through to it. Set on
+   its own line rather than inline, so it reads as a footnote to the quote
+   instead of turning part of the quote into a link. */
+.chapter-pull-link {
+    display: block;
+    margin-top: 14px;
+    font-family: var(--font-wide);
+    font-size: 9px;
+    font-weight: 300;
+    font-style: normal;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    border-bottom: 1px solid var(--blue-soft);
+    padding-bottom: 3px;
+    width: fit-content;
+    transition: border-color var(--dur) var(--ease);
+}
+
+.chapter-pull-link:hover,
+.chapter-pull-link:focus-visible { border-bottom-color: var(--blue); }
 
 .chapter-pull {
     font-family: var(--font-display);
