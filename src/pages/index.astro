@@ -64,6 +64,31 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <!-- ─── 1. HERO ─── -->
     <section class="hero" aria-label="Introduction">
         <div class="hero-inner">
+            {/* The hero is bottom-aligned in an 88vh band, so everything above
+                the headline was empty. This fills it and does the job the
+                sub-line does, in the form the audience actually reads.
+
+                Written as one span per line rather than as a real <pre> block:
+                whitespace inside <pre> is significant, so the source could not
+                then be indented to match the file around it without that
+                indentation shipping. Here the indent is padding, in CSS. */}
+            <div class="hero-code" role="img"
+                 aria-label="A JavaScript object describing me: role, backend developer and machine learning engineer; location, Rovigo, Italy; main languages, TypeScript and PHP; current focus, FlashFX, DigitalGabry and civitasCraft; learning, Python and advanced WebGPU; passion, building products that save time.">
+                <div class="hero-code-bar" aria-hidden="true">
+                    <span class="hero-code-file">gabriele.ts</span>
+                </div>
+                <code class="hero-code-body" aria-hidden="true">
+                    <span class="cl"><span class="k">const</span> <span class="v">gabriele</span> <span class="o">=</span> <span class="p">&#123;</span></span>
+                    <span class="cl i"><span class="pr">role</span><span class="o">:</span> <span class="s">"Backend Developer &amp; ML Engineer"</span><span class="p">,</span></span>
+                    <span class="cl i"><span class="pr">location</span><span class="o">:</span> <span class="s">"Rovigo, Italy 🇮🇹"</span><span class="p">,</span></span>
+                    <span class="cl i"><span class="pr">mainLanguages</span><span class="o">:</span> <span class="p">[</span><span class="s">"TypeScript"</span><span class="p">,</span> <span class="s">"PHP"</span><span class="p">],</span></span>
+                    <span class="cl i"><span class="pr">currentFocus</span><span class="o">:</span> <span class="p">[</span><span class="s">"FlashFX"</span><span class="p">,</span> <span class="s">"DigitalGabry"</span><span class="p">,</span> <span class="s">"civitasCraft"</span><span class="p">],</span></span>
+                    <span class="cl i"><span class="pr">learning</span><span class="o">:</span> <span class="p">[</span><span class="s">"Python"</span><span class="p">,</span> <span class="s">"Advanced WebGPU"</span><span class="p">],</span></span>
+                    <span class="cl i"><span class="pr">passion</span><span class="o">:</span> <span class="s">"Building products that save time"</span><span class="p">,</span></span>
+                    <span class="cl"><span class="p">&#125;</span><span class="o">;</span></span>
+                </code>
+            </div>
+
             <h1 class="hero-headline">Gabriele Bolognese</h1>
             <p class="hero-sub">Backend developer, founder of FlashFX, part-time video editor.</p>
             <div class="hero-meta">

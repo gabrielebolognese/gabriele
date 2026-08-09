@@ -63,11 +63,28 @@
     --blue-soft:   #a9c6f5;
     --red:         #b3261e;
 
+    /* The hero code block. Its own scale because it is the one dark surface on
+       the site and nothing else can borrow these safely. */
+    --code-bg:     #0d0d10;
+    --code-bar:    #17171c;
+    --code-line:   #26262e;
+    --code-punct:  #6f7684;
+    --code-key:    #c792ea;
+    --code-var:    #82aaff;
+    --code-prop:   #ffcb6b;
+    --code-string: #c3e88d;
+    --code-op:     #89ddff;
+
     /* Type */
     --font-display: 'Lexend', system-ui, sans-serif;
     --font-body:    'DM Sans', system-ui, sans-serif;
     --font-serif:   'Cormorant Garamond', Georgia, serif;
     --font-wide:    'Unbounded', sans-serif;
+    /* Deliberately a system stack, not a fifth webfont: four families at
+       fifteen variants is already a lot of bytes, and the one code block on
+       the site is not worth a download. */
+    --font-mono:    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+                    'Liberation Mono', monospace;
 
     --text-xs:   11px;
     --text-sm:   13px;
@@ -493,6 +510,64 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     margin: 0 auto;
 }
 
+/* ── The hero code block ─────────────────────────────────────────────────────
+   The only dark surface on the site, and the only place a monospace face
+   appears. It earns both: the page opens by claiming to be written by someone
+   who builds things, and this is that claim in the notation of the trade
+   rather than in a sentence about it.
+   ------------------------------------------------------------------------- */
+.hero-code {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 44px;
+    background: var(--code-bg);
+    border: 1px solid var(--code-line);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hero-code-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    background: var(--code-bar);
+    border-bottom: 1px solid var(--code-line);
+}
+
+/* Three dots would be a screenshot of an editor. A filename is the one piece
+   of chrome that says something: which language the block is in. */
+.hero-code-file {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--code-punct);
+}
+
+.hero-code-body {
+    display: block;
+    padding: 18px 20px;
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 1.15vw, 13.5px);
+    line-height: 1.85;
+    color: var(--code-punct);
+    /* The longest line is ~64 characters. Wrapping it would break the shape
+       that makes this read as code at all, so it scrolls instead. */
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+.hero-code-body .cl { display: block; }
+.hero-code-body .i  { padding-left: 2.4ch; }
+
+.hero-code-body .k  { color: var(--code-key); }
+.hero-code-body .v  { color: var(--code-var); }
+.hero-code-body .pr { color: var(--code-prop); }
+.hero-code-body .s  { color: var(--code-string); }
+.hero-code-body .o  { color: var(--code-op); }
+.hero-code-body .p  { color: var(--code-punct); }
+
 .hero-headline {
     font-family: var(--font-display);
     font-size: var(--text-hero);
@@ -557,14 +632,27 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 /* The mark inherits the link's colour, so the hover inversion needs no rule. */
 .social-icon { flex-shrink: 0; display: block; }
 
-.js .hero-headline { animation: rise-in 1.1s var(--ease-expo) 60ms both; }
-.js .hero-sub      { animation: rise-in 1.1s var(--ease-expo) 200ms both; }
-.js .hero-meta     { animation: rise-in 1.1s var(--ease-expo) 320ms both; }
-.js .hero-socials  { animation: rise-in 1.1s var(--ease-expo) 440ms both; }
+/* The block leads the stagger, so the page opens on the code and the name
+   arrives under it rather than the other way round. */
+.js .hero-code     { animation: rise-in 1.1s var(--ease-expo) 0ms both; }
+.js .hero-headline { animation: rise-in 1.1s var(--ease-expo) 160ms both; }
+.js .hero-sub      { animation: rise-in 1.1s var(--ease-expo) 300ms both; }
+.js .hero-meta     { animation: rise-in 1.1s var(--ease-expo) 420ms both; }
+.js .hero-socials  { animation: rise-in 1.1s var(--ease-expo) 540ms both; }
+
+@media (max-width: 860px) {
+    /* The hero is a fixed 88vh band and the block has just added ~230px to it.
+       Tightening the gaps keeps the socials above the fold on a laptop, which
+       is the whole reason they were moved up there. */
+    .hero-code { margin-bottom: 32px; }
+}
 
 @media (max-width: 520px) {
     .hero-meta { flex-direction: column; align-items: flex-start; gap: 6px; }
     .hero-meta .dot { display: none; }
+
+    .hero-code-body { padding: 14px 16px; line-height: 1.75; }
+    .hero-code { margin-bottom: 26px; }
 }
 
 
