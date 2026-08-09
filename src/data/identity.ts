@@ -155,6 +155,11 @@ export interface Social {
   description: string;
   /** Deliberately different on every card. */
   cta: string;
+  /** The platform's own brand colour, used for the icon, the card border and
+   *  the button. Every one is the official value, which is why X and GitHub
+   *  are near-black: that IS their brand. Changing those two to an accent
+   *  colour would make them the only two on the site that are not real. */
+  brand: string;
 }
 
 function fromSameAs(host: string): string {
@@ -173,6 +178,7 @@ export const SOCIALS: Social[] = [
     description:
       'Build updates and the reasoning behind product decisions. The fastest growing of my accounts.',
     cta: 'Connect with me',
+    brand: '#0a66c2',
   },
   {
     key: 'x',
@@ -180,6 +186,7 @@ export const SOCIALS: Social[] = [
     url: `https://x.com/${ORGANIZATION.xHandle}`,
     description: 'The FlashFX account. Releases, demos, and what broke on the way to them.',
     cta: 'See the updates',
+    brand: '#000000',
   },
   {
     key: 'github',
@@ -187,6 +194,7 @@ export const SOCIALS: Social[] = [
     url: fromSameAs('github.com'),
     description: 'Experiments and open work. Most things start here before they are anything.',
     cta: 'Browse the code',
+    brand: '#181717',
   },
   {
     key: 'youtube',
@@ -194,6 +202,7 @@ export const SOCIALS: Social[] = [
     url: fromSameAs('youtube.com'),
     description: 'Long form on building FlashFX, for the things worth more than a paragraph.',
     cta: 'Watch a build',
+    brand: '#ff0000',
   },
   {
     key: 'instagram',
@@ -202,6 +211,7 @@ export const SOCIALS: Social[] = [
     description:
       'The daily side of it: training, studying, and the parts of building that do not screenshot well.',
     cta: 'Follow the logs',
+    brand: '#e4405f',
   },
   {
     key: 'flashfx',
@@ -210,6 +220,9 @@ export const SOCIALS: Social[] = [
     description:
       'The product itself. Browser-native motion graphics and video editing, with nothing to install.',
     cta: 'Try it now',
+    // TODO: FlashFX's real brand hex. This is a placeholder, picked to be
+    // distinct from the other five, and it is the same gap as ORGANIZATION.logo.
+    brand: '#7b3ff2',
   },
 ];
 

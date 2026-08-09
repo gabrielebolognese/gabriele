@@ -108,6 +108,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 {SOCIALS.map(social => (
                     <a
                             class="hero-social"
+                            style={`--brand:${social.brand}`}
                             href={social.url}
                             target="_blank"
                             rel={social.key === 'flashfx' ? 'noopener noreferrer' : 'noopener noreferrer me'}
@@ -446,12 +447,12 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
             by anyone else. Updated monthly.
         </p>
 
-        {/* Fixed to the left edge, faded in by initSkipStory() only while the
-            story is on screen. Hidden until then, so no-JS visitors never see a
-            control that would not work for them. */}
-        <a class="skip-story" href="#story-end">
-            <span class="skip-story-label">Skip story</span>
-            <svg class="skip-story-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+        {/* Fixed to the left edge, faded in by initSkipJumps() only while the
+            section named in data-skip-watch is on screen. Hidden until then, so
+            no-JS visitors never see a control that would not work for them. */}
+        <a class="skip-jump" href="#story-end" data-skip-watch="#story">
+            <span class="skip-jump-label">Skip story</span>
+            <svg class="skip-jump-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
                  stroke-linejoin="round" aria-hidden="true" focusable="false">
                 <path d="M5 5.5l7 7 7-7" />
@@ -1031,6 +1032,18 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <!-- ─── 5. TIMELINE ─── -->
     <section class="section" id="timeline" aria-labelledby="timeline-heading">
         <h2 id="timeline-heading" class="section-label">Timeline</h2>
+
+        {/* Identical control to the story's, same component CSS and the same
+            observer, pointed at a different section. */}
+        <a class="skip-jump" href="#timeline-end" data-skip-watch="#timeline">
+            <span class="skip-jump-label">Skip timeline</span>
+            <svg class="skip-jump-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M5 5.5l7 7 7-7" />
+                <path d="M5 12.5l7 7 7-7" />
+            </svg>
+        </a>
         <p class="section-intro">A record of the milestones, launches and moments that shaped my path.</p>
 
         <ol class="timeline">
@@ -1371,6 +1384,8 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 The timeline is updated for every major event, usually once a month.
             </p>
         </div>
+
+        <span class="story-end" id="timeline-end" aria-hidden="true"></span>
     </section>
 
     <div class="rule"></div>
@@ -1446,9 +1461,14 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         <h2 id="follow-heading" class="section-label">Where to find me</h2>
         <p class="section-intro">Six places, six different reasons. Pick whichever one you actually use.</p>
 
+        {/* The whole card is the hit area, stretched from the button's own
+            link (see .contact-card-btn::after). Not a second <a> wrapped round
+            the card, which nests a link inside a link, and not a click handler,
+            which is not keyboard reachable and shows no URL on hover. One link
+            per card, card-sized target, button still visible. */}
         <div class="contact-grid">
             {SOCIALS.map(social => (
-                <article class="contact-card">
+                <article class="contact-card" style={`--brand:${social.brand}`}>
                     <div class="contact-card-head">
                         <SocialIcon name={social.key} size={22} />
                         <h3 class="contact-card-name">{social.name}</h3>

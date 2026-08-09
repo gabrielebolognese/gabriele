@@ -464,30 +464,40 @@
         return halt;
     }
 
-    /* ── Skip story ──────────────────────────────────────────────────────────
-       The story is the longest section on the site, so it gets a way out. The
-       button is only shown while the story is the thing being read: fixed and
-       permanent it would be a black pill floating over every other section,
-       and past the last chapter there is nothing left to skip.
+    /* ── Skip controls ──────────────────────────────────────────────────────
+       The story and the timeline are the two long sections on the page, so
+       each gets a way out. One implementation, driven by data-skip-watch on
+       the button: the section it names is what the observer follows, and the
+       href is where it jumps. Adding a third is markup only.
+
+       The button is only shown while its section is the thing being read.
+       Fixed and permanent they would be black pills floating over every other
+       section, and past the last row there is nothing left to skip.
 
        The margins are deliberately asymmetric. -35% on top means the button
-       waits until the story is genuinely underway rather than appearing the
+       waits until the section is genuinely underway rather than appearing the
        instant its first pixel crosses the fold, and -15% on the bottom retires
        it slightly before the end, where offering to skip is just noise. */
-    function initSkipStory() {
-        var btn = document.querySelector('.skip-story');
-        var story = document.getElementById('story');
-        if (!btn || !story) return;
+    function initSkipJumps() {
+        var btns = document.querySelectorAll('.skip-jump[data-skip-watch]');
+        if (!btns.length) return;
 
-        if (!('IntersectionObserver' in window)) {
-            btn.classList.add('is-visible');
-            return;
+        for (var i = 0; i < btns.length; i++) {
+            (function (btn) {
+                var target = document.querySelector(btn.getAttribute('data-skip-watch'));
+                if (!target) return;
+
+                if (!('IntersectionObserver' in window)) {
+                    btn.classList.add('is-visible');
+                    return;
+                }
+
+                new IntersectionObserver(function (entries) {
+                    var showing = entries[entries.length - 1].isIntersecting;
+                    btn.classList.toggle('is-visible', showing);
+                }, { rootMargin: '-35% 0px -15% 0px', threshold: 0 }).observe(target);
+            })(btns[i]);
         }
-
-        new IntersectionObserver(function (entries) {
-            var showing = entries[entries.length - 1].isIntersecting;
-            btn.classList.toggle('is-visible', showing);
-        }, { rootMargin: '-35% 0px -15% 0px', threshold: 0 }).observe(story);
     }
 
     function start() {
@@ -495,7 +505,7 @@
         initNav();
         initProgress();
         initCarousels();
-        initSkipStory();
+        initSkipJumps();
         initCountdown();
         initAgeCount();
         initLifeGrid();

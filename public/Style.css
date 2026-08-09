@@ -611,6 +611,9 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     margin-top: 26px;
 }
 
+/* --brand is set inline per pill from SOCIALS in identity.ts. The mark carries
+   the colour at rest and the whole pill takes it on hover, so six identical
+   grey outlines become six recognisable ones without shouting at rest. */
 .hero-social {
     display: inline-flex;
     align-items: center;
@@ -627,13 +630,20 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
         background   var(--dur) var(--ease);
 }
 
-.hero-social:hover {
+.hero-social .social-icon { color: var(--brand, var(--gray-dark)); }
+
+.hero-social:hover,
+.hero-social:focus-visible {
     color: var(--white);
-    background: var(--black);
-    border-color: var(--black);
+    background: var(--brand, var(--black));
+    border-color: var(--brand, var(--black));
 }
 
-/* The mark inherits the link's colour, so the hover inversion needs no rule. */
+/* On hover the pill is the brand colour, so the mark has to leave it and
+   become the label's white, or it disappears into its own background. */
+.hero-social:hover .social-icon,
+.hero-social:focus-visible .social-icon { color: currentColor; }
+
 .social-icon { flex-shrink: 0; display: block; }
 
 /* The block leads the stagger, so the page opens on the code and the name
@@ -1217,7 +1227,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
    the story is the thing on screen. It carries no `.js` gate because it starts
    hidden and is revealed by a class, so a visitor without JavaScript simply
    never sees a control that would not work for them anyway. */
-.skip-story {
+.skip-jump {
     position: fixed;
     left: 0;
     top: 50%;
@@ -1245,26 +1255,27 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
         visibility 0s linear var(--dur-slow);
 }
 
-.skip-story.is-visible {
+.skip-jump.is-visible {
     opacity: 1;
     visibility: visible;
     transform: translate3d(0, -50%, 0);
     transition-delay: 0s, 0s, 0s, 0s;
 }
 
-.skip-story:hover,
-.skip-story:focus-visible { padding-right: 34px; }
+.skip-jump:hover,
+.skip-jump:focus-visible { padding-right: 34px; }
 
-.skip-story-icon {
+.skip-jump-icon {
     flex: none;
     transition: transform var(--dur) var(--ease);
 }
 
-.skip-story:hover .skip-story-icon,
-.skip-story:focus-visible .skip-story-icon { transform: translate3d(0, 3px, 0); }
+.skip-jump:hover .skip-jump-icon,
+.skip-jump:focus-visible .skip-jump-icon { transform: translate3d(0, 3px, 0); }
 
-/* Empty, and only a scroll destination. The offset matches the one section[id]
-   gets in the reset, so landing here clears the sticky nav. */
+/* Empty, and only a scroll destination: #story-end and #timeline-end both use
+   it. The offset matches the one section[id] gets in the reset, so landing
+   here clears the sticky nav. */
 .story-end {
     display: block;
     scroll-margin-top: calc(var(--nav-h) + 16px);
@@ -1286,11 +1297,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
     /* A 150px pill parked over a 1-column layout covers the text it is offering
        to skip, so the label goes and the arrows carry it. */
-    .skip-story { padding: 14px 16px; gap: 0; }
-    .skip-story-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .skip-jump { padding: 14px 16px; gap: 0; }
+    .skip-jump-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
-    .skip-story:hover,
-    .skip-story:focus-visible { padding-right: 16px; }
+    .skip-jump:hover,
+    .skip-jump:focus-visible { padding-right: 16px; }
 }
 
 
@@ -1945,7 +1956,12 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     margin-top: 32px;
 }
 
+/* position: relative is load-bearing. The button's ::after is stretched to
+   these bounds to make the whole card one click target, so this has to be the
+   containing block or the hit area would escape to the nearest positioned
+   ancestor and cover the page. */
 .contact-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     aspect-ratio: 1 / 1;
@@ -1955,7 +1971,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     transition: border-color var(--dur) var(--ease);
 }
 
-.contact-card:hover { border-color: var(--black); }
+.contact-card:hover { border-color: var(--brand, var(--black)); }
 
 /* Icon and name on one line in the top-left, per the brief. align-items
    centres the mark against the cap height rather than the line box. */
@@ -1965,6 +1981,9 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     gap: 11px;
     color: var(--black);
 }
+
+/* --brand is set inline per card from SOCIALS in identity.ts. */
+.contact-card .social-icon { color: var(--brand, var(--black)); }
 
 .contact-card-name {
     font-family: var(--font-display);
@@ -1997,19 +2016,33 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--white);
-    background: var(--black);
-    border: 1px solid var(--black);
+    background: var(--brand, var(--black));
+    border: 1px solid var(--brand, var(--black));
     transition:
         background var(--dur) var(--ease),
         color      var(--dur) var(--ease);
 }
 
-.contact-card-btn:hover {
+/* Inverts to the brand colour on its own ground, which is why the border was
+   always a separate declaration rather than folded into the background. */
+.contact-card:hover .contact-card-btn,
+.contact-card-btn:focus-visible {
     background: var(--white);
-    color: var(--black);
+    color: var(--brand, var(--black));
 }
 
-.contact-card-btn:hover .issue-card-arrow { transform: translateX(4px); }
+.contact-card:hover .issue-card-arrow { transform: translateX(4px); }
+
+/* The whole card is the hit area, stretched from the button's own link. No
+   second <a> around the card (a link inside a link is invalid and screen
+   readers announce it twice) and no click handler (not keyboard reachable, no
+   URL in the status bar, dead without JS). The text stays selectable because
+   this sits above the padding but below nothing that needs pointer events. */
+.contact-card-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
 
 @media (max-width: 860px) {
     .contact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
