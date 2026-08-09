@@ -6,6 +6,7 @@ import IssueCard from '../components/newsletter/IssueCard.astro';
 import Faq from '../components/Faq.astro';
 import LifeSection from '../components/LifeSection.astro';
 import DevlogTimeline from '../components/DevlogTimeline.astro';
+import StatsSection from '../components/StatsSection.astro';
 import { Image } from 'astro:assets';
 /* Asset filenames are load-bearing: Astro emits each one as
    `<basename>.<hash>.webp`, so the source basename is the served filename and
@@ -125,6 +126,12 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
             </p>
         </LifeSection>
     </section>
+
+    <div class="rule"></div>
+
+    {/* Directly under About on purpose: the copy above is the claim, this is
+        the only part of the page that is measured rather than written. */}
+    <StatsSection />
 
     <div class="rule"></div>
 

@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "stats:refresh": "node scripts/refresh-github-stats.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.3",

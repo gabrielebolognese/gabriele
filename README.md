@@ -1,43 +1,45 @@
-# Astro Starter Kit: Minimal
+# gabrielebolognese.blog
+
+> I am Gabriele Bolognese, a founder from Rovigo, Italy, building FlashFX, browser-native motion
+> graphics and video editing used by more than 8,000 people, and I write down how it is actually
+> going while it happens.
+
+My personal site: the long version of that sentence, a devlog I add to most days, and a newsletter
+I write when something is worth more than a paragraph.
+
+Live at **[gabrielebolognese.blog](https://gabrielebolognese.blog)**.
+
+## Stack
+
+Astro 6, static output, no UI framework. Styling and the motion layer are plain CSS and plain JS
+served straight from `public/`, not bundled. Deployed to Netlify from `master`.
+
+Requires Node >= 22.12.
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev              # localhost:4321
+npm run build            # static build to ./dist
+npm run preview          # serve the built ./dist
+npm run stats:refresh    # refresh the committed GitHub stats snapshot
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## What is where
 
-## 🚀 Project Structure
+| Path | What it holds |
+| :--- | :--- |
+| `src/data/` | The source of truth for identity, facts, milestones and schema.org. Nothing is hardcoded in a page. |
+| `src/content/devlog.yaml` | Every devlog entry, in one file, so publishing is "add a block at the top and commit". |
+| `src/content/newsletter/` | One `.mdx` per issue. |
+| `public/Style.css` | The whole stylesheet, numbered by section. |
+| `public/motion.js` | Scroll reveals, the countdown, the carousels, the life grid. |
 
-Inside of your Astro project, you'll see the following folders and files:
+The section headers in those files explain the decisions behind them, including the ones that look
+wrong until you know what they are avoiding. [CLAUDE.md](CLAUDE.md) is the tour.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Notes
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+The statistics section on the homepage reads GitHub at build time and falls back to a committed
+snapshot if the fetch fails, so the numbers can go stale but the build cannot break.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+There are no em dashes anywhere in this repo, on purpose.

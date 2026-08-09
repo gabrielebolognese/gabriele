@@ -1,0 +1,183 @@
+---
+/* The statistics section: the only part of this site that is measured rather
+ * than written. Everything else on the homepage is a claim; this is the
+ * evidence, so it is deliberately placed directly under the About copy where
+ * the claims are made.
+ *
+ * Five things, in the order a reader would want them: the totals, the year of
+ * activity behind the totals, the repositories the work went into, and the
+ * most recent entry of the log that describes it.
+ *
+ * The grid is monochrome on purpose. GitHub's green would be the only
+ * saturated colour on a site that is otherwise black, grey and two accents,
+ * and the shading carries the same information either way.
+ */
+import { getCollection } from 'astro:content';
+import { getGithubStats } from '../data/github';
+
+const stats = await getGithubStats();
+
+const devlog = await getCollection('devlog');
+const latest = [...devlog].sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0];
+
+const nf = new Intl.NumberFormat('en-GB');
+
+const longDate = (value: string | Date) =>
+  new Date(value).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+
+/** "6 Jan - 9 Aug 2026", the span under a streak. Both ends carry a year only
+ *  when the streak actually crosses one, which most do not. */
+const span = (from: string | null, to: string | null) => {
+  if (!from || !to) return null;
+  const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', timeZone: 'UTC' };
+  const a = new Date(from);
+  const b = new Date(to);
+  const sameYear = a.getUTCFullYear() === b.getUTCFullYear();
+  const left = a.toLocaleDateString('en-GB', sameYear ? opts : { ...opts, year: 'numeric' });
+  const right = b.toLocaleDateString('en-GB', { ...opts, year: 'numeric' });
+  return `${left} to ${right}`;
+};
+
+const anchor = (date: Date) => date.toISOString().slice(0, 10);
+
+const figures = [
+  {
+    value: nf.format(stats.totalContributions),
+    label: 'Total contributions',
+    note: stats.firstContribution ? `Since ${longDate(stats.firstContribution)}` : null,
+  },
+  {
+    value: nf.format(stats.longestStreak.days),
+    unit: stats.longestStreak.days === 1 ? 'day' : 'days',
+    label: 'Longest streak',
+    note: span(stats.longestStreak.from, stats.longestStreak.to),
+  },
+  {
+    value: nf.format(stats.currentStreak.days),
+    unit: stats.currentStreak.days === 1 ? 'day' : 'days',
+    label: 'Current streak',
+    note: span(stats.currentStreak.from, stats.currentStreak.to) ?? 'Not running',
+  },
+];
+---
+
+<section class="section stats-section" id="stats" aria-labelledby="stats-heading">
+    <h2 class="section-label" id="stats-heading">Statistics</h2>
+    <p class="section-intro">Read from GitHub at build time, not typed in by hand.</p>
+
+    <div class="stat-figures">
+        {figures.map((f) => (
+            <div class="stat-figure">
+                <p class="stat-value">
+                    {f.value}{f.unit && <span class="stat-unit">{f.unit}</span>}
+                </p>
+                <p class="stat-label">{f.label}</p>
+                {f.note && <p class="stat-note">{f.note}</p>}
+            </div>
+        ))}
+    </div>
+
+    <figure class="contrib">
+        <figcaption class="contrib-heading">
+            <h3 class="stat-subheading">Contribution history</h3>
+            <p class="stat-note">
+                The last 12 months. {nf.format(stats.activeDays)} days with at least one
+                contribution since the account opened.
+            </p>
+        </figcaption>
+
+        {/* One <div> per week, seven cells each, so the whole year is 53
+            columns and the layout needs no per-cell positioning. Only days
+            that happened get a cell; the rest are holes, not empty days. */}
+        <div class="contrib-plot">
+            <div class="contrib-months" aria-hidden="true">
+                {stats.months.map((m) => (
+                    <span class="contrib-month" style={`--col:${m.column + 1}`}>{m.label}</span>
+                ))}
+            </div>
+
+            <div class="contrib-grid" role="img"
+                 aria-label={`Contribution activity for the last 12 months. ${nf.format(stats.totalContributions)} contributions in total, currently a ${stats.currentStreak.days} day streak.`}>
+                {stats.weeks.map((week) => (
+                    <div class="contrib-week">
+                        {week.map((day) => (
+                            day === null
+                                ? <span class="contrib-day is-empty"></span>
+                                : <span class="contrib-day" data-level={day.level}
+                                        title={`${day.count === 0 ? 'No' : nf.format(day.count)} contribution${day.count === 1 ? '' : 's'} on ${longDate(day.date)}`}></span>
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        <div class="contrib-foot">
+            <p class="stat-note">
+                {stats.live ? 'Live at build' : 'Snapshot'}, {longDate(stats.capturedAt)}.
+                <a href={stats.profileUrl} target="_blank" rel="noopener noreferrer me">
+                    @{stats.login}
+                </a>
+            </p>
+            <p class="contrib-legend" aria-hidden="true">
+                <span>Less</span>
+                <span class="contrib-day" data-level="0"></span>
+                <span class="contrib-day" data-level="1"></span>
+                <span class="contrib-day" data-level="2"></span>
+                <span class="contrib-day" data-level="3"></span>
+                <span class="contrib-day" data-level="4"></span>
+                <span>More</span>
+            </p>
+        </div>
+    </figure>
+
+    <div class="stats-split">
+        <div class="stats-repos">
+            <h3 class="stat-subheading">Main repositories</h3>
+            {stats.pinned.length === 0 ? (
+                <p class="stat-note">No pinned repositories could be read from the profile.</p>
+            ) : (
+                <ul class="repo-list">
+                    {stats.pinned.map((repo) => (
+                        <li class="repo-item">
+                            <a class="repo-name" href={repo.url} target="_blank" rel="noopener noreferrer">
+                                {repo.name}
+                            </a>
+                            {repo.description && <p class="repo-desc">{repo.description}</p>}
+                            <p class="repo-meta">
+                                {repo.language && (
+                                    <span class="repo-lang">
+                                        <span class="repo-dot" style={`background:${repo.languageColor ?? '#999'}`}></span>
+                                        {repo.language}
+                                    </span>
+                                )}
+                                {repo.stars > 0 && (
+                                    <span class="repo-stars">
+                                        {nf.format(repo.stars)} star{repo.stars === 1 ? '' : 's'}
+                                    </span>
+                                )}
+                            </p>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+
+        {latest && (
+            <div class="stats-latest">
+                <h3 class="stat-subheading">Latest devlog entry</h3>
+                <p class="latest-date">
+                    <time datetime={anchor(latest.data.date)}>{longDate(latest.data.date)}</time>
+                </p>
+                <p class="latest-text">{latest.data.text}</p>
+                <a class="latest-link" href={`/devlog#${anchor(latest.data.date)}`}>
+                    Read the full entry
+                </a>
+            </div>
+        )}
+    </div>
+</section>

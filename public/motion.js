@@ -18,6 +18,7 @@
         '.section-label', '.section-intro',
         '.intro-text p', '.intro-links', '.intro-image-wrap',
         '.cd-label', '.cd-display', '.cd-deadline', '.cd-goal',
+        '.stat-figure', '.contrib', '.repo-item', '.stats-latest',
         '.project-card',
         '.story-disclaimer',
         '.story-chapter', '.chapter-header', '.entry', '.entry-pull', '.entry-wide',
