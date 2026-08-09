@@ -123,13 +123,14 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <div class="rule"></div>
 
     <!-- ─── 2. INTRODUCTION ─── -->
-    <section class="section intro" id="about" aria-labelledby="about-heading">
-        <h2 id="about-heading" class="visually-hidden">About</h2>
+    {/* Labelled by the visible title LifeSection renders, rather than by a
+        hidden duplicate of it. */}
+    <section class="section intro" id="about" aria-labelledby="life-about-heading">
         {/* showLinks is off here: the same six profiles are already a row under
             the hero and a card grid above the FAQ, so a third copy in this
             column was the same links said three times on one page. The schema
             sameAs array is untouched and still corroborated twice over. */}
-        <LifeSection aboutHeading="About" showLinks={false}>
+        <LifeSection aboutHeading="About me" showLinks={false}>
             {/* One paragraph. The long version is the whole of /about, which is
                 what that page is for; this column has a life grid and 27 pills
                 to fit beside it. */}
@@ -168,12 +169,20 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 across Italy. Two tests: a project to design and build, and a coding test. I
                 finished first overall.
             </p>
-            <p class="award-links">
-                <a href="https://iisviolamarchesini.edu.it/2026/06/10/gabriele-bolognese-campione-nazionale-di-informatica/"
-                   target="_blank" rel="noopener noreferrer">The school's announcement</a>
-                <a href="https://www.polesine24.it/cronaca/2026/06/09/news/e-polesano-il-campione-nazionale-di-informatica-396780/"
-                   target="_blank" rel="noopener noreferrer">Interview in Polesine24</a>
-            </p>
+            {/* One button, not two hairline-underlined links. The corroboration
+                is the point of the banner, so it gets the weight of a control
+                rather than the weight of a footnote. */}
+            <a class="award-cta"
+               href="https://www.polesine24.it/cronaca/2026/06/09/news/e-polesano-il-campione-nazionale-di-informatica-396780/"
+               target="_blank" rel="noopener noreferrer">
+                Read press (Italian)
+                <svg class="award-cta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M7 17 17 7" />
+                    <path d="M8 7h9v9" />
+                </svg>
+            </a>
         </div>
     </section>
 

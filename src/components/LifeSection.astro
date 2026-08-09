@@ -107,14 +107,19 @@ const PILLS: Array<{ url: string; label: string }> = [
 ];
 ---
 {/* Count-up. Rendered with real values at build time; motion.js takes over. */}
+{/* The heading of the whole block, and the only one it has. It used to be a
+    9px "ALIVE FOR" eyebrow here plus a second 9px "About" further down the
+    left column, which is two labels for one section and neither of them
+    readable as a title. */}
 <div class="age" data-birth={PERSON.birthDateTime}>
-  <span class="age-label">Alive for</span>
+  <h2 class="age-title" id="life-about-heading">{aboutHeading}</h2>
 
   {/* Reads as a sentence across two lines, "17 years old / and 243 days,
       14 hours", rather than as three stacked numeric units. The ids are what
       initAgeCount() in motion.js writes to; renaming one silently stops the
       counter without failing anything. */}
   <p class="age-line">
+    <span class="age-word">I'm</span>
     <span class="age-num" id="age-years">{age.years}</span>
     <span class="age-word">years old</span>
   </p>
@@ -154,7 +159,6 @@ const PILLS: Array<{ url: string; label: string }> = [
       decoding="async"
     />
 
-    <h2 class="bio-side-heading">{aboutHeading}</h2>
     <div class="bio-lede">
       <slot />
     </div>
@@ -228,17 +232,19 @@ const PILLS: Array<{ url: string; label: string }> = [
         margin-top: 56px;
         padding-top: 48px;
         border-top: 1px solid var(--gray-line);
-        text-align: center;
+        text-align: left;
     }
 
-    .age-label {
-        display: block;
+    /* Matches .section-label, so this block is titled the same way as every
+       other section on the page rather than in a style of its own. */
+    .age-title {
         font-family: var(--font-wide);
-        font-size: 9px;
-        letter-spacing: 0.28em;
-        text-transform: uppercase;
-        color: var(--gray-mid);
-        margin-bottom: 32px;
+        font-size: clamp(20px, 2.8vw, 36px);
+        font-weight: 300;
+        letter-spacing: 0.04em;
+        line-height: 1.2;
+        color: var(--black);
+        margin-bottom: 40px;
     }
 
     /* Baseline alignment is the whole point: "years old" has to sit on the
@@ -246,7 +252,7 @@ const PILLS: Array<{ url: string; label: string }> = [
     .age-line {
         display: flex;
         align-items: baseline;
-        justify-content: center;
+        justify-content: flex-start;
         flex-wrap: wrap;
         gap: 0 14px;
     }
@@ -277,13 +283,15 @@ const PILLS: Array<{ url: string; label: string }> = [
     /* Shares the countdown's digit-roll keyframe, set in Style.css. */
     .age-num.is-tick { animation: tick-in 520ms var(--ease-expo) both; }
 
+    /* --gray-dark, not --gray-mid and not black: these words sit beside a 104px
+       numeral, and at full black they compete with it instead of framing it. */
     .age-word {
         font-family: var(--font-wide);
         font-weight: 300;
         font-size: clamp(12px, 1.5vw, 17px);
         letter-spacing: 0.16em;
         text-transform: uppercase;
-        color: var(--gray-mid);
+        color: var(--gray-dark);
     }
 
     /* Full span under the counter. Both lines sit here rather than above the
@@ -300,15 +308,16 @@ const PILLS: Array<{ url: string; label: string }> = [
     .age-sub-grid { margin-top: 10px; }
 
     /* ── Split: portrait + about on the left, life grid on the right ─────── */
+    /* No border-bottom and no trailing space. The .section this sits in already
+       carries 100px of bottom padding and is followed by a .rule, so the old
+       88px padding + 96px margin + its own hairline produced a second line and
+       ~280px of blank page under the grid that read as an empty section. */
     .bio-split {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
         gap: 72px;
         align-items: start;
         margin-top: 64px;
-        margin-bottom: 96px;
-        padding-bottom: 88px;
-        border-bottom: 1px solid var(--gray-line);
     }
 
     .bio-portrait {
@@ -317,17 +326,8 @@ const PILLS: Array<{ url: string; label: string }> = [
         filter: grayscale(100%);
     }
 
-    .bio-side-heading {
-        font-family: var(--font-wide);
-        font-size: 9px;
-        font-weight: 400;
-        letter-spacing: 0.28em;
-        text-transform: uppercase;
-        color: var(--gray-mid);
-        margin: 32px 0 18px;
-    }
-
     .bio-lede {
+        margin-top: 32px;
         font-size: var(--text-sm);
         line-height: 1.9;
         color: var(--gray-dark);

@@ -64,17 +64,18 @@
     --blue-soft:   #a9c6f5;
     --red:         #b3261e;
 
-    /* The hero code block. Its own scale because it is the one dark surface on
-       the site and nothing else can borrow these safely. */
-    --code-bg:     #0d0d10;
-    --code-bar:    #17171c;
-    --code-line:   #26262e;
-    --code-punct:  #6f7684;
-    --code-key:    #c792ea;
-    --code-var:    #82aaff;
-    --code-prop:   #ffcb6b;
-    --code-string: #c3e88d;
-    --code-op:     #89ddff;
+    /* The hero code block. A light scale: the syntax hues are the same families
+       as an editor theme but darkened to carry on a near-white ground, where
+       the bright originals would be unreadable. Every one clears 4.5:1. */
+    --code-bg:     #f4f4f2;
+    --code-bar:    #eaeae7;
+    --code-line:   #dedeD9;
+    --code-punct:  #6b7280;
+    --code-key:    #8250df;
+    --code-var:    #0b57d0;
+    --code-prop:   #9a5300;
+    --code-string: #0f7a3d;
+    --code-op:     #0e6f85;
 
     /* Type */
     --font-display: 'Lexend', system-ui, sans-serif;
@@ -512,10 +513,12 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 /* ── The hero code block ─────────────────────────────────────────────────────
-   The only dark surface on the site, and the only place a monospace face
-   appears. It earns both: the page opens by claiming to be written by someone
-   who builds things, and this is that claim in the notation of the trade
-   rather than in a sentence about it.
+   The only place a monospace face appears on the site. It earns that: the page
+   opens by claiming to be written by someone who builds things, and this is
+   that claim in the notation of the trade rather than in a sentence about it.
+
+   Light ground rather than the usual editor black, so it reads as part of a
+   white editorial page instead of as a screenshot pasted onto one.
    ------------------------------------------------------------------------- */
 .hero-code {
     width: 100%;
@@ -3278,28 +3281,37 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     max-width: 620px;
 }
 
-.award-links {
+/* Full width of the text column and solid black. A first-place national title
+   that nobody can verify is just a sentence, so the link out to the press is
+   the most important control in the band and is sized like it. */
+.award-cta {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px 24px;
-    margin-top: 4px;
-}
-
-/* Press, so the underline is present at rest rather than on hover: these are
-   the corroboration and they are meant to be seen and followed. */
-.award-links a {
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 17px 24px;
+    background: var(--black);
+    color: var(--white);
     font-family: var(--font-wide);
-    font-size: 9px;
-    font-weight: 200;
-    letter-spacing: 0.16em;
+    font-size: var(--text-xs);
+    font-weight: 300;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--black);
-    border-bottom: 1px solid var(--gray-line);
-    padding-bottom: 3px;
-    transition: border-color var(--dur) var(--ease);
+    transition: background var(--dur) var(--ease);
 }
 
-.award-links a:hover { border-bottom-color: var(--black); }
+.award-cta:hover,
+.award-cta:focus-visible { background: var(--gray-dark); }
+
+.award-cta-icon {
+    flex: none;
+    transition: transform var(--dur) var(--ease);
+}
+
+.award-cta:hover .award-cta-icon,
+.award-cta:focus-visible .award-cta-icon { transform: translate3d(2px, -2px, 0); }
 
 @media (max-width: 860px) {
     /* Stacked, the logo panel keeps a band of its own rather than a column:
