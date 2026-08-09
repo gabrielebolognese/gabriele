@@ -168,6 +168,11 @@ const PILLS: Array<{ url: string; label: string }> = [
         ))}
       </div>
     )}
+
+    {/* Anything else for this column. The homepage puts the tech stack here,
+        which is why it is a slot and not a prop: /about renders the same
+        component and passes nothing, so nothing appears there. */}
+    <slot name="aside" />
   </aside>
 
   {/* No heading or caption above the grid: its first row has to line up with

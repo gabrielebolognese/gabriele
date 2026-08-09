@@ -1,0 +1,32 @@
+---
+/* The languages and tools, grouped, in the column beside the life grid.
+ *
+ * No scoped <style>: the rules live under "22. TECH STACK" in Style.css with
+ * every other component block, and 27 pills is enough elements that a scoped
+ * block would stamp a data-astro-cid attribute on all of them for no reason.
+ *
+ * The colour is inline because it is per-item data, not design: putting 27
+ * one-line classes in the stylesheet would just be the same data written
+ * twice, and it would drift from stack.ts the first time one is edited.
+ */
+import { STACK, STACK_NAMES } from '../data/stack';
+---
+
+<div class="stack" aria-labelledby="stack-heading">
+    <h3 class="stack-heading" id="stack-heading">Languages and tools</h3>
+
+    {STACK.map((group) => (
+        <div class="stack-group">
+            <h4 class="stack-group-title">{group.title}</h4>
+            <ul class="stack-pills">
+                {group.items.map((tech) => (
+                    <li class={`stack-pill is-${tech.fg}`} style={`--pill:${tech.bg}`}>
+                        {tech.name}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    ))}
+
+    <p class="stack-count">{STACK_NAMES.length} in total</p>
+</div>

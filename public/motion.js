@@ -18,7 +18,7 @@
         '.section-label', '.section-intro',
         '.intro-text p', '.intro-links', '.intro-image-wrap',
         '.cd-label', '.cd-display', '.cd-deadline', '.cd-goal',
-        '.award', '.stat-figure', '.contrib', '.repo-list', '.stats-latest',
+        '.stack-group', '.award', '.stat-figure', '.contrib', '.repo-list', '.stats-latest',
         '.project-card',
         '.story-disclaimer',
         '.story-chapter', '.chapter-header', '.entry', '.entry-pull', '.entry-wide',

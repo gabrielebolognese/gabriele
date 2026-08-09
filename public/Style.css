@@ -24,6 +24,7 @@
    19. Devlog timeline
    20. Statistics  (component: src/components/StatsSection.astro)
    21. Award banner
+   22. Tech stack  (component: src/components/TechStack.astro)
 
    Conventions: each section owns its own media queries; breakpoints are
    860px (tablet) and 520px (phone).
@@ -218,7 +219,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .cd-display,
 .js .cd-deadline,
 .js .cd-goal,
-.js .award,
+.js .stack-group,
 .js .contrib,
 .js .repo-list,
 .js .stats-latest,
@@ -336,7 +337,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .cd-display,
     .js .cd-deadline,
     .js .cd-goal,
-    .js .award,
+    .js .stack-group,
     .js .contrib,
     .js .repo-list,
     .js .stats-latest,
@@ -3317,4 +3318,82 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .award-logo img { max-height: 96px; }
 
     .award-body { padding: 28px 0 32px; }
+}
+
+
+/* ── 22. TECH STACK  (component: src/components/TechStack.astro) ─────────────
+   Sits in the left column of .bio-split, under the About copy and the profile
+   pills, beside the life grid. That column is roughly a third of 1080px, so
+   these are sized to wrap two or three to a row rather than to fill one.
+
+   The pill colour comes in as --pill from stack.ts. It is inline because it is
+   per-item data: 27 one-line classes here would be the same data written twice
+   and would drift the first time one was edited.
+   ------------------------------------------------------------------------- */
+.stack {
+    margin-top: 34px;
+    padding-top: 26px;
+    border-top: 1px solid var(--gray-line);
+}
+
+.stack-heading {
+    font-family: var(--font-wide);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    margin-bottom: 20px;
+}
+
+.stack-group + .stack-group { margin-top: 18px; }
+
+.stack-group-title {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--black);
+    margin-bottom: 9px;
+}
+
+.stack-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+}
+
+/* Deliberately not links and not buttons: a list of things known is not a set
+   of destinations, and making them look clickable would promise a page that
+   does not exist for any of them. */
+.stack-pill {
+    padding: 5px 10px;
+    border-radius: 4px;
+    background: var(--pill);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.stack-pill.is-light { color: #ffffff; }
+
+/* JavaScript and the two React entries only: their badge colours are too light
+   to carry white text, which is why the originals set logoColor=black. */
+.stack-pill.is-dark { color: #0a0a0a; }
+
+.stack-count {
+    margin-top: 22px;
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+}
+
+@media (max-width: 900px) {
+    /* Full width once .bio-split collapses to one column, so the pills stop
+       being a narrow ragged rail and lay out across the page instead. */
+    .stack { margin-top: 40px; }
 }

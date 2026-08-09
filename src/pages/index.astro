@@ -7,6 +7,7 @@ import Faq from '../components/Faq.astro';
 import LifeSection from '../components/LifeSection.astro';
 import DevlogTimeline from '../components/DevlogTimeline.astro';
 import StatsSection from '../components/StatsSection.astro';
+import TechStack from '../components/TechStack.astro';
 import { Image } from 'astro:assets';
 /* Asset filenames are load-bearing: Astro emits each one as
    `<basename>.<hash>.webp`, so the source basename is the served filename and
@@ -125,31 +126,23 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <section class="section intro" id="about" aria-labelledby="about-heading">
         <h2 id="about-heading" class="visually-hidden">About</h2>
         <LifeSection aboutHeading="About" showLinks={true}>
+            {/* Cut from four paragraphs to two to make room for the stack
+                below. The long version is the whole of /about, which is what
+                that page is for; this is the summary that has to earn its
+                space beside a life grid and 27 pills. */}
             <p>
-                I am Gabriele Bolognese, a founder and software developer based in the Venice, Treviso
-                area of northern Italy. At 17 I lead FlashFX, a browser-native motion graphics and video
-                editing platform, handling everything from product architecture to community growth.
-                FlashFX has grown to over {FACTS.usersLabel} users entirely through organic traction,
-                without spending a single dollar on advertising.
+                I am Gabriele Bolognese, a founder and software developer in Rovigo, northern Italy. I
+                lead FlashFX, a browser-native motion graphics and video editing platform, now past
+                {' '}{FACTS.usersLabel} users with nothing spent on advertising.
             </p>
             <p>
-                My work sits at the intersection of creative tooling, web development, and applied
-                machine learning. Outside of building, I compete in the Italian mathematics nationals at
-                champion level and in national coding competitions, and I train in gymnastics and
-                sprinting.
+                I wrote my first line of code in January 2024 and lost that entire project to one
+                file-path error a few weeks later. Four rebuilds and roughly 300,000 lines of TypeScript
+                since, it runs in a browser tab with nothing to install. The
+                {' '}<a href="/about">longer version is on the about page</a>.
             </p>
-            <p>
-                I wrote my first line of code in January 2024, having never programmed before, and I lost
-                that entire project to a single file-path error a few weeks later. Everything since has
-                been built on what that failure taught me: four complete rebuilds of FlashFX, roughly
-                300,000 lines of TypeScript, and a product that now runs in the browser with no install,
-                no licence, and no barrier for anyone who wants to make something move.
-            </p>
-            <p>
-                The grid on the right is every week of a ninety year life. The coloured squares are the
-                weeks that changed the direction of mine. Alot of them are failures, and I think thats
-                the honest way to show it.
-            </p>
+
+            <TechStack slot="aside" />
         </LifeSection>
     </section>
 
