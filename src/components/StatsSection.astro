@@ -8,9 +8,11 @@
  * activity behind the totals, the repositories the work went into, and the
  * most recent entry of the log that describes it.
  *
- * The grid is monochrome on purpose. GitHub's green would be the only
- * saturated colour on a site that is otherwise black, grey and two accents,
- * and the shading carries the same information either way.
+ * This is the one section allowed colour. The grid keeps GitHub's own green
+ * ramp because it is a quotation: anyone who has seen a contribution graph
+ * reads it without a legend, and recolouring it would throw that away to gain
+ * nothing. The three icons follow the same rule, they carry meaning the number
+ * beside them does not.
  */
 import { getCollection } from 'astro:content';
 import { getGithubStats } from '../data/github';
@@ -45,25 +47,50 @@ const span = (from: string | null, to: string | null) => {
 
 const anchor = (date: Date) => date.toISOString().slice(0, 10);
 
-const figures = [
+/* One icon per figure, and only three of them on the whole page, so they are
+ * written out here rather than pulled through a generic icon component. The
+ * flames are the only animated decoration on the site: `long` is the record
+ * and burns, `current` is simply lit. */
+type Icon = 'code' | 'flame-long' | 'flame-current';
+
+const figures: {
+  value: string;
+  unit?: string;
+  label: string;
+  note: string | null;
+  icon: Icon;
+  breakdown?: boolean;
+}[] = [
   {
     value: nf.format(stats.totalContributions),
     label: 'Total contributions',
     note: stats.firstContribution ? `Since ${longDate(stats.firstContribution)}` : null,
+    icon: 'code',
+    breakdown: true,
   },
   {
     value: nf.format(stats.longestStreak.days),
     unit: stats.longestStreak.days === 1 ? 'day' : 'days',
     label: 'Longest streak',
     note: span(stats.longestStreak.from, stats.longestStreak.to),
+    icon: 'flame-long',
   },
   {
     value: nf.format(stats.currentStreak.days),
     unit: stats.currentStreak.days === 1 ? 'day' : 'days',
     label: 'Current streak',
     note: span(stats.currentStreak.from, stats.currentStreak.to) ?? 'Not running',
+    icon: 'flame-current',
   },
 ];
+
+/** The same silhouette at both sizes, so the two flames read as one family. */
+const FLAME_BODY =
+  'M12 1.6c.6 3.3-1.4 4.7-2.9 6.2C7.4 9.5 6.6 11.2 6.6 13.2c0 4 3 6.6 5.4 9.2 '
+  + '2.4-2.6 5.4-5.2 5.4-9.2 0-2.9-1.6-4.8-3.2-6.6C12.8 5 12.3 3.3 12 1.6Z';
+const FLAME_CORE =
+  'M12 10c.4 1.9-.9 2.6-1.7 3.5-.5.6-.8 1.3-.8 2.1 0 1.9 1.5 3.2 2.5 4.6 '
+  + '1-1.4 2.5-2.7 2.5-4.6 0-1.4-.8-2.3-1.6-3.2-.6-.7-.9-1.5-.9-2.4Z';
 ---
 
 <section class="section stats-section" id="stats" aria-labelledby="stats-heading">
@@ -73,11 +100,55 @@ const figures = [
     <div class="stat-figures">
         {figures.map((f) => (
             <div class="stat-figure">
+                <span class={`stat-icon stat-icon--${f.icon}`} aria-hidden="true">
+                    {f.icon === 'code' && (
+                        <svg viewBox="0 0 24 24" width="26" height="26" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <path d="M8.5 7.5 3 12l5.5 4.5" />
+                            <path d="M15.5 7.5 21 12l-5.5 4.5" />
+                            <path d="M13.6 4.5 10.4 19.5" />
+                        </svg>
+                    )}
+                    {f.icon === 'flame-long' && (
+                        <svg viewBox="0 0 24 24" width="40" height="40">
+                            <defs>
+                                <linearGradient id="flame-long-grad" x1="0.2" y1="1" x2="0.7" y2="0">
+                                    <stop offset="0%" stop-color="#e0362f" />
+                                    <stop offset="45%" stop-color="#c2185b" />
+                                    <stop offset="100%" stop-color="#7b3ff2" />
+                                </linearGradient>
+                            </defs>
+                            <path class="flame-body" fill="url(#flame-long-grad)" d={FLAME_BODY} />
+                            <path class="flame-core" fill="#ffb300" d={FLAME_CORE} />
+                        </svg>
+                    )}
+                    {f.icon === 'flame-current' && (
+                        <svg viewBox="0 0 24 24" width="26" height="26">
+                            <path fill="var(--red)" d={FLAME_BODY} />
+                            <path fill="#e8763a" d={FLAME_CORE} />
+                        </svg>
+                    )}
+                </span>
+
                 <p class="stat-value">
                     {f.value}{f.unit && <span class="stat-unit">{f.unit}</span>}
                 </p>
                 <p class="stat-label">{f.label}</p>
                 {f.note && <p class="stat-note">{f.note}</p>}
+
+                {/* Per year, under the total. A single all-time number says how
+                    much; the split says when, which is the part that changed. */}
+                {f.breakdown && stats.years.length > 0 && (
+                    <ul class="stat-breakdown">
+                        {stats.years.map((y) => (
+                            <li>
+                                <span class="stat-breakdown-year">{y.year}</span>
+                                <span class="stat-breakdown-value">{nf.format(y.total)}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         ))}
     </div>

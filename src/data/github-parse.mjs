@@ -128,16 +128,20 @@ export function computeStats(days, todayIso) {
       longestStreak: { days: 0, from: null, to: null },
       firstContribution: null,
       activeDays: 0,
+      years: [],
     };
   }
 
   const dates = [...byDate.keys()].sort();
+  const perYear = new Map();
   let total = 0;
   let activeDays = 0;
   let firstContribution = null;
   for (const d of dates) {
     const n = byDate.get(d);
     total += n;
+    const year = Number(d.slice(0, 4));
+    perYear.set(year, (perYear.get(year) ?? 0) + n);
     if (n > 0) {
       activeDays++;
       if (!firstContribution) firstContribution = d;
@@ -182,6 +186,12 @@ export function computeStats(days, todayIso) {
     longestStreak: longest,
     firstContribution,
     activeDays,
+    /* Calendar years, oldest first. A year with nothing in it is dropped
+       rather than shown as a zero: the account did not exist for it. */
+    years: [...perYear.entries()]
+      .filter(([, n]) => n > 0)
+      .sort((a, b) => a[0] - b[0])
+      .map(([year, n]) => ({ year, total: n })),
   };
 }
 

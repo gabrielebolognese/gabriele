@@ -56,6 +56,8 @@ export interface GithubStats {
   longestStreak: Streak;
   firstContribution: string | null;
   activeDays: number;
+  /** Per calendar year, oldest first, empty years dropped. */
+  years: { year: number; total: number }[];
   /** 53 columns of 7. `null` is a day outside the account's life or in the
    *  future, which is drawn as a hole rather than as an empty day. */
   weeks: (ContributionDay | null)[][];

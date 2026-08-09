@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-08-09T07:13:07.721Z",
+  "capturedAt": "2026-08-09T07:21:19.108Z",
   "login": "gabrielebolognese",
   "profileUrl": "https://github.com/gabrielebolognese",
   "totalContributions": 13246,
@@ -15,6 +15,20 @@
   },
   "firstContribution": "2024-10-29",
   "activeDays": 644,
+  "years": [
+    {
+      "year": 2024,
+      "total": 283
+    },
+    {
+      "year": 2025,
+      "total": 7494
+    },
+    {
+      "year": 2026,
+      "total": 5469
+    }
+  ],
   "weeks": [
     [
       {

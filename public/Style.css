@@ -2793,6 +2793,43 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 .stat-figure:first-child { border-left: 0; padding-left: 0; }
 
+/* ── The three icons ────────────────────────────────────────────────────────
+   Reserved height on the row, not on each icon: the flames are drawn at
+   different sizes and letting them set their own box would leave the three
+   numbers sitting on three different baselines.
+   ------------------------------------------------------------------------- */
+.stat-icon {
+    display: flex;
+    align-items: flex-end;
+    height: 42px;
+    margin-bottom: 14px;
+}
+
+.stat-icon--code { color: var(--gray-dark); }
+
+/* The record streak. The only looping animation on the site, which is the
+   whole argument for it being on the largest number and nothing else. */
+.stat-icon--flame-long .flame-body {
+    transform-origin: 50% 90%;
+    animation: flame-sway 2.6s var(--ease-soft) infinite;
+}
+
+.stat-icon--flame-long .flame-core {
+    transform-origin: 50% 90%;
+    animation: flame-lick 1.3s var(--ease-soft) infinite;
+}
+
+@keyframes flame-sway {
+    0%, 100% { transform: scale(1, 1)       skewX(0deg); }
+    30%      { transform: scale(0.96, 1.05) skewX(2.5deg); }
+    65%      { transform: scale(1.04, 0.97) skewX(-2deg); }
+}
+
+@keyframes flame-lick {
+    0%, 100% { transform: scaleY(1);    opacity: 0.95; }
+    50%      { transform: scaleY(0.82); opacity: 0.7; }
+}
+
 .stat-value {
     font-family: var(--font-display);
     font-size: clamp(38px, 5vw, 60px);
@@ -2826,6 +2863,38 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     font-size: var(--text-xs);
     line-height: 1.7;
     color: var(--gray-mid);
+}
+
+/* Per-year split, under the total only. Deliberately quiet: it is context for
+   the number above it, not a fourth statistic competing with it. */
+.stat-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--gray-line);
+    list-style: none;
+}
+
+.stat-breakdown li {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+}
+
+.stat-breakdown-year {
+    font-family: var(--font-wide);
+    font-size: 9px;
+    font-weight: 200;
+    letter-spacing: 0.14em;
+    color: var(--gray-mid);
+}
+
+.stat-breakdown-value {
+    font-size: var(--text-xs);
+    color: var(--gray-dark);
+    font-variant-numeric: tabular-nums;
 }
 
 .stat-note a { color: var(--gray-dark); border-bottom: 1px solid var(--gray-line); }
@@ -2882,12 +2951,14 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     background: var(--gray-soft);
 }
 
-/* Monochrome, not green: see the component header. The ramp runs to pure black
-   so the busiest days read as ink rather than as a fifth shade of grey. */
-.contrib-day[data-level="1"] { background: #cfcfc9; }
-.contrib-day[data-level="2"] { background: #8f8f88; }
-.contrib-day[data-level="3"] { background: #4a4a45; }
-.contrib-day[data-level="4"] { background: var(--black); }
+/* GitHub's own light-mode ramp, quoted rather than reinterpreted: the graph is
+   only instantly readable because everyone has already seen these five greens
+   somewhere else. Level 0 stays --gray-soft so an empty day belongs to this
+   page rather than to GitHub. */
+.contrib-day[data-level="1"] { background: #9be9a8; }
+.contrib-day[data-level="2"] { background: #40c463; }
+.contrib-day[data-level="3"] { background: #30a14e; }
+.contrib-day[data-level="4"] { background: #216e39; }
 
 /* A day the account did not exist for is not a day with no contributions */
 .contrib-day.is-empty { background: transparent; }
