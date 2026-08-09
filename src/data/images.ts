@@ -36,6 +36,7 @@ import portfolioSite from '../assets/video-editing-portfolio-site.png';
 import visionAiDemo from '../assets/vision-ai-demo-video-editor-2024.png';
 import earlyMotionDesign from '../assets/flashfx-early-motion-design-interface-2024.png';
 import boltPrototype from '../assets/flashfx-bolt-hackathon-prototype.png';
+import gni from '../assets/gara-nazionale-informatica-2026-logo.jpg';
 
 export interface IndexedImage {
   src: ImageMetadata;
@@ -47,6 +48,7 @@ export interface IndexedImage {
 const CAROUSEL = 1440; // index.astro project carousels
 const FIGURE = 960; // about.astro bio figures
 const PORTRAIT = 640; // LifeSection portrait
+const AWARD = 560; // index.astro award banner logo
 // No card width of any kind: both the archive and the homepage newsletter
 // section render IssueCard, which carries no image (see IssueCard.astro).
 export const COVER = 2080; // IssueLayout hero cover
@@ -58,6 +60,7 @@ const PORTRAIT_ENTRY: IndexedImage = { src: portrait, width: PORTRAIT };
 export const PAGE_IMAGES: Record<string, IndexedImage[]> = {
   '/': [
     PORTRAIT_ENTRY,
+    { src: gni, width: AWARD },
     { src: animatorTimeline, width: CAROUSEL },
     { src: animatorKeyframes, width: CAROUSEL },
     { src: animatorLayers, width: CAROUSEL },

@@ -27,6 +27,7 @@ import flashfxDocs from '../assets/flashfx-documentation-site.png';
 import flashfxRoadmap from '../assets/flashfx-roadmap-page.png';
 import portfolioSite from '../assets/video-editing-portfolio-site.png';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
+import gni from '../assets/gara-nazionale-informatica-2026-logo.jpg';
 import {HOMEPAGE_FAQ} from '../data/faq';
 import {homepageSchema} from '../data/schema';
 import {PERSON, ORGANIZATION, FACTS, DEVLOG, SOCIALS, absoluteUrl} from '../data/identity';
@@ -125,6 +126,39 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                 the honest way to show it.
             </p>
         </LifeSection>
+    </section>
+
+    <div class="rule"></div>
+
+    {/* A banner and not a section: one claim, no heading furniture around it.
+        It sits above the statistics because it is the single strongest line on
+        the page and the statistics are the ongoing evidence underneath it. */}
+    <section class="award" id="award" aria-labelledby="award-heading">
+        <div class="award-logo">
+            {/* contain, not cover: this is a logo with its own margins baked
+                in, and cropping it to fill the panel would cut the wordmark. */}
+            <Image src={gni} alt="Logo of the Gara Nazionale di Informatica, Pinin 2026 edition"
+                   widths={[280, 560]} sizes="(max-width: 860px) 100vw, 280px"
+                   loading="lazy" decoding="async" />
+        </div>
+
+        <div class="award-body">
+            <p class="award-kicker">GNI 2026 · Gara Nazionale di Informatica</p>
+            <h2 class="award-title" id="award-heading">
+                1st place in the Italian national computer science competition
+            </h2>
+            <p class="award-desc">
+                Three days at the Istituto Tecnico Pinin Farina in Moncalieri, May 2026, against 31
+                finalists from technical schools across Italy. Two tests: a project to design and
+                build, and a coding test. I won both and took the title outright.
+            </p>
+            <p class="award-links">
+                <a href="https://iisviolamarchesini.edu.it/2026/06/10/gabriele-bolognese-campione-nazionale-di-informatica/"
+                   target="_blank" rel="noopener noreferrer">The school's announcement</a>
+                <a href="https://www.polesine24.it/cronaca/2026/06/09/news/e-polesano-il-campione-nazionale-di-informatica-396780/"
+                   target="_blank" rel="noopener noreferrer">Interview in Polesine24</a>
+            </p>
+        </div>
     </section>
 
     <div class="rule"></div>

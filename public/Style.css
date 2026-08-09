@@ -23,6 +23,7 @@
    18. Life grid
    19. Devlog timeline
    20. Statistics  (component: src/components/StatsSection.astro)
+   21. Award banner
 
    Conventions: each section owns its own media queries; breakpoints are
    860px (tablet) and 520px (phone).
@@ -200,7 +201,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .cd-display,
 .js .cd-deadline,
 .js .cd-goal,
-.js .stat-figure,
+.js .award,
 .js .contrib,
 .js .repo-list,
 .js .stats-latest,
@@ -318,7 +319,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .cd-display,
     .js .cd-deadline,
     .js .cd-goal,
-    .js .stat-figure,
+    .js .award,
     .js .contrib,
     .js .repo-list,
     .js .stats-latest,
@@ -3114,4 +3115,118 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 @media (max-width: 520px) {
     .repo-list { grid-template-columns: 1fr; }
+}
+
+
+/* ── 21. AWARD BANNER ────────────────────────────────────────────────────────
+   One claim, in a band, with no section furniture around it. Deliberately not
+   a `.section`: a section-label and a 100px gap either side would file the
+   single strongest line on the page alongside "Projects" and "Timeline".
+   ------------------------------------------------------------------------- */
+.award {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    align-items: stretch;
+    gap: 0;
+    max-width: var(--content-max);
+    margin: 0 auto;
+    /* "about 25vh", with a floor and a ceiling: unclamped, this is 130px on a
+       laptop in landscape and 340px on a tall monitor, for the same words. */
+    min-height: clamp(190px, 25vh, 280px);
+    border-bottom: 1px solid var(--gray-line);
+}
+
+.award-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--white);
+    border-right: 1px solid var(--gray-line);
+}
+
+/* Fills the height of the band and keeps its aspect ratio. The logo ships with
+   generous white margins of its own, which is why the panel is not padded
+   further and why this is `contain`. */
+.award-logo img {
+    width: 100%;
+    height: 100%;
+    max-height: 150px;
+    object-fit: contain;
+}
+
+.award-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 32px 0 32px 40px;
+}
+
+.award-kicker {
+    font-family: var(--font-wide);
+    font-size: 9px;
+    font-weight: 200;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+}
+
+.award-title {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.6vw, 30px);
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--black);
+    max-width: 620px;
+}
+
+.award-desc {
+    font-size: var(--text-sm);
+    line-height: 1.8;
+    color: var(--gray-dark);
+    max-width: 620px;
+}
+
+.award-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: 4px;
+}
+
+/* Press, so the underline is present at rest rather than on hover: these are
+   the corroboration and they are meant to be seen and followed. */
+.award-links a {
+    font-family: var(--font-wide);
+    font-size: 9px;
+    font-weight: 200;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--black);
+    border-bottom: 1px solid var(--gray-line);
+    padding-bottom: 3px;
+    transition: border-color var(--dur) var(--ease);
+}
+
+.award-links a:hover { border-bottom-color: var(--black); }
+
+@media (max-width: 860px) {
+    /* Stacked, the logo panel keeps a band of its own rather than a column:
+       a 280px logo beside 24px-padded text is unreadable on a phone. */
+    .award {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .award-logo {
+        border-right: 0;
+        border-bottom: 1px solid var(--gray-line);
+        padding: 24px;
+    }
+
+    .award-logo img { max-height: 96px; }
+
+    .award-body { padding: 28px 0 32px; }
 }
