@@ -60,7 +60,7 @@ export const MILESTONES: Milestone[] = [
   { month: '2025-09', kind: 'flashfx',  label: '3,400 Discord members' },
   { month: '2025-11', kind: 'flashfx',  label: 'FlashFX v1.0, public launch' },
   { month: '2025-12', kind: 'flashfx',  label: 'FlashFX reaches 5,000 users · turned 17' },
-  { month: '2026-01', kind: 'flashfx',  label: 'Aziz joins as co-founder, Camille hired' },
+  { month: '2026-01', kind: 'flashfx',  label: 'Co-founder joins, Camille hired' },
   { month: '2026-02', kind: 'flashfx',  label: 'FlashFX v1.2, AI animation tier' },
   { month: '2026-04',    kind: 'flashfx',  label: 'Y Combinator interview invitation' },
 
