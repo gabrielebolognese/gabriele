@@ -1450,6 +1450,16 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         <p class="next-contact">
             Reach me at <a href="mailto:the.real.gabryy@gmail.com">the.real.gabryy@gmail.com</a>
         </p>
+
+        {/* Instagram's brand colour, resolved from SOCIALS rather than written
+            here, so it stays in step with the pills and the cards. */}
+        <a class="next-btn"
+           style={`--brand:${SOCIALS.find(s => s.key === 'instagram')!.brand}`}
+           href={SOCIALS.find(s => s.key === 'instagram')!.url}
+           target="_blank" rel="noopener noreferrer me">
+            <SocialIcon name="instagram" size={16} />
+            Follow my Instagram for daily logs
+        </a>
     </section>
 
     <div class="rule"></div>
@@ -1499,6 +1509,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
             entries={HOMEPAGE_FAQ}
             heading="Frequently asked"
             intro="The questions people search for most often."
+            showAsk={true}
     />
 
 </main>

@@ -1940,6 +1940,34 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     color: var(--gray-mid);
 }
 
+/* The section is centred, so this is an inline-flex rather than a full-width
+   block: stretched across a 1080px measure it would read as a banner and pull
+   more weight than the email line above it, which is the primary ask here. */
+.next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    padding: 15px 26px;
+    background: var(--brand, var(--black));
+    color: var(--white);
+    font-family: var(--font-wide);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: 1px solid var(--brand, var(--black));
+    transition:
+        background var(--dur) var(--ease),
+        color      var(--dur) var(--ease);
+}
+
+.next-btn:hover,
+.next-btn:focus-visible {
+    background: var(--white);
+    color: var(--brand, var(--black));
+}
+
 
 /* ── Contact cards ───────────────────────────────────────────────────────────
    The .issue-card treatment at three to a row instead of two. Note what that

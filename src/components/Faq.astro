@@ -2,17 +2,39 @@
 /* Renders the same entries that feed the FAQPage JSON-LD, so the structured
    data always describes content that is actually on the page. */
 import type { FaqEntry } from '../data/schema';
+import { PERSON } from '../data/identity';
 
 interface Props {
   entries: FaqEntry[];
   heading?: string;
   intro?: string;
+  /** Renders the "or ask me a question" mailto beside the heading. Off by
+   *  default so /about, which reuses this component, does not offer the same
+   *  address a second time on the same site. */
+  showAsk?: boolean;
 }
 
-const { entries, heading = 'Frequently asked', intro } = Astro.props;
+const { entries, heading = 'Frequently asked', intro, showAsk = false } = Astro.props;
+
+/* Prefilled, because "ask me a question" that opens a blank compose window
+   with no subject is a question most people do not end up sending. */
+const askHref = `mailto:${PERSON.email}?subject=${encodeURIComponent('A question for you')}`;
 ---
 <section class="section section-faq" id="faq" aria-labelledby="faq-heading">
-  <h2 id="faq-heading" class="section-label">{heading}</h2>
+  <div class="faq-head">
+    <h2 id="faq-heading" class="section-label">{heading}</h2>
+    {showAsk && (
+      <a class="faq-ask" href={askHref}>
+        or ask me a question
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true" focusable="false">
+          <path d="M3 6.5h18v11H3z" />
+          <path d="m3.6 7 8.4 6 8.4-6" />
+        </svg>
+      </a>
+    )}
+  </div>
   {intro && <p class="section-intro">{intro}</p>}
 
   <dl class="faq-list">
@@ -28,7 +50,47 @@ const { entries, heading = 'Frequently asked', intro } = Astro.props;
 <style>
   /* Owns every FAQ style; only the .section/.section-label primitives come
      from public/Style.css. */
+
+  /* The heading keeps its own bottom margin, so this row aligns on the
+     baseline rather than centring the link against the heading's line box. */
+  .faq-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+  }
+
+  .faq-head .section-label { margin-bottom: 0; }
+
+  .faq-ask {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 18px;
+    border: 1px solid var(--gray-line);
+    font-family: var(--font-wide);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gray-dark);
+    transition:
+      color        var(--dur) var(--ease),
+      background   var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
+  }
+
+  .faq-ask:hover,
+  .faq-ask:focus-visible {
+    color: var(--white);
+    background: var(--black);
+    border-color: var(--black);
+  }
+
+  .faq-ask svg { flex: none; }
+
   .faq-list {
+    margin-top: 48px;
     max-width: 760px;
     margin: 0 auto;
   }
