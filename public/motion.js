@@ -19,6 +19,7 @@
         '.intro-text p', '.intro-links', '.intro-image-wrap',
         '.cd-label', '.cd-display', '.cd-deadline', '.cd-goal',
         '.project-card',
+        '.story-disclaimer',
         '.story-chapter', '.chapter-header', '.entry', '.entry-pull', '.entry-wide',
         '.timeline-item', '.timeline-end',
         '.next-paragraph', '.next-contact', '.contact-card',
@@ -462,11 +463,38 @@
         return halt;
     }
 
+    /* ── Skip story ──────────────────────────────────────────────────────────
+       The story is the longest section on the site, so it gets a way out. The
+       button is only shown while the story is the thing being read: fixed and
+       permanent it would be a black pill floating over every other section,
+       and past the last chapter there is nothing left to skip.
+
+       The margins are deliberately asymmetric. -35% on top means the button
+       waits until the story is genuinely underway rather than appearing the
+       instant its first pixel crosses the fold, and -15% on the bottom retires
+       it slightly before the end, where offering to skip is just noise. */
+    function initSkipStory() {
+        var btn = document.querySelector('.skip-story');
+        var story = document.getElementById('story');
+        if (!btn || !story) return;
+
+        if (!('IntersectionObserver' in window)) {
+            btn.classList.add('is-visible');
+            return;
+        }
+
+        new IntersectionObserver(function (entries) {
+            var showing = entries[entries.length - 1].isIntersecting;
+            btn.classList.toggle('is-visible', showing);
+        }, { rootMargin: '-35% 0px -15% 0px', threshold: 0 }).observe(story);
+    }
+
     function start() {
         initReveal();
         initNav();
         initProgress();
         initCarousels();
+        initSkipStory();
         initCountdown();
         initAgeCount();
         initLifeGrid();
