@@ -128,8 +128,17 @@ function cellTitle(i: number): string | undefined {
 }
 
 /* A year in the right margin every third row, counted back from the row being
-   lived now so that this year is always one of the labelled ones. Nothing on
-   the rows ahead: they are not a record of anything yet.
+   lived now so that this year is always one of the labelled ones.
+
+   The rows ahead are labelled too. They used to stop at the current row on the
+   grounds that the future is not a record of anything, which is true, but it
+   also left two thirds of the grid with no scale at all: without a number
+   beside them those rows are an anonymous grey field rather than a specific
+   set of years someone can locate themselves in. They are marked as ahead so
+   they read as projection rather than record.
+
+   The modulo works unchanged for future rows: (currentRow - r) is negative
+   there, and -3 % 3 is -0, which passes `!== 0`.
 
    The year is taken from the middle of the row rather than its first week,
    because a row is 364 days and drifts against the calendar; the midpoint
@@ -138,9 +147,17 @@ const currentRow = Math.floor(weeksLived / columns);
 const YEAR_EVERY = 3;
 
 function yearFor(r: number): string | null {
-  if (r > currentRow || (currentRow - r) % YEAR_EVERY !== 0) return null;
+  if ((currentRow - r) % YEAR_EVERY !== 0) return null;
   return String(weekStart(r * columns + Math.floor(columns / 2)).getUTCFullYear());
 }
+
+/* The note over the unlived half. Positioned at the midpoint of the rows that
+   have not happened, as a percentage of the whole grid, so it stays centred in
+   that field as the lived half grows year on year rather than being pinned to
+   a row number that goes stale on the next deploy. */
+const aheadMidRow = (currentRow + rows) / 2;
+const aheadMidPercent = ((aheadMidRow + 0.5) / rows) * 100;
+const AHEAD_NOTE = 'hopefully i complete this chart...';
 ---
 {/* role="img" with a label: 4,680 empty cells would otherwise be announced one
     at a time. The figures and the event list underneath carry the meaning. */}
@@ -149,10 +166,15 @@ function yearFor(r: number): string | null {
   role="img"
   data-birth={birth}
   data-lived={weeksLived}
-  aria-label={`Life in weeks: ${weeksLived} of ${totalWeeks} weeks lived, ${percent} per cent.`}
+  aria-label={`Life in weeks: ${weeksLived} of ${totalWeeks} weeks lived, ${percent} per cent. ${AHEAD_NOTE}`}
 >{Array.from({ length: rows }, (_, r) => (
   <div class="life-row" style={`--r:${r}`}>{Array.from({ length: columns }, (_, c) => {
     const i = r * columns + c;
     return i < totalWeeks ? <i class={cellClass(i)} title={cellTitle(i)}></i> : null;
-  })}{yearFor(r) && <span class="life-year">{yearFor(r)}</span>}</div>
-))}</div>
+  })}{yearFor(r) && <span class={`life-year${r > currentRow ? ' is-ahead' : ''}`}>{yearFor(r)}</span>}</div>
+))}{/* aria-hidden because the grid is role="img": nothing inside it is
+       announced anyway, so the sentence is carried in the aria-label above
+       instead of being read out of position here. */}
+  <p class="life-ahead-note" style={`--mid:${aheadMidPercent.toFixed(2)}%`} aria-hidden="true">
+    <span>{AHEAD_NOTE}</span>
+  </p></div>

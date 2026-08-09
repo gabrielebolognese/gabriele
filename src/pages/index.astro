@@ -109,6 +109,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
                     <a
                             class="hero-social"
                             style={`--brand:${social.brand}`}
+                            data-ink={social.brandInk}
                             href={social.url}
                             target="_blank"
                             rel={social.key === 'flashfx' ? 'noopener noreferrer' : 'noopener noreferrer me'}
@@ -1494,7 +1495,7 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
             per card, card-sized target, button still visible. */}
         <div class="contact-grid">
             {SOCIALS.map(social => (
-                <article class="contact-card" style={`--brand:${social.brand}`}>
+                <article class="contact-card" style={`--brand:${social.brand}`} data-ink={social.brandInk}>
                     <div class="contact-card-head">
                         <SocialIcon name={social.key} size={22} />
                         <h3 class="contact-card-name">{social.name}</h3>
@@ -1524,7 +1525,6 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <Faq
             entries={HOMEPAGE_FAQ}
             heading="Frequently asked"
-            intro="The questions people search for most often."
             showAsk={true}
     />
 

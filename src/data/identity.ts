@@ -155,11 +155,14 @@ export interface Social {
   description: string;
   /** Deliberately different on every card. */
   cta: string;
-  /** The platform's own brand colour, used for the icon, the card border and
-   *  the button. Every one is the official value, which is why X and GitHub
-   *  are near-black: that IS their brand. Changing those two to an accent
-   *  colour would make them the only two on the site that are not real. */
+  /** The brand colour, used for the icon, the card border and the button.
+   *  X keeps its true #000000. GitHub takes its purple accent rather than its
+   *  true #181717, because two black tiles beside each other read as one
+   *  unstyled pair rather than as two brands. */
   brand: string;
+  /** Which ink survives on `brand`. Only FlashFX's gold needs the dark one:
+   *  white on #f0a01e is about 2:1 and fails at any size. */
+  brandInk?: 'light' | 'dark';
 }
 
 function fromSameAs(host: string): string {
@@ -194,7 +197,7 @@ export const SOCIALS: Social[] = [
     url: fromSameAs('github.com'),
     description: 'Experiments and open work. Most things start here before they are anything.',
     cta: 'Browse the code',
-    brand: '#181717',
+    brand: '#8250df',
   },
   {
     key: 'youtube',
@@ -220,9 +223,8 @@ export const SOCIALS: Social[] = [
     description:
       'The product itself. Browser-native motion graphics and video editing, with nothing to install.',
     cta: 'Try it now',
-    // TODO: FlashFX's real brand hex. This is a placeholder, picked to be
-    // distinct from the other five, and it is the same gap as ORGANIZATION.logo.
-    brand: '#7b3ff2',
+    brand: '#f0a01e',
+    brandInk: 'dark',
   },
 ];
 

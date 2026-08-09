@@ -651,6 +651,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .hero-social:hover .social-icon,
 .hero-social:focus-visible .social-icon { color: currentColor; }
 
+/* A light brand needs dark ink. White on FlashFX's #f0a01e is about 2:1, which
+   fails at any size; black on it is over 10:1. */
+.hero-social[data-ink="dark"]:hover,
+.hero-social[data-ink="dark"]:focus-visible { color: var(--black); }
+
 .social-icon { flex-shrink: 0; display: block; }
 
 /* The block leads the stagger, so the page opens on the code and the name
@@ -2081,6 +2086,9 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
         color      var(--dur) var(--ease);
 }
 
+/* Same reason as the hero pill: a light brand cannot carry white text. */
+.contact-card[data-ink="dark"] .contact-card-btn { color: var(--black); }
+
 /* Inverts to the brand colour on its own ground, which is why the border was
    always a separate declaration rather than folded into the background. */
 .contact-card:hover .contact-card-btn,
@@ -2444,10 +2452,44 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
    square the moment it was wrong. */
 .life-grid { padding-right: 40px; }
 
+/* position: relative is load-bearing: .life-ahead-note is placed against these
+   bounds, and without it the note would escape to the nearest positioned
+   ancestor and land somewhere else on the page entirely. */
 .life-grid {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 2px;
+}
+
+/* The line over the unlived half. Reaching ninety is the one achievement on
+   this page that cannot be worked for, so it is set quietly rather than as a
+   caption, and the pill behind it is only there to stop 4,680 squares reading
+   through the letters. --mid is written per build from the current row.
+
+   pointer-events: none so the note never intercepts a hover that belongs to a
+   week underneath it: every square has a label and this sits over hundreds. */
+.life-ahead-note {
+    position: absolute;
+    left: 0;
+    right: 40px;               /* clears the year-marker gutter, so it centres
+                                  on the squares rather than on the padding */
+    top: var(--mid, 70%);
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.life-ahead-note span {
+    padding: 7px 14px;
+    background: var(--white);
+    font-family: var(--font-serif);
+    font-size: clamp(13px, 1.5vw, 18px);
+    font-style: italic;
+    letter-spacing: 0.01em;
+    color: var(--gray-dark);
+    text-align: center;
 }
 
 /* Rows exist so the fill animation can stagger by row index. A flat grid would
@@ -2475,6 +2517,11 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     line-height: 1;
     pointer-events: none;
 }
+
+/* Years ahead are a scale, not a record, so they are set lighter than the ones
+   that have happened. Without them two thirds of the grid had no numbers at
+   all and read as an anonymous grey field. */
+.life-year.is-ahead { color: var(--gray-line); }
 
 /* Both halves of the grid are filled now, the weeks ahead carry the grey the
    lived weeks used to, and the lived weeks went near-black. An unfilled cell
