@@ -125,21 +125,18 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <!-- ─── 2. INTRODUCTION ─── -->
     <section class="section intro" id="about" aria-labelledby="about-heading">
         <h2 id="about-heading" class="visually-hidden">About</h2>
-        <LifeSection aboutHeading="About" showLinks={true}>
-            {/* Cut from four paragraphs to two to make room for the stack
-                below. The long version is the whole of /about, which is what
-                that page is for; this is the summary that has to earn its
-                space beside a life grid and 27 pills. */}
+        {/* showLinks is off here: the same six profiles are already a row under
+            the hero and a card grid above the FAQ, so a third copy in this
+            column was the same links said three times on one page. The schema
+            sameAs array is untouched and still corroborated twice over. */}
+        <LifeSection aboutHeading="About" showLinks={false}>
+            {/* One paragraph. The long version is the whole of /about, which is
+                what that page is for; this column has a life grid and 27 pills
+                to fit beside it. */}
             <p>
-                I am Gabriele Bolognese, a founder and software developer in Rovigo, northern Italy. I
-                lead FlashFX, a browser-native motion graphics and video editing platform, now past
-                {' '}{FACTS.usersLabel} users with nothing spent on advertising.
-            </p>
-            <p>
-                I wrote my first line of code in January 2024 and lost that entire project to one
-                file-path error a few weeks later. Four rebuilds and roughly 300,000 lines of TypeScript
-                since, it runs in a browser tab with nothing to install. The
-                {' '}<a href="/about">longer version is on the about page</a>.
+                I'm Gabriele Bolognese, backend developer and founder of FlashFX, a browser-based
+                motion graphics editor powered by AI. Won the national computer science competition
+                with first place overall.
             </p>
 
             <TechStack slot="aside" />
