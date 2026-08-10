@@ -15,6 +15,7 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+import { DEVLOG_PROJECTS, DEFAULT_PROJECT } from '../data/devlog-projects';
 
 interface Props {
   /** Omit for all entries. The homepage passes a small number. */
@@ -34,7 +35,13 @@ const all = await getCollection('devlog');
 /* Newest first for display. The day number counts from the OLDEST entry, so
    it is derived from the data rather than a configured start date that could
    drift out of sync with the first entry. */
-const chronological = [...all].sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+/* Date alone stopped being a total order the day a second project started
+   being logged: two entries share a date and Array.sort is only stable for
+   equal keys, which would leave the pair in yaml order on some days and
+   reversed on others. Project order breaks the tie. */
+const chronological = [...all].sort((a, b) =>
+  a.data.date.getTime() - b.data.date.getTime()
+  || DEVLOG_PROJECTS[b.data.project].order - DEVLOG_PROJECTS[a.data.project].order);
 const firstDay = chronological[0]?.data.date;
 
 const dayNumber = (date: Date): number => {
@@ -56,13 +63,21 @@ const rendered = await Promise.all(
 
 const Heading = headingLevel;
 
-/** "2026-08-06", the anchor, so an entry is linkable without being a page. */
-const anchor = (date: Date) =>
+/** "2026-08-06", the anchor, so an entry is linkable without being a page.
+ *  The default project keeps the bare date, so every link that worked before
+ *  the devlog covered two projects still lands on the same entry; anything
+ *  else is suffixed, because two ids per day would collide. */
+const isoDate = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const anchor = (entry: { data: { date: Date; project: keyof typeof DEVLOG_PROJECTS } }) =>
+  entry.data.project === DEFAULT_PROJECT
+    ? isoDate(entry.data.date)
+    : `${isoDate(entry.data.date)}-${entry.data.project}`;
 ---
 <ol class={`devlog devlog-${variant}`}>
   {rendered.map(({ entry, detailHtml }) => (
-    <li class="devlog-entry" id={anchor(entry.data.date)}>
+    <li class="devlog-entry" id={anchor(entry)}>
       <div class="devlog-rail">
         <span class="devlog-day">Day {dayNumber(entry.data.date)}</span>
         <time class="devlog-date" datetime={entry.data.date.toISOString()}>
@@ -73,11 +88,15 @@ const anchor = (date: Date) =>
           })}
         </time>
         {/* Anchors an entry without turning it into its own page. */}
-        <a class="devlog-permalink" href={`/devlog#${anchor(entry.data.date)}`}
-           aria-label={`Link to the entry for ${entry.data.date.toLocaleDateString('en-GB')}`}>#</a>
+        <a class="devlog-permalink" href={`/devlog#${anchor(entry)}`}
+           aria-label={`Link to the ${DEVLOG_PROJECTS[entry.data.project].label} entry for ${entry.data.date.toLocaleDateString('en-GB')}`}>#</a>
       </div>
 
       <div class="devlog-body">
+        <span class="devlog-project" title={DEVLOG_PROJECTS[entry.data.project].repo}>
+          {DEVLOG_PROJECTS[entry.data.project].label}
+        </span>
+
         <Heading class="devlog-headline">{entry.data.text}</Heading>
 
         {detailHtml && (

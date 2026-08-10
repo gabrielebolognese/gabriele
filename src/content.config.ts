@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { load as loadYaml } from 'js-yaml';
+import { DEVLOG_PROJECT_KEYS, DEFAULT_PROJECT } from './data/devlog-projects';
 
 /* Was `articles`. Folded into one publication because two thin writing
    surfaces compete with each other, the same mistake story.html made against
@@ -54,8 +55,14 @@ const devlog = defineCollection({
           const raw = entry.date;
           // js-yaml 5 hands back a string here, but older majors resolve the
           // YAML timestamp type to a Date. Normalise either into YYYY-MM-DD.
-          const id = raw instanceof Date ? raw.toISOString().slice(0, 10) : String(raw);
-          return [id, entry];
+          const date = raw instanceof Date ? raw.toISOString().slice(0, 10) : String(raw);
+          /* The id is date + project, not date alone: since 2026-08-06 a day
+             can carry an entry per project, and two items sharing an id would
+             silently drop one rather than fail. Entries written before the
+             split have no project, so they key as `<date>--app` and keep the
+             bare `#<date>` anchor the renderer gives the default project. */
+          const project = entry.project ? String(entry.project) : DEFAULT_PROJECT;
+          return [`${date}--${project}`, entry];
         }),
       );
     },
@@ -63,6 +70,9 @@ const devlog = defineCollection({
   schema: ({ image }) =>
     z.object({
       date: z.coerce.date(),
+      /** Which project the day's work was in. Omitted on every entry written
+       *  before there was more than one, which is why it defaults. */
+      project: z.enum(DEVLOG_PROJECT_KEYS).default(DEFAULT_PROJECT),
       /** One sentence. The timeline headline. */
       text: z.string(),
       /** Optional long form, rendered as markdown at build time. */

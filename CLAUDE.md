@@ -154,9 +154,20 @@ En dashes in numeric ranges (`€150–400`, `01–04`) are untouched and fine.
 
 **The devlog is one page, never one page per entry.** `/devlog` holds every entry; a daily log split
 across separate URLs is 365 pages of two sentences a year, which is thin content on a site whose whole
-purpose is being read as one credible entity. Entries stay linkable through date anchors
-(`/devlog#2026-08-06`). `DevlogTimeline.astro` renders both the full page and the truncated homepage
-section, so the two cannot drift.
+purpose is being read as one credible entity. `DevlogTimeline.astro` renders both the full page and the
+truncated homepage section, so the two cannot drift.
+
+**A date can carry more than one entry, one per project.** Since 2026-08-06 the log covers the FlashFX
+editor and the FlashFX landing page, so `date` alone stopped being unique. `src/data/devlog-projects.ts`
+holds the keys, labels and within-a-day sort order; the schema reads `DEVLOG_PROJECT_KEYS`, so an
+unknown `project:` fails the build rather than rendering an unlabelled entry. Three consequences that
+are easy to undo by accident: the loader keys on `${date}--${project}`, because two items sharing an id
+silently drop one instead of failing; `app` is the default and keeps the **bare** date anchor
+(`/devlog#2026-08-06`) that every pre-split entry was already linkable by, while other projects are
+suffixed (`/devlog#2026-08-06-landing`); and the sort needs the project tiebreak, since `Array.sort` is
+only stable for equal keys and two entries on one date would otherwise sit in yaml order on some days
+and reversed on others. `DEVLOG.homepageLimit` counts entries, not days, so it needs raising by one per
+project added or the newest day stops fitting on the homepage.
 
 Every entry lives in `src/content/devlog.yaml`, one file, loaded with `file()` rather than `glob()`,
 because publishing has to be "add a block at the top and commit" or a daily log dies in week two. The

@@ -2667,6 +2667,24 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 
+/* Which project a day's work was in. Sits above the headline rather than in
+   the rail: the rail answers "when", and this answers "which of them". Muted
+   on purpose, it is a label and not a claim. */
+.devlog-project {
+    display: inline-block;
+    margin-bottom: 9px;
+    padding: 3px 9px;
+    border: 1px solid var(--gray-line);
+    border-radius: 999px;
+    font-family: var(--font-wide);
+    font-size: 8px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    white-space: nowrap;
+}
+
 /* ── 19. DEVLOG TIMELINE ─────────────────────────────────────────────────────
    Rendered by src/components/DevlogTimeline.astro on both /devlog (in full)
    and the homepage (truncated), so the styles live here rather than scoped to

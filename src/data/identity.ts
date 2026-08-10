@@ -292,9 +292,14 @@ export const DEVLOG = {
   description:
     'What I shipped, what broke, and what it taught me. One line a day from inside FlashFX, with the long version underneath.',
   /** How many entries the homepage section shows before linking through.
-   *  Three, so the section stays a sample of the newest days rather than a
-   *  second copy of /devlog that grows every time an entry is added. */
-  homepageLimit: 3,
+   *  The section is a sample of the newest days, never a second copy of
+   *  /devlog that grows every time an entry is added.
+   *
+   *  Four rather than three since 2026-08-06, when a day started carrying an
+   *  entry per project. At three, the homepage showed one and a half days and
+   *  cut a date in half, which reads as a bug rather than as a limit. Raise it
+   *  by one per project added, or the newest day stops fitting. */
+  homepageLimit: 4,
 } as const;
 
 /* ── Image licensing ─────────────────────────────────────────────────────────
