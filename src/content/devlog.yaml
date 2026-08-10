@@ -23,6 +23,173 @@
 # one credible entity. One page that deepens daily is the stronger signal.
 # ============================================================================
 
+- date: 2026-08-09
+  text: The 3D camera got a settings dialog, a schematic view and a bezier flight path, and the cloner stopped crashing the editor.
+  detail: |
+    Scope of the session: the 3D camera and the editor around it. 24 commits,
+    one of them empty and pushed by accident, 52 files changed, +2777/−323.
+    Typecheck stayed at 0 errors and lint at its 127 baseline through every
+    commit.
+
+    Anything touching WebGPU or pointer behaviour is verified in the Node
+    harness only, so it still needs a browser to feel.
+
+    **The Cloner no longer crashes the editor, and it draws its instances.**
+
+    - *Number*: `verify:cloner-render`, 8 assertions.
+    - *Cause*: it was never being skipped, it was being mis-bucketed. A
+      resolved cloner has no drawable payload of its own, and the renderer's
+      catch-all `else` filed it as a shape, so the shape packer dereferenced
+      `layer.shape` and threw on every single frame.
+    - *Hard part*: the real fix was upstream. `resolveFrame` now expands a
+      cloner into per-instance stamps of its source layer and hides the source,
+      the way C4D does, and the bucketing skips any resolved layer with no
+      payload. The note in CLAUDE.md claiming the if-chain "safely skipped" it
+      was wrong, and has been corrected.
+
+    **Space plays the video even while a number field has focus, and Esc or a
+    click outside deselects.**
+
+    - *Hard part*: a focused `<input>` swallows Space as a literal character,
+      so "press space to play" silently typed a space instead. Play now wins
+      over the field, except while text is actually being edited, and deselect
+      had to clear the canvas selection and the timeline selection both.
+
+    **Multi-select outlines sit on parented objects instead of up and to the
+    left of them.**
+
+    - *Cause*: the bounds check was reading a layer's own position rather than
+      its position after the parent chain has been applied.
+
+    **The site and the app got a search-engine pass, and the FlashFX mark now
+    sits in both headers.**
+
+    - *Number*: a rewritten `index.html` head, plus `robots.txt`,
+      `sitemap.xml`, a web manifest, an inline brand logo, and a rasterised
+      social-preview image and touch icon.
+    - *Hard part*: a raw `&` inside the OG image's `aria-label` broke librsvg,
+      which is strict XML, and produced a blank PNG; escaping it to `&amp;`
+      fixed it. The sitemap lives at `editor.flashfx.app/sitemap.xml`.
+
+    **The dashboard tabs work: Recents, All, Starred, Trash and Templates.**
+
+    - *Number*: `verify:trash`, 5 assertions on the retention math. 7 days to
+      purge, 30 if starred, and a permanent delete that asks you to type the
+      project name, the way GitHub does. The new Templates tab carries 4 scene
+      deep links: galaxy, city skyline, rocket launch and forest.
+    - *Hard part*: keeping the retention math pure enough to prove in Node.
+      Purge time is derived (`trashedAt` plus `retentionDays`) rather than
+      stored, and "starred gets longer" had to survive the round trip with no
+      background job to lean on.
+
+    **An After Effects style Camera Settings dialog, with coupled lens fields
+    and working depth of field.**
+
+    - *Number*: Zoom, Angle of View, Focal Length, Film Size and Comp Size, in
+      two columns with a placeholder for a tutorial video. `verify:camera3d`,
+      24 assertions. How After Effects actually behaves was researched with a
+      multi-agent workflow first, then the algebra written to match it.
+    - *Hard part*: the four lens fields are one identity, `Z = f·C/F`, so
+      storing all of them would desync the moment one was keyframed. Only Zoom,
+      in pixels, is stored and render-affecting; focal length, angle of view
+      and f-stop are derived for display and cannot drift. Depth of field is a
+      per-3D-layer circle of confusion routed through the existing blur
+      pipeline, honouring After Effects' "lock to zoom".
+
+    **Fewer buttons in the editor chrome.**
+
+    - *Number*: the FlashFX brand button is gone from the top bar, which now
+      reads just "Projects"; the separator is gone from the dashboard header;
+      "Render" and a small "Export" collapsed into one Export button; and the
+      Animation Builder is hidden, with the code kept.
+
+    **A 2.5D Camera Parallax template.**
+
+    - *Number*: cards at varying depth with a keyframed truck and push,
+      reachable by deep link.
+
+    **A 3D View in the inspector: a flat schematic of the world, next to the
+    live canvas.**
+
+    - *Number*: shown when a camera is selected, with the tab sidebar hiding to
+      make room. Drag the camera or its point of interest to place them and the
+      main canvas updates as you drag. A WebGPU validation-error scope went in
+      alongside it, so a validation error is captured and logged instead of
+      escalating into a lost device.
+    - *Hard part*: the Side view would not drag. The SVG used a fixed square
+      `viewBox` with the default `preserveAspectRatio`, which letterboxes,
+      while the pointer math assumed a linear stretch, so clicks skewed on the
+      letterboxed axis. Fixed by tracking the element's real pixel size as the
+      viewBox with `preserveAspectRatio="none"`, which gives a 1:1 pointer
+      mapping on both views.
+
+    **A "Disable Camera" toggle renders the screen flat, as if no camera
+    existed.**
+
+    - *Number*: top right of the canvas. Screen only; an export always keeps
+      the camera.
+    - *Cause*: the whole 3D path already checks for a camera before it runs, so
+      removing it for the screen render produces the exact 2D result with
+      nothing else changed.
+
+    **Camera interaction polish.**
+
+    - *Number*: full-width Top and Side tabs, double-click the camera to open
+      Settings (the inline button is gone), a precision drag mode where the
+      world moves at 40% of pointer speed, and aperture handles in millimetres
+      that mirror each other.
+
+    **A camera-path keyframe editor inside the 3D view.**
+
+    - *Number*: a rhombus that follows the camera to key its position, keyframe
+      markers anchored in the world (click to seek, right-click to delete), a
+      dotted "possible path" that becomes a solid line at two keys or more, and
+      a right-click menu per segment.
+    - *Hard part*: the drawn path is sampled from the real evaluated eye rather
+      than guessed, so what is on screen is exactly what renders, for any
+      interpolation.
+
+    **The camera path is a smooth spatial bezier with draggable tangent
+    handles.**
+
+    - *Number*: `verify:camera-path`, 4 assertions: collapse-to-lerp, byte
+      identity, bow and u-tracking. Right-click a segment for Smooth (automatic
+      Catmull-Rom tangents), Straight or Hold.
+    - *Hard part*: making it a strict opt-in generalisation. A cubic bezier
+      whose control points sit on the 1/3 and 2/3 line collapses to a straight
+      lerp, so a path with no tangents is byte-identical to the old linear one,
+      and that is proven rather than assumed, which is what stops the existing
+      harnesses regressing. Timing also had to keep coming from the real
+      keyframes: the along-path parameter `u` is extracted from the actual
+      interpolation of whichever axis moves most, so easing and holds on the
+      position keys still drive the fly-through.
+
+    **Project cards show a random frame from the scene, refreshed on every
+    open.**
+
+    - *Cause*: tens of projects otherwise look identical in a list.
+    - *Hard part*: the old capture called `canvas.toBlob()` on the WebGPU
+      canvas at teardown, which hands back a blank or stale frame. The new one
+      renders a random frame to an offscreen target on the live device, reusing
+      the warmed-up texture caches and never touching the visible canvas so
+      there is no flash, then downscales to a small WebP and overwrites the old
+      blob in place.
+
+    **A loading splash covers the editor on open until the scene, the assets
+    and the first frame are ready.**
+
+    - *Hard part*: opening a project janks the main thread for a couple of
+      seconds (deserialise, resolve, first WebGPU render), which would freeze a
+      normal JS-driven loader too. The spinner and the progress bar are pure
+      CSS transform animations, so they run on the compositor thread and keep
+      moving straight through the freeze.
+
+    **Every Transform property row has a revert-to-default button.**
+
+    - *Number*: position to the composition centre, scale to 1, rotations and Z
+      to 0, opacity to 1. Keyframe-aware, and dimmed when the value is already
+      at its default.
+
 - date: 2026-08-08
   text: Forty commits across eight fronts, from Figma-style time savers to the first cards positioned in 3D space.
   detail: |
