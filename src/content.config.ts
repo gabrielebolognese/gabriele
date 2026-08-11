@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { load as loadYaml } from 'js-yaml';
-import { DEVLOG_PROJECT_KEYS, DEFAULT_PROJECT } from './data/devlog-projects';
+import { DEVLOG_PROJECT_KEYS } from './data/devlog-projects';
 
 /* Was `articles`. Folded into one publication because two thin writing
    surfaces compete with each other, the same mistake story.html made against
@@ -55,14 +55,8 @@ const devlog = defineCollection({
           const raw = entry.date;
           // js-yaml 5 hands back a string here, but older majors resolve the
           // YAML timestamp type to a Date. Normalise either into YYYY-MM-DD.
-          const date = raw instanceof Date ? raw.toISOString().slice(0, 10) : String(raw);
-          /* The id is date + project, not date alone: since 2026-08-06 a day
-             can carry an entry per project, and two items sharing an id would
-             silently drop one rather than fail. Entries written before the
-             split have no project, so they key as `<date>--app` and keep the
-             bare `#<date>` anchor the renderer gives the default project. */
-          const project = entry.project ? String(entry.project) : DEFAULT_PROJECT;
-          return [`${date}--${project}`, entry];
+          const id = raw instanceof Date ? raw.toISOString().slice(0, 10) : String(raw);
+          return [id, entry];
         }),
       );
     },
@@ -70,13 +64,24 @@ const devlog = defineCollection({
   schema: ({ image }) =>
     z.object({
       date: z.coerce.date(),
-      /** Which project the day's work was in. Omitted on every entry written
-       *  before there was more than one, which is why it defaults. */
-      project: z.enum(DEVLOG_PROJECT_KEYS).default(DEFAULT_PROJECT),
-      /** One sentence. The timeline headline. */
+      /** One sentence covering the whole day, whatever it spans. */
       text: z.string(),
-      /** Optional long form, rendered as markdown at build time. */
-      detail: z.string().optional(),
+      /** The long version, one markdown block per project, rendered as a
+       *  column each. A day usually carries one or two.
+       *
+       *  Built from DEVLOG_PROJECT_KEYS rather than written out, so the key
+       *  set has one home. NOT z.record(z.enum(...)): a record keyed by an
+       *  enum is exhaustive in zod, so it demands every project on every day
+       *  and a single-project day fails to parse. Every key is optional and
+       *  unknown ones are stripped, so a typo drops a column loudly at the
+       *  point the entry is read rather than at the point it is rendered. */
+      detail: z
+        .object(
+          Object.fromEntries(
+            DEVLOG_PROJECT_KEYS.map((key) => [key, z.string().optional()]),
+          ) as Record<(typeof DEVLOG_PROJECT_KEYS)[number], z.ZodOptional<z.ZodString>>,
+        )
+        .optional(),
       image: image().optional(),
       imageAlt: z.string().optional(),
     })

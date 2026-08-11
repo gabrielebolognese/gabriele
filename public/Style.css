@@ -2667,22 +2667,39 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 
-/* Which project a day's work was in. Sits above the headline rather than in
-   the rail: the rail answers "when", and this answers "which of them". Muted
-   on purpose, it is a label and not a claim. */
-.devlog-project {
-    display: inline-block;
-    margin-bottom: 9px;
-    padding: 3px 9px;
-    border: 1px solid var(--gray-line);
-    border-radius: 999px;
+/* A day is one entry with a column per project. Two columns at 1fr each, not
+   auto-fit: with auto-fit a day carrying one project would stretch it to a
+   full-width paragraph while a two-project day sat at half, and the same prose
+   would change measure from one entry to the next. data-columns comes off the
+   markup so the grid is sized by what the day actually has. */
+.devlog-work {
+    display: grid;
+    gap: 32px 40px;
+    margin-top: 4px;
+}
+
+.devlog-work[data-columns="2"],
+.devlog-work[data-columns="3"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* The rule between columns is drawn by the gap, so it does not need a border
+   on the last one and does not shift the text off the grid. */
+.devlog-work[data-columns="2"] .devlog-column + .devlog-column,
+.devlog-work[data-columns="3"] .devlog-column + .devlog-column {
+    padding-left: 40px;
+    margin-left: -40px;
+    border-left: 1px solid var(--gray-line);
+}
+
+.devlog-column-title {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-line);
     font-family: var(--font-wide);
-    font-size: 8px;
+    font-size: 9px;
     font-weight: 300;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--gray-mid);
-    white-space: nowrap;
+    color: var(--black);
 }
 
 /* ── 19. DEVLOG TIMELINE ─────────────────────────────────────────────────────

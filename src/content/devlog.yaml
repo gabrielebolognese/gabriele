@@ -11,15 +11,23 @@
 #
 # Fields
 #   date    required, YYYY-MM-DD. Day numbers count from the oldest entry.
-#           A date can now carry MORE THAN ONE entry, one per project.
-#   project optional, 'app' (default) or 'landing'. See
-#           src/data/devlog-projects.ts; an unknown value fails the build.
-#           Entries written before 2026-08-06 predate the second project and
-#           carry no project line, which is exactly why it defaults.
-#   text    required, ONE sentence. This is the timeline headline; keep it
-#           short enough to scan a hundred of them.
-#   detail  optional, the long version. Markdown: paragraphs, lists, `code`,
-#           links. This is where the commit-level substance goes.
+#           ONE entry per date. A day covering several projects is still one
+#           entry; the projects are columns inside it, not entries beside it.
+#   text    required, ONE sentence covering the whole day, whatever it spans.
+#           This is the timeline headline; keep it short enough to scan a
+#           hundred of them.
+#   detail  optional, the long version, keyed by project:
+#
+#             detail:
+#               app: |
+#                 ...markdown...
+#               landing: |
+#                 ...markdown...
+#
+#           Each key renders as a column. Keys and their left-to-right order
+#           live in src/data/devlog-projects.ts (app, landing, site); an
+#           unknown key fails the build. A day with one key renders one
+#           full-width column and needs nothing special.
 #   image   optional, path relative to src/assets/.
 #   imageAlt required whenever image is set.
 #
@@ -28,1014 +36,1005 @@
 # one credible entity. One page that deepens daily is the stronger signal.
 # ============================================================================
 
+
 - date: 2026-08-10
-  project: landing
   text: Rewrote the plan ladder twice in one afternoon, and put seven screens of joke under the footer.
-  detail: |
-    Scope of the session: pricing, and one deliberate piece of nonsense. 3
-    commits, 12 files changed, +341/−89, one new component.
+  detail:
+    landing: |
+      Scope of the session: pricing, and one deliberate piece of nonsense. 3
+      commits, 12 files changed, +341/−89, one new component.
 
-    Nothing today was checked in a browser. The autoplay-on-arrival behaviour,
-    the section rhythm and the pricing table's appearance are verified
-    structurally only.
+      Nothing today was checked in a browser. The autoplay-on-arrival behaviour,
+      the section rhythm and the pricing table's appearance are verified
+      structurally only.
 
-    **The $29 tier is Pro, and the $39-per-seat Teams tier is gone, replaced by
-    Ultra at $89.**
+      **The $29 tier is Pro, and the $39-per-seat Teams tier is gone, replaced by
+      Ultra at $89.**
 
-    - *Number*: 9 files, +138/−69. No per-seat plan remains.
-    - *Hard part*: the prices were restated in seven places and not one of them
-      derived from the pricing data: the cards, the comparison table,
-      `/pricing` metadata (three separate title and description pairs), its
-      `Offer` graph, four FAQ answers, the refund-policy standfirst, the 404
-      route list, and the collaboration row in `comparisonData.ts`. Four of
-      those are read by crawlers. Editing only `PricingSection.tsx` would have
-      left the old prices live in the structured data while the visible page
-      showed the new ones, which is worse than either being wrong on its own.
+      - *Number*: 9 files, +138/−69. No per-seat plan remains.
+      - *Hard part*: the prices were restated in seven places and not one of them
+        derived from the pricing data: the cards, the comparison table,
+        `/pricing` metadata (three separate title and description pairs), its
+        `Offer` graph, four FAQ answers, the refund-policy standfirst, the 404
+        route list, and the collaboration row in `comparisonData.ts`. Four of
+        those are read by crawlers. Editing only `PricingSection.tsx` would have
+        left the old prices live in the structured data while the visible page
+        showed the new ones, which is worse than either being wrong on its own.
 
-    **The plan ladder was then revised again, hours later, on stated numbers.**
+      **The plan ladder was then revised again, hours later, on stated numbers.**
 
-    - *Number*: credits 1M / 50M / 200M, version history 30 / 60 / 90 days. The
-      whole 3D set except advanced materials opened to the free tier, comments
-      and guest access on every plan, and AI in 3D added as an Ultra-only row.
-      37 rows across 3 columns, checked by reading the three feature-group
-      arrays back out of the source and printing them side by side. Every row
-      is populated in all three columns.
-    - *Hard part*: this contradicted work from ninety minutes earlier. The
-      first commit derived $854/yr, 70 GB, 1,750 credits and 1 year of history
-      from a stated "Ultra is 3.5x Pro"; the second replaced two of those with
-      hand-set numbers, so the ratio now holds for storage only. Credits are 4x
-      from Pro to Ultra and history is 1.5x. The comment in
-      `PricingSection.tsx` says not to "restore" the ratio, because the
-      derivation reads as more principled than the explicit numbers and someone
-      will be tempted.
+      - *Number*: credits 1M / 50M / 200M, version history 30 / 60 / 90 days. The
+        whole 3D set except advanced materials opened to the free tier, comments
+        and guest access on every plan, and AI in 3D added as an Ultra-only row.
+        37 rows across 3 columns, checked by reading the three feature-group
+        arrays back out of the source and printing them side by side. Every row
+        is populated in all three columns.
+      - *Hard part*: this contradicted work from ninety minutes earlier. The
+        first commit derived $854/yr, 70 GB, 1,750 credits and 1 year of history
+        from a stated "Ultra is 3.5x Pro"; the second replaced two of those with
+        hand-set numbers, so the ratio now holds for storage only. Credits are 4x
+        from Pro to Ultra and history is 1.5x. The comment in
+        `PricingSection.tsx` says not to "restore" the ratio, because the
+        derivation reads as more principled than the explicit numbers and someone
+        will be tempted.
 
-    **Deleted the claim that the free tier is a complete manual editor with no
-    AI features.**
+      **Deleted the claim that the free tier is a complete manual editor with no
+      AI features.**
 
-    - *Hard part*: the free tier now carries 1M AI credits and none of the AI
-      tools. Motion graphics, the assistant, image search and generation, the
-      background remover and the sound generator are all still Pro and up. That
-      is exactly what was specified, and the prose was rewritten to match the
-      table rather than paper over it, but a credit allowance with nothing in
-      the table to spend it on is incoherent on its face. Logged in `FIX.md` as
-      unresolved rather than guessed at. Same with advanced materials, PBR,
-      toon and wireframe: it was the one 3D row not named in the list to open
-      up, so it stayed paid instead of being swept along with the other four.
+      - *Hard part*: the free tier now carries 1M AI credits and none of the AI
+        tools. Motion graphics, the assistant, image search and generation, the
+        background remover and the sound generator are all still Pro and up. That
+        is exactly what was specified, and the prose was rewritten to match the
+        table rather than paper over it, but a credit allowance with nothing in
+        the table to spend it on is incoherent on its face. Logged in `FIX.md` as
+        unresolved rather than guessed at. Same with advanced materials, PBR,
+        toon and wireframe: it was the one 3D row not named in the list to open
+        up, so it stayed paid instead of being swept along with the other four.
 
-    **Six full-height sections below the footer: two blank, "Stop scrolling",
-    blank, "I warned you", blank, then a muted video.**
+      **Six full-height sections below the footer: two blank, "Stop scrolling",
+      blank, "I warned you", blank, then a muted video.**
 
-    - *Number*: 4 files, +171/−17. Homepage only, confirmed present in
-      `index.html` and absent from `pricing`, `faq` and `about`.
-    - *Hard part*: the footer is rendered by `app/layout.tsx`, so "under the
-      footer" leaves the layout as the only mount point, and the layout is
-      every route. Seven viewport-heights of joke under the refund policy and
-      six SEO landing pages is a defect, not a joke, so the component gates
-      itself on `usePathname()`.
+      - *Number*: 4 files, +171/−17. Homepage only, confirmed present in
+        `index.html` and absent from `pricing`, `faq` and `about`.
+      - *Hard part*: the footer is rendered by `app/layout.tsx`, so "under the
+        footer" leaves the layout as the only mount point, and the layout is
+        every route. Seven viewport-heights of joke under the refund policy and
+        six SEO landing pages is a defect, not a joke, so the component gates
+        itself on `usePathname()`.
 
-    **The site backdrop measures scroll progress against the end of the page
-    rather than the end of the document.**
+      **The site backdrop measures scroll progress against the end of the page
+      rather than the end of the document.**
 
-    - *Hard part*: this is the one that would have shipped silently.
-      `SiteBackdrop` drives its colour ramp off `scrollY / (scrollHeight -
-      innerHeight)`. Adding seven screens of padding stretches that
-      denominator, so the real content would never reach the light end of the
-      gradient and the footer would sit in the same navy as the hero: a joke
-      below the fold quietly recolouring everything above it. Fixed by
-      subtracting the height of any `[data-fx-beyond]` element, which is a
-      named contract rather than a special case for one component.
+      - *Hard part*: this is the one that would have shipped silently.
+        `SiteBackdrop` drives its colour ramp off `scrollY / (scrollHeight -
+        innerHeight)`. Adding seven screens of padding stretches that
+        denominator, so the real content would never reach the light end of the
+        gradient and the footer would sit in the same navy as the hero: a joke
+        below the fold quietly recolouring everything above it. Fixed by
+        subtracting the height of any `[data-fx-beyond]` element, which is a
+        named contract rather than a special case for one component.
 
-    **The video got its own visibility observer instead of the shared embed
-    hook.**
+      **The video got its own visibility observer instead of the shared embed
+      hook.**
 
-    - *Hard part*: `useVideoEmbed` carries a 400px `rootMargin` so videos are
-      ready before you arrive, which is exactly wrong here: it would have the
-      video playing to an empty screen while the visitor is still two sections
-      above. This one has no `rootMargin`, a 0.55 threshold, and disconnects
-      after firing so it cannot restart on the way back up. Muted regardless of
-      the brief, since no current browser honours autoplay without it.
+      - *Hard part*: `useVideoEmbed` carries a 400px `rootMargin` so videos are
+        ready before you arrive, which is exactly wrong here: it would have the
+        video playing to an empty screen while the visitor is still two sections
+        above. This one has no `rootMargin`, a 0.55 threshold, and disconnects
+        after firing so it cannot restart on the way back up. Muted regardless of
+        the brief, since no current browser honours autoplay without it.
 
-    **Verification, and one false alarm.**
+      **Verification, and one false alarm.**
 
-    - *Number*: server HTML contains zero `<iframe>` on every route, and the
-      video id is not in it until the observer fires. The `Offer` graph on
-      `/pricing` carries Free $0, Pro $29, Ultra $89. No "Teams" and no "$39"
-      survives on any route.
-    - *Cause*: a verification script reported "0 JSON-LD blocks" on `/pricing`
-      and was wrong. The pattern assumed the script tag opened with its `type`
-      attribute, while the tags carry an `id` first. The structured data was
-      correct all along. A pattern that finds nothing looks identical to a page
-      that contains nothing.
+      - *Number*: server HTML contains zero `<iframe>` on every route, and the
+        video id is not in it until the observer fires. The `Offer` graph on
+        `/pricing` carries Free $0, Pro $29, Ultra $89. No "Teams" and no "$39"
+        survives on any route.
+      - *Cause*: a verification script reported "0 JSON-LD blocks" on `/pricing`
+        and was wrong. The pattern assumed the script tag opened with its `type`
+        attribute, while the tags carry an `id` first. The structured data was
+        correct all along. A pattern that finds nothing looks identical to a page
+        that contains nothing.
 
 - date: 2026-08-09
-  project: landing
-  text: Two published install-size figures turned out to be wrong, and a depth section had to be fitted rather than tuned.
-  detail: |
-    Scope of the session: competitor facts, and one full-bleed 3D section. 10
-    commits, 21 files changed, +1573/−255, two new components and four supplied
-    logos.
+  text: A camera settings dialog, a schematic view and a bezier flight path in the editor, and two wrong install-size figures corrected on the site.
+  detail:
+    app: |
+      Scope of the session: the 3D camera and the editor around it. 24 commits,
+      one of them empty and pushed by accident, 52 files changed, +2777/−323.
+      Typecheck stayed at 0 errors and lint at its 127 baseline through every
+      commit.
 
-    **Centred four tool logos that sat off the ends of their own cables.**
+      Anything touching WebGPU or pointer behaviour is verified in the Node
+      harness only, so it still needs a browser to feel.
 
-    - *Number*: third attempt at this. The first two moved the wrong element.
-    - *Hard part*: framer-motion writes `transform` inline, so animating `y` or
-      `scale` on the same element that carries Tailwind's `-translate-x-1/2
-      -translate-y-1/2` silently discards the centring and positions the
-      element by its top-left corner. That is half a logo in each axis, not a
-      few pixels, which is why nudging offsets in the previous two commits
-      changed nothing. Fixed by splitting centring (outer div, plain inline
-      transform) from animation (inner `motion.div`). The trap is already
-      documented in CLAUDE.md and still cost three attempts in one file.
+      **The Cloner no longer crashes the editor, and it draws its instances.**
 
-    **Published an After Effects install size, then corrected it 39 minutes
-    later.**
+      - *Number*: `verify:cloner-render`, 8 assertions.
+      - *Cause*: it was never being skipped, it was being mis-bucketed. A
+        resolved cloner has no drawable payload of its own, and the renderer's
+        catch-all `else` filed it as a shape, so the shape packer dereferenced
+        `layer.shape` and threw on every single frame.
+      - *Hard part*: the real fix was upstream. `resolveFrame` now expands a
+        cloner into per-instance stamps of its source layer and hides the source,
+        the way C4D does, and the bucketing skips any resolved layer with no
+        payload. The note in CLAUDE.md claiming the if-chain "safely skipped" it
+        was wrong, and has been corrected.
 
-    - *Number*: three places carry the figure: `LoadTime`,
-      `SystemRequirementsSection` and `FeatureComparisonTable`.
-    - *Hard part*: `helpx.adobe.com` is unreachable from this environment,
-      timing out on the current page, both versioned pages and the `/in/` and
-      `/sg/` mirrors, across several sessions. The first commit aligned
-      everything to 15 GB because that is what the site had already been
-      publishing. Weighing four secondary sources afterwards put two
-      independent references on 8 GB tied to a specific build (25.6, November
-      2025), against one on 15 GB with no version tie and one on 5 GB matching
-      older releases. The site's long-standing number was the weaker reading.
-      Corrected to 8 GB, still second-hand, with the source table recorded in
-      `FIX.md` so it can be re-weighed rather than re-derived.
+      **Space plays the video even while a number field has focus, and Esc or a
+      click outside deselects.**
 
-    **Looked for the DaVinci Resolve equivalent and found that no published
-    figure exists.**
+      - *Hard part*: a focused `<input>` swallows Space as a literal character,
+        so "press space to play" silently typed a space instead. Play now wins
+        over the field, except while text is actually being edited, and deselect
+        had to clear the canvas selection and the timeline selection both.
 
-    - *Hard part*: Blackmagic publishes no disk-space requirement at all. Their
-      stated minimums cover CPU, GPU and RAM, and the tech-specs page is about
-      control panels. Third-party figures run 2 GB to 7 GB with nothing primary
-      behind any of them. The site's "3-4 GB desktop install" was invented
-      somewhere upstream and appeared in three places. All now say
-      "multi-gigabyte", the only thing every source agrees on.
+      **Multi-select outlines sit on parented objects instead of up and to the
+      left of them.**
 
-    **A full-bleed section of flat layers standing in depth, with a camera
-    moving through them.**
+      - *Cause*: the bounds check was reading a layer's own position rather than
+        its position after the parent chain has been applied.
 
-    - *Number*: three commits in 88 minutes. Shipped as a rig plus a live inset
-      of the camera's own view, reworked to a 65/35 split, then rebuilt to open
-      on a flat picture that comes apart. The final form renders one scene
-      through two cameras into two scissored viewports.
-    - *Hard part*: the geometry could not be hand-tuned. Two constraints pull
-      opposite ways: the backdrop must cover the shot camera's frame across the
-      whole dolly, which wants it large, and the rig view must frame the whole
-      set at any orbit angle, which wants it small. Four attempts at picking a
-      radius failed because raising the orbit distance while lowering the field
-      of view left `R*tan(fov/2)` roughly constant, so the framing never
-      improved. Replaced with a bounding-sphere fit, `radius / sin(half fov)`,
-      recomputed on resize since horizontal fov moves with aspect. A sphere is
-      the same size from every direction, so the framing holds at every angle
-      instead of at the one it was tuned at.
-    - *Hard part*: making the camera bigger and pushing the layers further
-      apart are in direct conflict, since a deeper scene means a wider fit and
-      a smaller camera on screen. Resolved by sizing the body from the fitted
-      radius rather than in absolute units, so it holds about 10.5% of frame
-      height regardless of depth.
-    - *Cause*: nothing in this section was checked in a browser. Framing, the
-      parallax ratio (12.7x foreground against backdrop) and near-plane
-      clearance are verified structurally only, by projecting the scene's
-      corners in Node against the constants read back out of the source file.
+      **The site and the app got a search-engine pass, and the FlashFX mark now
+      sits in both headers.**
 
-    **Reordered the pen tool demo so the cursor moves, clicks, and only then
-    places the anchor.**
+      - *Number*: a rewritten `index.html` head, plus `robots.txt`,
+        `sitemap.xml`, a web manifest, an inline brand logo, and a rasterised
+        social-preview image and touch icon.
+      - *Hard part*: a raw `&` inside the OG image's `aria-label` broke librsvg,
+        which is strict XML, and produced a blank PNG; escaping it to `&amp;`
+        fixed it. The sitemap lives at `editor.flashfx.app/sitemap.xml`.
 
-    - *Hard part*: it placed the point and moved the cursor from the same
-      instant, so each anchor appeared under a pen still travelling towards it.
-      It read as the drawing happening to the cursor rather than because of it.
-      Separately `curved`, the 0-to-1 blend from polyline to bezier, was
-      assigned rather than animated, so the one moment a pen-tool section
-      exists to show was crossed in a single frame. Driving it with framer's
-      `animate` also fixed the handles, which are drawn at `cx * curved` and so
-      now grow out of the anchors rather than appearing at full length.
-      Splitting the curve into one path per segment, which the draw-on needs,
-      forced the stroke gradient to `userSpaceOnUse`, or each segment would
-      have restarted it: four small rainbows instead of one sweep.
+      **The dashboard tabs work: Recents, All, Starred, Trash and Templates.**
 
-    **The screenshot carousel expands on click, with arrows the height of the
-    image.**
+      - *Number*: `verify:trash`, 5 assertions on the retention math. 7 days to
+        purge, 30 if starred, and a permanent delete that asks you to type the
+        project name, the way GitHub does. The new Templates tab carries 4 scene
+        deep links: galaxy, city skyline, rocket launch and forest.
+      - *Hard part*: keeping the retention math pure enough to prove in Node.
+        Purge time is derived (`trashedAt` plus `retentionDays`) rather than
+        stored, and "starred gets longer" had to survive the round trip with no
+        background job to lean on.
 
-    - *Hard part*: a drag ends with a click event on whichever card was under
-      the pointer, so every fling would also have opened a picture. framer only
-      fires `onDragStart` once its own threshold is crossed, which makes it
-      exactly the signal for "that was a drag, not a tap". The arrows track the
-      image height with `items-stretch`, so the row takes its height from the
-      only item with an intrinsic size and nothing has to measure anything.
+      **An After Effects style Camera Settings dialog, with coupled lens fields
+      and working depth of field.**
+
+      - *Number*: Zoom, Angle of View, Focal Length, Film Size and Comp Size, in
+        two columns with a placeholder for a tutorial video. `verify:camera3d`,
+        24 assertions. How After Effects actually behaves was researched with a
+        multi-agent workflow first, then the algebra written to match it.
+      - *Hard part*: the four lens fields are one identity, `Z = f·C/F`, so
+        storing all of them would desync the moment one was keyframed. Only Zoom,
+        in pixels, is stored and render-affecting; focal length, angle of view
+        and f-stop are derived for display and cannot drift. Depth of field is a
+        per-3D-layer circle of confusion routed through the existing blur
+        pipeline, honouring After Effects' "lock to zoom".
+
+      **Fewer buttons in the editor chrome.**
+
+      - *Number*: the FlashFX brand button is gone from the top bar, which now
+        reads just "Projects"; the separator is gone from the dashboard header;
+        "Render" and a small "Export" collapsed into one Export button; and the
+        Animation Builder is hidden, with the code kept.
+
+      **A 2.5D Camera Parallax template.**
+
+      - *Number*: cards at varying depth with a keyframed truck and push,
+        reachable by deep link.
+
+      **A 3D View in the inspector: a flat schematic of the world, next to the
+      live canvas.**
+
+      - *Number*: shown when a camera is selected, with the tab sidebar hiding to
+        make room. Drag the camera or its point of interest to place them and the
+        main canvas updates as you drag. A WebGPU validation-error scope went in
+        alongside it, so a validation error is captured and logged instead of
+        escalating into a lost device.
+      - *Hard part*: the Side view would not drag. The SVG used a fixed square
+        `viewBox` with the default `preserveAspectRatio`, which letterboxes,
+        while the pointer math assumed a linear stretch, so clicks skewed on the
+        letterboxed axis. Fixed by tracking the element's real pixel size as the
+        viewBox with `preserveAspectRatio="none"`, which gives a 1:1 pointer
+        mapping on both views.
+
+      **A "Disable Camera" toggle renders the screen flat, as if no camera
+      existed.**
+
+      - *Number*: top right of the canvas. Screen only; an export always keeps
+        the camera.
+      - *Cause*: the whole 3D path already checks for a camera before it runs, so
+        removing it for the screen render produces the exact 2D result with
+        nothing else changed.
+
+      **Camera interaction polish.**
+
+      - *Number*: full-width Top and Side tabs, double-click the camera to open
+        Settings (the inline button is gone), a precision drag mode where the
+        world moves at 40% of pointer speed, and aperture handles in millimetres
+        that mirror each other.
+
+      **A camera-path keyframe editor inside the 3D view.**
+
+      - *Number*: a rhombus that follows the camera to key its position, keyframe
+        markers anchored in the world (click to seek, right-click to delete), a
+        dotted "possible path" that becomes a solid line at two keys or more, and
+        a right-click menu per segment.
+      - *Hard part*: the drawn path is sampled from the real evaluated eye rather
+        than guessed, so what is on screen is exactly what renders, for any
+        interpolation.
+
+      **The camera path is a smooth spatial bezier with draggable tangent
+      handles.**
+
+      - *Number*: `verify:camera-path`, 4 assertions: collapse-to-lerp, byte
+        identity, bow and u-tracking. Right-click a segment for Smooth (automatic
+        Catmull-Rom tangents), Straight or Hold.
+      - *Hard part*: making it a strict opt-in generalisation. A cubic bezier
+        whose control points sit on the 1/3 and 2/3 line collapses to a straight
+        lerp, so a path with no tangents is byte-identical to the old linear one,
+        and that is proven rather than assumed, which is what stops the existing
+        harnesses regressing. Timing also had to keep coming from the real
+        keyframes: the along-path parameter `u` is extracted from the actual
+        interpolation of whichever axis moves most, so easing and holds on the
+        position keys still drive the fly-through.
+
+      **Project cards show a random frame from the scene, refreshed on every
+      open.**
+
+      - *Cause*: tens of projects otherwise look identical in a list.
+      - *Hard part*: the old capture called `canvas.toBlob()` on the WebGPU
+        canvas at teardown, which hands back a blank or stale frame. The new one
+        renders a random frame to an offscreen target on the live device, reusing
+        the warmed-up texture caches and never touching the visible canvas so
+        there is no flash, then downscales to a small WebP and overwrites the old
+        blob in place.
+
+      **A loading splash covers the editor on open until the scene, the assets
+      and the first frame are ready.**
+
+      - *Hard part*: opening a project janks the main thread for a couple of
+        seconds (deserialise, resolve, first WebGPU render), which would freeze a
+        normal JS-driven loader too. The spinner and the progress bar are pure
+        CSS transform animations, so they run on the compositor thread and keep
+        moving straight through the freeze.
+
+      **Every Transform property row has a revert-to-default button.**
+
+      - *Number*: position to the composition centre, scale to 1, rotations and Z
+        to 0, opacity to 1. Keyframe-aware, and dimmed when the value is already
+        at its default.
+    landing: |
+      Scope of the session: competitor facts, and one full-bleed 3D section. 10
+      commits, 21 files changed, +1573/−255, two new components and four supplied
+      logos.
+
+      **Centred four tool logos that sat off the ends of their own cables.**
+
+      - *Number*: third attempt at this. The first two moved the wrong element.
+      - *Hard part*: framer-motion writes `transform` inline, so animating `y` or
+        `scale` on the same element that carries Tailwind's `-translate-x-1/2
+        -translate-y-1/2` silently discards the centring and positions the
+        element by its top-left corner. That is half a logo in each axis, not a
+        few pixels, which is why nudging offsets in the previous two commits
+        changed nothing. Fixed by splitting centring (outer div, plain inline
+        transform) from animation (inner `motion.div`). The trap is already
+        documented in CLAUDE.md and still cost three attempts in one file.
+
+      **Published an After Effects install size, then corrected it 39 minutes
+      later.**
+
+      - *Number*: three places carry the figure: `LoadTime`,
+        `SystemRequirementsSection` and `FeatureComparisonTable`.
+      - *Hard part*: `helpx.adobe.com` is unreachable from this environment,
+        timing out on the current page, both versioned pages and the `/in/` and
+        `/sg/` mirrors, across several sessions. The first commit aligned
+        everything to 15 GB because that is what the site had already been
+        publishing. Weighing four secondary sources afterwards put two
+        independent references on 8 GB tied to a specific build (25.6, November
+        2025), against one on 15 GB with no version tie and one on 5 GB matching
+        older releases. The site's long-standing number was the weaker reading.
+        Corrected to 8 GB, still second-hand, with the source table recorded in
+        `FIX.md` so it can be re-weighed rather than re-derived.
+
+      **Looked for the DaVinci Resolve equivalent and found that no published
+      figure exists.**
+
+      - *Hard part*: Blackmagic publishes no disk-space requirement at all. Their
+        stated minimums cover CPU, GPU and RAM, and the tech-specs page is about
+        control panels. Third-party figures run 2 GB to 7 GB with nothing primary
+        behind any of them. The site's "3-4 GB desktop install" was invented
+        somewhere upstream and appeared in three places. All now say
+        "multi-gigabyte", the only thing every source agrees on.
+
+      **A full-bleed section of flat layers standing in depth, with a camera
+      moving through them.**
+
+      - *Number*: three commits in 88 minutes. Shipped as a rig plus a live inset
+        of the camera's own view, reworked to a 65/35 split, then rebuilt to open
+        on a flat picture that comes apart. The final form renders one scene
+        through two cameras into two scissored viewports.
+      - *Hard part*: the geometry could not be hand-tuned. Two constraints pull
+        opposite ways: the backdrop must cover the shot camera's frame across the
+        whole dolly, which wants it large, and the rig view must frame the whole
+        set at any orbit angle, which wants it small. Four attempts at picking a
+        radius failed because raising the orbit distance while lowering the field
+        of view left `R*tan(fov/2)` roughly constant, so the framing never
+        improved. Replaced with a bounding-sphere fit, `radius / sin(half fov)`,
+        recomputed on resize since horizontal fov moves with aspect. A sphere is
+        the same size from every direction, so the framing holds at every angle
+        instead of at the one it was tuned at.
+      - *Hard part*: making the camera bigger and pushing the layers further
+        apart are in direct conflict, since a deeper scene means a wider fit and
+        a smaller camera on screen. Resolved by sizing the body from the fitted
+        radius rather than in absolute units, so it holds about 10.5% of frame
+        height regardless of depth.
+      - *Cause*: nothing in this section was checked in a browser. Framing, the
+        parallax ratio (12.7x foreground against backdrop) and near-plane
+        clearance are verified structurally only, by projecting the scene's
+        corners in Node against the constants read back out of the source file.
+
+      **Reordered the pen tool demo so the cursor moves, clicks, and only then
+      places the anchor.**
+
+      - *Hard part*: it placed the point and moved the cursor from the same
+        instant, so each anchor appeared under a pen still travelling towards it.
+        It read as the drawing happening to the cursor rather than because of it.
+        Separately `curved`, the 0-to-1 blend from polyline to bezier, was
+        assigned rather than animated, so the one moment a pen-tool section
+        exists to show was crossed in a single frame. Driving it with framer's
+        `animate` also fixed the handles, which are drawn at `cx * curved` and so
+        now grow out of the anchors rather than appearing at full length.
+        Splitting the curve into one path per segment, which the draw-on needs,
+        forced the stroke gradient to `userSpaceOnUse`, or each segment would
+        have restarted it: four small rainbows instead of one sweep.
+
+      **The screenshot carousel expands on click, with arrows the height of the
+      image.**
+
+      - *Hard part*: a drag ends with a click event on whichever card was under
+        the pointer, so every fling would also have opened a picture. framer only
+        fires `onDragStart` once its own threshold is crossed, which makes it
+        exactly the signal for "that was a drag, not a tap". The arrows track the
+        image height with `items-stretch`, so the row takes its height from the
+        only item with an intrinsic size and nothing has to measure anything.
 
 - date: 2026-08-08
-  project: landing
-  text: Twenty new components in a day, and a text-tidying script that quietly ate its own indentation.
-  detail: |
-    Scope of the session: new sections, and the cost of rendering 176 of
-    anything. 37 commits, 133 files changed, +6052/−656, twenty new components
-    and nineteen new images.
+  text: Forty commits across eight fronts in the editor, and twenty new components on the landing page.
+  detail:
+    app: |
+      Scope of the session: breadth. 40 commits, +9917/−362, about 253 file
+      changes, across eight areas of work. Typecheck stayed at 0 errors and lint
+      at its 127 baseline through every commit.
 
-    **Eight new sections, at roughly one per 25 minutes.**
+      Anything touching GPU rendering or pointer behaviour is verified by
+      structure only, Node harnesses plus guards, so it still needs a browser to
+      confirm by feel.
 
-    - *Number*: "Edit in plain English", the media pool, procedural animation,
-      templates, a two-audience section with CSS-3D workstations, a Features
-      run above the 3D section, and a five-part "Not convinced yet?" AI block.
-      8 new section components and 8 new demo components.
-    - *Hard part*: several were rebuilt immediately after shipping because the
-      first reading of the brief was wrong. The procedural section went through
-      three forms in 21 minutes: one cube becoming eight things, then 2D
-      squares and kaleidoscopes at 1200ms crossings, then every radial
-      formation cut. Evaluating the formations numerically in Node found the
-      actual defects: the mandala reached radius 1.08 against a frame of 1.00,
-      and the tunnel crossed the frame edge at 40% opacity, so it was sliced
-      rather than fading.
-    - *Hard part*: `app/page.tsx` is a server component, and
-      `dynamic(() => import('./X').then(m => m.X))` written there fails at
-      prerender with "Cannot access X.then on the server". The dynamic call has
-      to live inside a `'use client'` module. Two files exist only for that.
+      **Six more Figma time-saver milestones, M17 through M22.**
 
-    **The 176-card feature grid skips everything off screen.**
+      - *Number*: 6 commits. Outline Text (M17) turns a text layer into editable
+        letter shapes that can be moved point by point; batch rename (M19,
+        Ctrl+R) renames a whole multi-selection at once with tokens, numbering
+        and pattern matching; a freehand draw tool (M18, Shift+P); rulers with
+        tick marks and labels, plus snapping to whole pixels while dragging
+        (M20); linked colour styles (M21), so changing a colour once updates
+        every layer using it; and outline stroke with hole-preserving booleans
+        (M22).
+      - *Cause*: shape and text fill and stroke now read the linked style first,
+        before the material overlay is applied.
+      - *Hard part*: preserving holes through a boolean means tracking even-odd
+        winding, not just unioning the outer rings.
 
-    - *Number*: roughly a dozen cards are on screen at any time.
-    - *Hard part*: `content-visibility: auto` alone breaks the page. A skipped
-      card measures zero, so the document collapses and the scrollbar jumps.
-      `contain-intrinsic-size: auto 190px` is the necessary other half, and
-      `auto` is what makes the browser remember each card's real height after
-      it has rendered once.
-    - *Cause*: this grid was described as 179 cards in the previous day's
-      commit and in code comments. The real count is 176 (47+90+39). The 179
-      came from a loose `title:` pattern matching entries outside the three
-      data files.
+      **A tutorial that builds a complete title-card scene by driving the real
+      editor.**
 
-    **Removed the last grid backgrounds, so the shader field runs through every
-    section.**
+      - *Number*: phases 1 to 5 in 4 commits, chapters 1 to 10, with a spotlight
+        overlay on the interface and a prompt on first open.
+      - *Hard part*: it runs the actual store actions rather than a scripted
+        fake, so every step has to tolerate real state and undo. A canned
+        animation would drift from the editor the first time anything moved.
 
-    - *Hard part*: the iceberg image below the grid has top and bottom fades
-      hand-matched to `#141f40`, and meeting a shader field they would read as
-      a hard seam. It keeps its solid ground, with a lead-in gradient taking
-      the page from the field into the flat colour.
+      **Buttons on the landing page open the editor on a template that plays
+      immediately.**
 
-    **Settled the RAM floor at 4 GB across the site, and removed every em dash
-    from visible copy.**
+      - *Number*: 3 commits. `/?template=<id>` loads a fresh project that plays
+        on open and can then be edited; the first one is a tuned particle hero.
+      - *Hard part*: the splash overlays the app while WebGPU warms and pre-rolls
+        about 8 frames before playing, so the heaviest first frames happen behind
+        it. And the seeding has to wait until the async scene load actually swaps
+        the composition reference, or it lands on the wrong document and gets
+        overwritten.
 
-    - *Number*: the RAM figure had been contradictory across seven files.
-      `/lightweight-video-editor` alone said "Works on 4 GB" twice and
-      "Requires only 2 GB" once.
-    - *Hard part*: the em-dash script's tidy pass ran a whitespace-before-comma
-      substitution on every line and ate the indentation off chained
-      `.join(' ')` calls. Caught because the candidate count jumped from 206 to
-      248 between runs; fixed with an early return so only dash-bearing lines
-      are touched. A blind dash-to-comma replacement also produced comma
-      splices ("you are always on the current version, there is nothing to
-      download"), so the replacement is keyed on the word after the dash:
-      connector to comma, clause-opener to full stop, `-ing` to comma, digits
-      to hyphen, otherwise a colon.
+      **"Use this" inserts a working animation at the playhead, timing and motion
+      included, not only the artwork.**
 
-    **The editor has a single deep-link contract in `lib/editor.ts`.**
+      - *Number*: 9 commits, 24 or more templates. Scenes (beach, forest,
+        night), weather (sunset, rain, city, snow), creative (galaxy, phone chat,
+        pen, clock, fireworks, rocket, coffee, confetti, spinner) and four
+        showcases: Chain Reaction (a Rube Goldberg with 200 balls), Departure
+        Board (split-flap flip wave, parallax planes, rain matte), Bar Chart Race
+        (pre-computed reordering) and Recursive Editor (FlashFX animating a video
+        editor). An "All" button inserts every template one after another.
+        `verify:anim-templates`, 132 checks.
+      - *Hard part*: templates are authored 0-based and rebased to the playhead,
+        rescaled if the composition fps differs from the authoring fps. The
+        Recursive Editor lives or dies on cursor believability, so the cursor
+        engine is a bezier arc plus ballistic velocity, overshoot, dwell,
+        sub-pixel noise and icon swaps. And the bar-race reorder is *baked*,
+        because a live reorder needs a per-frame sort the keyframe model cannot
+        express.
 
-    - *Number*: `?template=<id>`, with a whitelist typed so an unknown id is a
-      compile error.
-    - *Hard part*: the editor silently ignores ids it does not recognise. No
-      error, the visitor just lands on an empty dashboard. Nothing in this repo
-      can validate an id at build time, so the whitelist is only as good as the
-      discipline around it.
+      **An AI chat panel that can be toggled on, in the style of VS Code and
+      Copilot.**
 
-    **Moved the workstation figure out of the laptop it was rendering inside,
-    then reverted it.**
+      - *Number*: 2 commits, a mockup. It takes the right 20% of the screen and
+        compresses the layout in every mode except preview. Assistant replies
+        without borders, a loading state while thinking, streaming text and a
+        response timer; the composer buttons (add file, from Drive, image and the
+        rest) are placeholders.
+      - *Cause*: internally there is a `streamResponse()` seam with a canned
+        reply behind it, so a real model drops in later with no change to the UI.
 
-    - *Hard part*: the figure and the laptop lid genuinely occupy the same
-      depth range in the `preserve-3d` stack, so the browser interleaves them.
-      It is not a spacing problem, and moving the figure down or forward does
-      not fix it: the shapes intersect. The revert restores the
-      interpenetration, which the commit says out loud rather than quietly
-      putting things back.
+      **A new layer type that draws patterns on the graphics card at full
+      resolution.**
+
+      - *Number*: phases 1 to 3 in 6 commits. `generativePattern` covers 11 types
+        (waves, plasma, kaleidoscope, mosaic and 7 more) with a palette editor,
+        and the layer has bounds, so it moves, resizes and masks like a
+        rectangle, with animatable scale, rotation, warp and contrast, and
+        blending with the layer below. `verify:pattern`, 16 checks.
+      - *Hard part*: the config's type whitelist was still hard-coded to the
+        original 4 types, so every new type silently parsed back to plasma; the
+        harness caught it as `'plasma' !== 'clouds'`. And blend cannot read the
+        scene texture progressively, so each mode is a separate pipeline whose
+        fragment output form is matched to its blend state: 4 variants, normal,
+        add, multiply and screen.
+
+      **The timeline's layer-name column sizes itself to the busiest track.**
+
+      - *Number*: 2 commits. It doubles in width in Edit mode, then grows to fit,
+        up to a limit. Clip counts are computed O(N) through a Map, not
+        per-track-per-render.
+
+      **The start of After Effects style cards positioned in space.**
+
+      - *Number*: M0 to M3 plus M6, with M2 landing last, in 8 commits.
+        `verify:mat4`, 9 checks; `verify:camera3d`, 17; `verify:scene3d`, 5.
+      - *Cause*: built so a 2D project renders byte-identical at every step, with
+        the depth fields defaulting to 0 and the GPU path switched on by an
+        `is3D` flag. M0 is a matrix core plus optional Z position and X/Y
+        rotation on Transform. M1 is a camera layer that resolves to view and
+        projection each frame, and its default frames the composition 1:1 at any
+        zoom, so a single layer switched to 3D does not jump. M3 is the per-layer
+        3D toggle, with X, Y and Z position and rotation rows in the inspector.
+        M2 is the renderer projecting each 3D layer through the camera in the
+        shader (added to the image, shape, text and pattern uniforms) and sorting
+        by depth, far to near, with 2D layers holding their existing order.
+      - *Hard part*: the y-down handedness trap. The default camera was flipping
+        both screen axes against the renderer's y-down convention, and the first
+        harness only checked magnitudes, so it passed anyway. Fixed with a −Y
+        composition-up vector and pinned with signed-parity assertions (top-left
+        lands at (−1,+1), and so on). The GPU projection itself cannot be proven
+        outside a browser, so it is additive and guarded, a zero-initialised
+        `is3D` flag means no 2D layer can be affected, and everything that is
+        actually hard, parity, foreshortening and painter order, is proven in
+        Node.
+    landing: |
+      Scope of the session: new sections, and the cost of rendering 176 of
+      anything. 37 commits, 133 files changed, +6052/−656, twenty new components
+      and nineteen new images.
+
+      **Eight new sections, at roughly one per 25 minutes.**
+
+      - *Number*: "Edit in plain English", the media pool, procedural animation,
+        templates, a two-audience section with CSS-3D workstations, a Features
+        run above the 3D section, and a five-part "Not convinced yet?" AI block.
+        8 new section components and 8 new demo components.
+      - *Hard part*: several were rebuilt immediately after shipping because the
+        first reading of the brief was wrong. The procedural section went through
+        three forms in 21 minutes: one cube becoming eight things, then 2D
+        squares and kaleidoscopes at 1200ms crossings, then every radial
+        formation cut. Evaluating the formations numerically in Node found the
+        actual defects: the mandala reached radius 1.08 against a frame of 1.00,
+        and the tunnel crossed the frame edge at 40% opacity, so it was sliced
+        rather than fading.
+      - *Hard part*: `app/page.tsx` is a server component, and
+        `dynamic(() => import('./X').then(m => m.X))` written there fails at
+        prerender with "Cannot access X.then on the server". The dynamic call has
+        to live inside a `'use client'` module. Two files exist only for that.
+
+      **The 176-card feature grid skips everything off screen.**
+
+      - *Number*: roughly a dozen cards are on screen at any time.
+      - *Hard part*: `content-visibility: auto` alone breaks the page. A skipped
+        card measures zero, so the document collapses and the scrollbar jumps.
+        `contain-intrinsic-size: auto 190px` is the necessary other half, and
+        `auto` is what makes the browser remember each card's real height after
+        it has rendered once.
+      - *Cause*: this grid was described as 179 cards in the previous day's
+        commit and in code comments. The real count is 176 (47+90+39). The 179
+        came from a loose `title:` pattern matching entries outside the three
+        data files.
+
+      **Removed the last grid backgrounds, so the shader field runs through every
+      section.**
+
+      - *Hard part*: the iceberg image below the grid has top and bottom fades
+        hand-matched to `#141f40`, and meeting a shader field they would read as
+        a hard seam. It keeps its solid ground, with a lead-in gradient taking
+        the page from the field into the flat colour.
+
+      **Settled the RAM floor at 4 GB across the site, and removed every em dash
+      from visible copy.**
+
+      - *Number*: the RAM figure had been contradictory across seven files.
+        `/lightweight-video-editor` alone said "Works on 4 GB" twice and
+        "Requires only 2 GB" once.
+      - *Hard part*: the em-dash script's tidy pass ran a whitespace-before-comma
+        substitution on every line and ate the indentation off chained
+        `.join(' ')` calls. Caught because the candidate count jumped from 206 to
+        248 between runs; fixed with an early return so only dash-bearing lines
+        are touched. A blind dash-to-comma replacement also produced comma
+        splices ("you are always on the current version, there is nothing to
+        download"), so the replacement is keyed on the word after the dash:
+        connector to comma, clause-opener to full stop, `-ing` to comma, digits
+        to hyphen, otherwise a colon.
+
+      **The editor has a single deep-link contract in `lib/editor.ts`.**
+
+      - *Number*: `?template=<id>`, with a whitelist typed so an unknown id is a
+        compile error.
+      - *Hard part*: the editor silently ignores ids it does not recognise. No
+        error, the visitor just lands on an empty dashboard. Nothing in this repo
+        can validate an id at build time, so the whitelist is only as good as the
+        discipline around it.
+
+      **Moved the workstation figure out of the laptop it was rendering inside,
+      then reverted it.**
+
+      - *Hard part*: the figure and the laptop lid genuinely occupy the same
+        depth range in the `preserve-3d` stack, so the browser interleaves them.
+        It is not a spacing problem, and moving the figure down or forward does
+        not fix it: the shapes intersect. The revert restores the
+        interpenetration, which the commit says out loud rather than quietly
+        putting things back.
 
 - date: 2026-08-07
-  project: landing
-  text: The largest day on the site by commits and by lines, and a build budget that caught 57 MB nobody was looking at.
-  detail: |
-    Scope of the session: performance, and settling the homepage's shape. 49
-    commits, 124 files changed, +8052/−1541. The largest day by commit count
-    and by lines.
+  text: Nine milestones of vector editing in the editor, and the largest day the landing page has had.
+  detail:
+    app: |
+      Scope of the session: vector editing and the shortcuts around it. M2 through
+      M10 in 8 commits, plus M1 which landed late the night before. 8 new Node
+      verification harnesses: transform HUD, measurement, equal-gap, nudge, fuzzy
+      search, tangent, bend, path cleanup. Typecheck stayed at 0 errors and lint at
+      its 127 baseline through every commit.
 
-    **Every continuous animation is behind a governor capped at 6 concurrent
-    loops.**
+      Anything touching pointer input or WebGPU is verified structurally only,
+      because it needs a browser to feel, so each commit carries its own
+      manual-check list.
 
-    - *Number*: 183 `trace` borders against 1 `ambient` on the whole site. Only
-      `ambient` and `pulse` take a slot, claimed per system rather than per
-      element.
-    - *Hard part*: the unit had to be one ambient system, not one element. A
-      backdrop with 24 animated paths takes one slot and shares it down the
-      tree via context; registering per element would leave 40 shapes fighting
-      over 6 slots and freezing at random. `active: false` also had to mean
-      "hold a still frame", never "render nothing": a background that vanishes
-      when the cap is spent looks broken.
+      **Rectangle corners can be rounded by dragging, one corner at a time.**
 
-    **Replaced seven video boxes with in-page recreations of the editor.**
+      - *Number*: 4 independent radii per rectangle (M1, shipped late on the 6th).
+      - *Cause*: `borderRadius` was already an animatable property, so this was
+        exposure, not a new engine.
+      - *Hard part*: the drag handle has to live in composition space and read back
+        through the same anchor, rotation and scale math the renderer uses, or the
+        handle drifts off the corner as soon as the layer is rotated.
 
-    - *Number*: an embed is 1 to 2 MB of third-party JavaScript and its own
-      rendering context; these are a few kB.
-    - *Hard part*: the rule that came out of it matters more than the saving.
-      Footage of the editor's UI may become a demo; footage of real finished
-      work may not. The five shorts in `WhatIsFlashFX` are actual output made
-      with FlashFX and stay as video. Showing a simulation where a visitor
-      believes they are seeing genuine results is a different claim from
-      illustrating an interface. Recorded as a standing rule the same day.
+      **The four boolean operations and Flatten now have keyboard shortcuts.**
 
-    **Fixed the timelines rendering as a strip with three quarters of the panel
-    empty.**
+      - *Number*: Alt+Shift+U/S/I/E, plus Ctrl+E. Before today 1 of the 4
+        operations had a binding; now all 4 do, and so does flatten.
+      - *Hard part*: subtract was using selection order, so which shape survived
+        depended on the order they were clicked. Fixed to z-order, bottom shape
+        wins, matching Figma. Alt also mangles `e.key` on some layouts, so every
+        Alt combo matches the physical `e.code` instead.
 
-    - *Number*: about 220px of content inside an 845px panel, 74% empty.
-    - *Hard part*: the previous commit had added tracks and raised the aspect
-      ratio, which only made the empty area larger, because neither was the
-      cause. `DemoShell`'s content wrapper was `relative flex-1 min-h-0`, a
-      block container, so the tracks div's `flex-1` had nothing to flex against
-      and collapsed to the height of its 8px label text. The fix is one class,
-      `flex flex-col`, on that wrapper. Demos positioned `absolute inset-0` are
-      out of flow and were unaffected either way, which is why the bug looked
-      inconsistent.
+      **A readout of position, size and rotation appears while moving, resizing or
+      rotating a layer.**
 
-    **Built a cube to sphere to aeroplane morph across four commits, then
-    deleted it and kept only its last stage.**
+      - *Number*: `verify:transformhud`, 13 assertions.
+      - *Hard part*: the numbers have to come out of the exact same transform
+        pipeline the shader uses (scale, then anchor-relative, then rotate, then
+        translate), or the readout disagrees with what is on screen for any layer
+        that has been rotated or scaled.
 
-    - *Number*: a 107 MB source model baked down to 2,324 triangles. The morph
-      rewrote 20,916 floats every frame; the rotatable A380 that replaced it
-      writes a rotation and nothing else.
-    - *Hard part*: the section it lived in also had a `SplineScene` stub
-      rendering "3D scene unavailable" on a black square, so the page had been
-      shipping a large empty box. Deleting the morph freed the column that stub
-      occupied, which removed a whole section from the homepage, 26 down to 25.
-      The dead end was worth it only because it produced the geometry.
+      **Holding Alt while hovering shows pixel distances to neighbouring objects,
+      and dragging snaps to equal gaps.**
 
-    **Replaced per-section backgrounds with one field of light behind the whole
-    site, then partly reverted it.**
+      - *Number*: `verify:measure`, 9 assertions; `verify:equalgap`, 7.
+      - *Hard part*: equal-gap detection is a fuzzy match over the gaps between
+        bounding boxes: find the run of objects that are nearly evenly spaced, then
+        snap to complete it, without the snap fighting the pointer.
 
-    - *Hard part*: the change folded the hero's rays into the backdrop and
-      removed `ShaderAnimation` altogether. Reverted on the owner's call: it is
-      the best animation on the site and it stays. `Hero.tsx` was restored
-      verbatim from the commit before, and the backdrop's rays were removed
-      instead, since drawing them in both places doubles them behind the hero.
-      The homepage now deliberately runs two decorative contexts, recorded as
-      an exception rather than left implying the hero shader was retired.
+      **Arrow-key nudging, align and distribute are wired up, along with several
+      actions that had no shortcut at all.**
 
-    **Build budgets that fail the deploy rather than printing a warning.**
+      - *Number*: Shift for a larger step, Alt+A/D/W/S/H/V to align, Ctrl+Alt+H/V
+        to distribute. `verify:nudge`, 4 assertions; the nudge amounts are
+        configurable in Settings.
+      - *Hard part*: Alt+S already meant "trim clip down". Resolved by gating the
+        align keys to a selection of 2 or more and ordering them ahead of the trim
+        keys, so Alt+S aligns to the bottom only when it cannot mean trim.
 
-    - *Number*: `public/` was 57.5 MB and is now 0.86 MB. Homepage eager JS
-      measured at 108.4 kB against a 140 kB budget.
-    - *Hard part*: the guard caught it on its first run.
-      `public/airbus-a380.zip` (34 MB) and `public/A380.rar` (23 MB) were
-      source archives for a model already baked into `a380-geometry.ts`,
-      referenced by nothing and deploying on every build. Nobody had noticed
-      for the same reason 6.6 MB of PNGs went unnoticed the day before: nothing
-      was looking. The JS budget deliberately does not reproduce the figure the
-      Next CLI prints, because that number is computed inside Next's build and
-      cannot be read back, so matching it would mean guessing at its
-      arithmetic. It measures the gzipped bytes of the chunks the served HTML
-      actually requests.
+      **A command palette opens on Ctrl+/ or Ctrl+K.**
 
-    **About 20 commits reordering, retitling, deleting and rebuilding homepage
-    sections to spoken briefs.**
+      - *Number*: `verify:fuzzy`, 10 assertions, covering the palette's matcher.
+      - *Hard part*: the value is the registry, not the popup. Commands had to be
+        described as data (id, label, when-enabled, run) so the palette, and later
+        the menus and the shortcut layer, all read one source instead of each
+        re-deriving state.
 
-    - *Number*: the hero opening on cubes, both timelines full-bleed, the
-      interpolation section becoming a rollercoaster, three sections deleted
-      outright, headings moved to Inter and Cormorant retired.
-    - *Cause*: this arc is thin on hard parts because most of it was taste, not
-      difficulty. It is recorded mainly so a future reader knows the homepage's
-      shape was settled in one day and not designed up front.
+      **Alt-dragging duplicates a layer; Ctrl+D duplicates and repeats the last
+      transform.**
+
+      - *Number*: the offset carries, so a second Ctrl+D re-applies the same delta,
+        which builds an array.
+      - *Hard part*: power duplicate means remembering the last move or rotate as a
+        delta and re-applying it on every Ctrl+D, while Alt-drag instead leaves a
+        copy behind at the origin. Two different notions of "the thing that just
+        happened", tracked separately.
+
+      **Pressing Enter converts any shape into an editable path, with full control
+      of the curve handles.**
+
+      - *Number*: `verify:tangent`, 6 assertions. Handle modes are mirrored,
+        angle-only and independent, with Alt to break a tangent for one drag.
+      - *Hard part*: `normalizeAngle(-360)` returned `-0`, which fails `deepEqual`
+        against `0` because that compares with `Object.is`, and it broke the
+        harness; fixed by normalising to `+0`. The handle-mode UI also had to go in
+        `ShapeProperties`, not `InspectorTabContent`: the polygon inspector section
+        lives in a different component than it looks like it does.
+
+      **A point on a segment can be grabbed and dragged to curve it.**
+
+      - *Number*: M9. `verify:bend`, 4 assertions.
+      - *Hard part*: to make a cubic pass through the cursor at parameter `t` you
+        add `d / (3(1-t)t)` to both endpoint handles, and that delta has to be
+        applied to the pre-drag handles on every move, not to the live ones, or it
+        compounds.
+
+      **An anchor point can be deleted and the curve healed across the gap, and
+      paths can be joined or closed.**
+
+      - *Number*: Shift+Delete to heal, Ctrl+J to join or close (M10).
+        `verify:pathcleanup`, 9 assertions.
+      - *Hard part*: healing is the interesting one. Drop an anchor, reconnect the
+        neighbours, and you get a kink. Figma's actual fix is a Schneider (1990)
+        least-squares refit: hold the two endpoints and their tangent directions
+        fixed, then solve only for the two handle lengths that best fit the
+        original two-curve span. My first version just passed the curve through
+        where the point used to be, which is cheaper but changes the tangents and
+        kinks anyway; it was replaced with the least-squares solve before shipping.
+    landing: |
+      Scope of the session: performance, and settling the homepage's shape. 49
+      commits, 124 files changed, +8052/−1541. The largest day by commit count
+      and by lines.
+
+      **Every continuous animation is behind a governor capped at 6 concurrent
+      loops.**
+
+      - *Number*: 183 `trace` borders against 1 `ambient` on the whole site. Only
+        `ambient` and `pulse` take a slot, claimed per system rather than per
+        element.
+      - *Hard part*: the unit had to be one ambient system, not one element. A
+        backdrop with 24 animated paths takes one slot and shares it down the
+        tree via context; registering per element would leave 40 shapes fighting
+        over 6 slots and freezing at random. `active: false` also had to mean
+        "hold a still frame", never "render nothing": a background that vanishes
+        when the cap is spent looks broken.
+
+      **Replaced seven video boxes with in-page recreations of the editor.**
+
+      - *Number*: an embed is 1 to 2 MB of third-party JavaScript and its own
+        rendering context; these are a few kB.
+      - *Hard part*: the rule that came out of it matters more than the saving.
+        Footage of the editor's UI may become a demo; footage of real finished
+        work may not. The five shorts in `WhatIsFlashFX` are actual output made
+        with FlashFX and stay as video. Showing a simulation where a visitor
+        believes they are seeing genuine results is a different claim from
+        illustrating an interface. Recorded as a standing rule the same day.
+
+      **Fixed the timelines rendering as a strip with three quarters of the panel
+      empty.**
+
+      - *Number*: about 220px of content inside an 845px panel, 74% empty.
+      - *Hard part*: the previous commit had added tracks and raised the aspect
+        ratio, which only made the empty area larger, because neither was the
+        cause. `DemoShell`'s content wrapper was `relative flex-1 min-h-0`, a
+        block container, so the tracks div's `flex-1` had nothing to flex against
+        and collapsed to the height of its 8px label text. The fix is one class,
+        `flex flex-col`, on that wrapper. Demos positioned `absolute inset-0` are
+        out of flow and were unaffected either way, which is why the bug looked
+        inconsistent.
+
+      **Built a cube to sphere to aeroplane morph across four commits, then
+      deleted it and kept only its last stage.**
+
+      - *Number*: a 107 MB source model baked down to 2,324 triangles. The morph
+        rewrote 20,916 floats every frame; the rotatable A380 that replaced it
+        writes a rotation and nothing else.
+      - *Hard part*: the section it lived in also had a `SplineScene` stub
+        rendering "3D scene unavailable" on a black square, so the page had been
+        shipping a large empty box. Deleting the morph freed the column that stub
+        occupied, which removed a whole section from the homepage, 26 down to 25.
+        The dead end was worth it only because it produced the geometry.
+
+      **Replaced per-section backgrounds with one field of light behind the whole
+      site, then partly reverted it.**
+
+      - *Hard part*: the change folded the hero's rays into the backdrop and
+        removed `ShaderAnimation` altogether. Reverted on the owner's call: it is
+        the best animation on the site and it stays. `Hero.tsx` was restored
+        verbatim from the commit before, and the backdrop's rays were removed
+        instead, since drawing them in both places doubles them behind the hero.
+        The homepage now deliberately runs two decorative contexts, recorded as
+        an exception rather than left implying the hero shader was retired.
+
+      **Build budgets that fail the deploy rather than printing a warning.**
+
+      - *Number*: `public/` was 57.5 MB and is now 0.86 MB. Homepage eager JS
+        measured at 108.4 kB against a 140 kB budget.
+      - *Hard part*: the guard caught it on its first run.
+        `public/airbus-a380.zip` (34 MB) and `public/A380.rar` (23 MB) were
+        source archives for a model already baked into `a380-geometry.ts`,
+        referenced by nothing and deploying on every build. Nobody had noticed
+        for the same reason 6.6 MB of PNGs went unnoticed the day before: nothing
+        was looking. The JS budget deliberately does not reproduce the figure the
+        Next CLI prints, because that number is computed inside Next's build and
+        cannot be read back, so matching it would mean guessing at its
+        arithmetic. It measures the gzipped bytes of the chunks the served HTML
+        actually requests.
+
+      **About 20 commits reordering, retitling, deleting and rebuilding homepage
+      sections to spoken briefs.**
+
+      - *Number*: the hero opening on cubes, both timelines full-bleed, the
+        interpolation section becoming a rollercoaster, three sections deleted
+        outright, headings moved to Inter and Cormorant retired.
+      - *Cause*: this arc is thin on hard parts because most of it was taste, not
+        difficulty. It is recorded mainly so a future reader knows the homepage's
+        shape was settled in one day and not designed up front.
 
 - date: 2026-08-06
-  project: landing
-  text: The sitemap had never once run on Netlify, and fifteen routes the footer already linked to did not exist.
-  detail: |
-    Scope of the session: the routes the site claimed to have, and the weight
-    of the ones it did. 22 commits, 137 files changed, +7481/−464, fifteen new
-    routes.
-
-    **Fixed the deploy command so the sitemap regenerates.**
-
-    - *Number*: the deployed sitemap held six URLs, missing every route added
-      since it was committed.
-    - *Hard part*: `netlify.toml` ran `npx next build`, which invokes the
-      `next` binary directly, and npm only fires `pre` and `post` lifecycle
-      scripts for scripts run through `npm run`. So `postbuild` never executed
-      and `next-sitemap` had never run on Netlify: production served whatever
-      happened to be committed to `public/`. The failure is completely silent.
-      The build stays green, the file exists, it just stops tracking reality.
-      This is now the one thing CLAUDE.md says must not change about the build
-      command.
-
-    **Added fifteen routes.**
-
-    - *Number*: `/pricing`, `/features`, `/faq`, `/changelog`, `/brand`,
-      `/careers`, `/download`, `/your-data`, three Termly policy pages, a
-      three-way comparison page, a YouTube-specific landing page, and a branded
-      404.
-    - *Hard part*: the footer had been linking to about 18 routes that did not
-      exist. Building them was the straightforward half; deciding which to
-      build and which to delete was not. `/status` was removed rather than
-      faked, `/security` became `/your-data`, and `/roadmap` was repointed
-      rather than invented. A 404 a real visitor reaches from your own footer
-      is worse than a missing link, so the branded 404 lists the routes that do
-      exist.
-
-    **Expanded the capability matrix from 16 rows to 27, and corrected the
-    cloud storage figures.**
-
-    - *Hard part*: 50 MB, 500 MB and 20 GB are not in conflict, they are
-      different states: no account, free tier, paid. Copy quoting a storage
-      number without saying which state it means reads as a contradiction,
-      which is exactly what `editorFeatures.ts` had been doing.
-
-    **Performance steps P1 through P6.**
-
-    - *Number*: images 6.56 MB to 0.45 MB (P3); homepage First Load JS 316 kB
-      to 176 kB and route JS 178 kB to 37.6 kB (P5); animated paths 72 to 24
-      (P6). Also stopped the loader blocking first paint, lazy-loaded every
-      embed, paused off-screen WebGL and moved three.js off the initial bundle.
-    - *Hard part*: the old splash gated first paint on `window.load` plus five
-      YouTube `onLoad` events, and `Hero` returned `null` until it finished,
-      which kept the LCP element out of the DOM for the entire load. The
-      replacement is a server component with no JavaScript at all, fading via
-      CSS so it begins at first paint and cannot hang waiting on anything.
-    - *Hard part*: the plan's under-150 kB target was not met and was
-      abandoned, which P5 records rather than quietly dropping. The remaining
-      weight above the shared baseline is mostly framer-motion, imported by 93
-      components; removing it means rewriting every reveal animation on the
-      site for roughly 26 kB. Two components on the original lazy-load list,
-      `BackgroundPaths` and `RadialOrbitalTimeline`, were wrong to include,
-      because both wrap real content rather than decoration.
-
-- date: 2026-08-09
-  text: The 3D camera got a settings dialog, a schematic view and a bezier flight path, and the cloner stopped crashing the editor.
-  detail: |
-    Scope of the session: the 3D camera and the editor around it. 24 commits,
-    one of them empty and pushed by accident, 52 files changed, +2777/−323.
-    Typecheck stayed at 0 errors and lint at its 127 baseline through every
-    commit.
-
-    Anything touching WebGPU or pointer behaviour is verified in the Node
-    harness only, so it still needs a browser to feel.
-
-    **The Cloner no longer crashes the editor, and it draws its instances.**
-
-    - *Number*: `verify:cloner-render`, 8 assertions.
-    - *Cause*: it was never being skipped, it was being mis-bucketed. A
-      resolved cloner has no drawable payload of its own, and the renderer's
-      catch-all `else` filed it as a shape, so the shape packer dereferenced
-      `layer.shape` and threw on every single frame.
-    - *Hard part*: the real fix was upstream. `resolveFrame` now expands a
-      cloner into per-instance stamps of its source layer and hides the source,
-      the way C4D does, and the bucketing skips any resolved layer with no
-      payload. The note in CLAUDE.md claiming the if-chain "safely skipped" it
-      was wrong, and has been corrected.
-
-    **Space plays the video even while a number field has focus, and Esc or a
-    click outside deselects.**
-
-    - *Hard part*: a focused `<input>` swallows Space as a literal character,
-      so "press space to play" silently typed a space instead. Play now wins
-      over the field, except while text is actually being edited, and deselect
-      had to clear the canvas selection and the timeline selection both.
-
-    **Multi-select outlines sit on parented objects instead of up and to the
-    left of them.**
-
-    - *Cause*: the bounds check was reading a layer's own position rather than
-      its position after the parent chain has been applied.
-
-    **The site and the app got a search-engine pass, and the FlashFX mark now
-    sits in both headers.**
-
-    - *Number*: a rewritten `index.html` head, plus `robots.txt`,
-      `sitemap.xml`, a web manifest, an inline brand logo, and a rasterised
-      social-preview image and touch icon.
-    - *Hard part*: a raw `&` inside the OG image's `aria-label` broke librsvg,
-      which is strict XML, and produced a blank PNG; escaping it to `&amp;`
-      fixed it. The sitemap lives at `editor.flashfx.app/sitemap.xml`.
-
-    **The dashboard tabs work: Recents, All, Starred, Trash and Templates.**
-
-    - *Number*: `verify:trash`, 5 assertions on the retention math. 7 days to
-      purge, 30 if starred, and a permanent delete that asks you to type the
-      project name, the way GitHub does. The new Templates tab carries 4 scene
-      deep links: galaxy, city skyline, rocket launch and forest.
-    - *Hard part*: keeping the retention math pure enough to prove in Node.
-      Purge time is derived (`trashedAt` plus `retentionDays`) rather than
-      stored, and "starred gets longer" had to survive the round trip with no
-      background job to lean on.
-
-    **An After Effects style Camera Settings dialog, with coupled lens fields
-    and working depth of field.**
-
-    - *Number*: Zoom, Angle of View, Focal Length, Film Size and Comp Size, in
-      two columns with a placeholder for a tutorial video. `verify:camera3d`,
-      24 assertions. How After Effects actually behaves was researched with a
-      multi-agent workflow first, then the algebra written to match it.
-    - *Hard part*: the four lens fields are one identity, `Z = f·C/F`, so
-      storing all of them would desync the moment one was keyframed. Only Zoom,
-      in pixels, is stored and render-affecting; focal length, angle of view
-      and f-stop are derived for display and cannot drift. Depth of field is a
-      per-3D-layer circle of confusion routed through the existing blur
-      pipeline, honouring After Effects' "lock to zoom".
-
-    **Fewer buttons in the editor chrome.**
-
-    - *Number*: the FlashFX brand button is gone from the top bar, which now
-      reads just "Projects"; the separator is gone from the dashboard header;
-      "Render" and a small "Export" collapsed into one Export button; and the
-      Animation Builder is hidden, with the code kept.
-
-    **A 2.5D Camera Parallax template.**
-
-    - *Number*: cards at varying depth with a keyframed truck and push,
-      reachable by deep link.
-
-    **A 3D View in the inspector: a flat schematic of the world, next to the
-    live canvas.**
-
-    - *Number*: shown when a camera is selected, with the tab sidebar hiding to
-      make room. Drag the camera or its point of interest to place them and the
-      main canvas updates as you drag. A WebGPU validation-error scope went in
-      alongside it, so a validation error is captured and logged instead of
-      escalating into a lost device.
-    - *Hard part*: the Side view would not drag. The SVG used a fixed square
-      `viewBox` with the default `preserveAspectRatio`, which letterboxes,
-      while the pointer math assumed a linear stretch, so clicks skewed on the
-      letterboxed axis. Fixed by tracking the element's real pixel size as the
-      viewBox with `preserveAspectRatio="none"`, which gives a 1:1 pointer
-      mapping on both views.
-
-    **A "Disable Camera" toggle renders the screen flat, as if no camera
-    existed.**
-
-    - *Number*: top right of the canvas. Screen only; an export always keeps
-      the camera.
-    - *Cause*: the whole 3D path already checks for a camera before it runs, so
-      removing it for the screen render produces the exact 2D result with
-      nothing else changed.
-
-    **Camera interaction polish.**
-
-    - *Number*: full-width Top and Side tabs, double-click the camera to open
-      Settings (the inline button is gone), a precision drag mode where the
-      world moves at 40% of pointer speed, and aperture handles in millimetres
-      that mirror each other.
-
-    **A camera-path keyframe editor inside the 3D view.**
-
-    - *Number*: a rhombus that follows the camera to key its position, keyframe
-      markers anchored in the world (click to seek, right-click to delete), a
-      dotted "possible path" that becomes a solid line at two keys or more, and
-      a right-click menu per segment.
-    - *Hard part*: the drawn path is sampled from the real evaluated eye rather
-      than guessed, so what is on screen is exactly what renders, for any
-      interpolation.
-
-    **The camera path is a smooth spatial bezier with draggable tangent
-    handles.**
-
-    - *Number*: `verify:camera-path`, 4 assertions: collapse-to-lerp, byte
-      identity, bow and u-tracking. Right-click a segment for Smooth (automatic
-      Catmull-Rom tangents), Straight or Hold.
-    - *Hard part*: making it a strict opt-in generalisation. A cubic bezier
-      whose control points sit on the 1/3 and 2/3 line collapses to a straight
-      lerp, so a path with no tangents is byte-identical to the old linear one,
-      and that is proven rather than assumed, which is what stops the existing
-      harnesses regressing. Timing also had to keep coming from the real
-      keyframes: the along-path parameter `u` is extracted from the actual
-      interpolation of whichever axis moves most, so easing and holds on the
-      position keys still drive the fly-through.
-
-    **Project cards show a random frame from the scene, refreshed on every
-    open.**
-
-    - *Cause*: tens of projects otherwise look identical in a list.
-    - *Hard part*: the old capture called `canvas.toBlob()` on the WebGPU
-      canvas at teardown, which hands back a blank or stale frame. The new one
-      renders a random frame to an offscreen target on the live device, reusing
-      the warmed-up texture caches and never touching the visible canvas so
-      there is no flash, then downscales to a small WebP and overwrites the old
-      blob in place.
-
-    **A loading splash covers the editor on open until the scene, the assets
-    and the first frame are ready.**
-
-    - *Hard part*: opening a project janks the main thread for a couple of
-      seconds (deserialise, resolve, first WebGPU render), which would freeze a
-      normal JS-driven loader too. The spinner and the progress bar are pure
-      CSS transform animations, so they run on the compositor thread and keep
-      moving straight through the freeze.
-
-    **Every Transform property row has a revert-to-default button.**
-
-    - *Number*: position to the composition centre, scale to 1, rotations and Z
-      to 0, opacity to 1. Keyframe-aware, and dimmed when the value is already
-      at its default.
-
-- date: 2026-08-08
-  text: Forty commits across eight fronts, from Figma-style time savers to the first cards positioned in 3D space.
-  detail: |
-    Scope of the session: breadth. 40 commits, +9917/−362, about 253 file
-    changes, across eight areas of work. Typecheck stayed at 0 errors and lint
-    at its 127 baseline through every commit.
-
-    Anything touching GPU rendering or pointer behaviour is verified by
-    structure only, Node harnesses plus guards, so it still needs a browser to
-    confirm by feel.
-
-    **Six more Figma time-saver milestones, M17 through M22.**
-
-    - *Number*: 6 commits. Outline Text (M17) turns a text layer into editable
-      letter shapes that can be moved point by point; batch rename (M19,
-      Ctrl+R) renames a whole multi-selection at once with tokens, numbering
-      and pattern matching; a freehand draw tool (M18, Shift+P); rulers with
-      tick marks and labels, plus snapping to whole pixels while dragging
-      (M20); linked colour styles (M21), so changing a colour once updates
-      every layer using it; and outline stroke with hole-preserving booleans
-      (M22).
-    - *Cause*: shape and text fill and stroke now read the linked style first,
-      before the material overlay is applied.
-    - *Hard part*: preserving holes through a boolean means tracking even-odd
-      winding, not just unioning the outer rings.
-
-    **A tutorial that builds a complete title-card scene by driving the real
-    editor.**
-
-    - *Number*: phases 1 to 5 in 4 commits, chapters 1 to 10, with a spotlight
-      overlay on the interface and a prompt on first open.
-    - *Hard part*: it runs the actual store actions rather than a scripted
-      fake, so every step has to tolerate real state and undo. A canned
-      animation would drift from the editor the first time anything moved.
-
-    **Buttons on the landing page open the editor on a template that plays
-    immediately.**
-
-    - *Number*: 3 commits. `/?template=<id>` loads a fresh project that plays
-      on open and can then be edited; the first one is a tuned particle hero.
-    - *Hard part*: the splash overlays the app while WebGPU warms and pre-rolls
-      about 8 frames before playing, so the heaviest first frames happen behind
-      it. And the seeding has to wait until the async scene load actually swaps
-      the composition reference, or it lands on the wrong document and gets
-      overwritten.
-
-    **"Use this" inserts a working animation at the playhead, timing and motion
-    included, not only the artwork.**
-
-    - *Number*: 9 commits, 24 or more templates. Scenes (beach, forest,
-      night), weather (sunset, rain, city, snow), creative (galaxy, phone chat,
-      pen, clock, fireworks, rocket, coffee, confetti, spinner) and four
-      showcases: Chain Reaction (a Rube Goldberg with 200 balls), Departure
-      Board (split-flap flip wave, parallax planes, rain matte), Bar Chart Race
-      (pre-computed reordering) and Recursive Editor (FlashFX animating a video
-      editor). An "All" button inserts every template one after another.
-      `verify:anim-templates`, 132 checks.
-    - *Hard part*: templates are authored 0-based and rebased to the playhead,
-      rescaled if the composition fps differs from the authoring fps. The
-      Recursive Editor lives or dies on cursor believability, so the cursor
-      engine is a bezier arc plus ballistic velocity, overshoot, dwell,
-      sub-pixel noise and icon swaps. And the bar-race reorder is *baked*,
-      because a live reorder needs a per-frame sort the keyframe model cannot
-      express.
-
-    **An AI chat panel that can be toggled on, in the style of VS Code and
-    Copilot.**
-
-    - *Number*: 2 commits, a mockup. It takes the right 20% of the screen and
-      compresses the layout in every mode except preview. Assistant replies
-      without borders, a loading state while thinking, streaming text and a
-      response timer; the composer buttons (add file, from Drive, image and the
-      rest) are placeholders.
-    - *Cause*: internally there is a `streamResponse()` seam with a canned
-      reply behind it, so a real model drops in later with no change to the UI.
-
-    **A new layer type that draws patterns on the graphics card at full
-    resolution.**
-
-    - *Number*: phases 1 to 3 in 6 commits. `generativePattern` covers 11 types
-      (waves, plasma, kaleidoscope, mosaic and 7 more) with a palette editor,
-      and the layer has bounds, so it moves, resizes and masks like a
-      rectangle, with animatable scale, rotation, warp and contrast, and
-      blending with the layer below. `verify:pattern`, 16 checks.
-    - *Hard part*: the config's type whitelist was still hard-coded to the
-      original 4 types, so every new type silently parsed back to plasma; the
-      harness caught it as `'plasma' !== 'clouds'`. And blend cannot read the
-      scene texture progressively, so each mode is a separate pipeline whose
-      fragment output form is matched to its blend state: 4 variants, normal,
-      add, multiply and screen.
-
-    **The timeline's layer-name column sizes itself to the busiest track.**
-
-    - *Number*: 2 commits. It doubles in width in Edit mode, then grows to fit,
-      up to a limit. Clip counts are computed O(N) through a Map, not
-      per-track-per-render.
-
-    **The start of After Effects style cards positioned in space.**
-
-    - *Number*: M0 to M3 plus M6, with M2 landing last, in 8 commits.
-      `verify:mat4`, 9 checks; `verify:camera3d`, 17; `verify:scene3d`, 5.
-    - *Cause*: built so a 2D project renders byte-identical at every step, with
-      the depth fields defaulting to 0 and the GPU path switched on by an
-      `is3D` flag. M0 is a matrix core plus optional Z position and X/Y
-      rotation on Transform. M1 is a camera layer that resolves to view and
-      projection each frame, and its default frames the composition 1:1 at any
-      zoom, so a single layer switched to 3D does not jump. M3 is the per-layer
-      3D toggle, with X, Y and Z position and rotation rows in the inspector.
-      M2 is the renderer projecting each 3D layer through the camera in the
-      shader (added to the image, shape, text and pattern uniforms) and sorting
-      by depth, far to near, with 2D layers holding their existing order.
-    - *Hard part*: the y-down handedness trap. The default camera was flipping
-      both screen axes against the renderer's y-down convention, and the first
-      harness only checked magnitudes, so it passed anyway. Fixed with a −Y
-      composition-up vector and pinned with signed-parity assertions (top-left
-      lands at (−1,+1), and so on). The GPU projection itself cannot be proven
-      outside a browser, so it is additive and guarded, a zero-initialised
-      `is3D` flag means no 2D layer can be affected, and everything that is
-      actually hard, parity, foreshortening and painter order, is proven in
-      Node.
-
-- date: 2026-08-07
-  text: Nine milestones of vector and editing work in one day, from draggable corner radii to path healing.
-  detail: |
-    Scope of the session: vector editing and the shortcuts around it. M2 through
-    M10 in 8 commits, plus M1 which landed late the night before. 8 new Node
-    verification harnesses: transform HUD, measurement, equal-gap, nudge, fuzzy
-    search, tangent, bend, path cleanup. Typecheck stayed at 0 errors and lint at
-    its 127 baseline through every commit.
-
-    Anything touching pointer input or WebGPU is verified structurally only,
-    because it needs a browser to feel, so each commit carries its own
-    manual-check list.
-
-    **Rectangle corners can be rounded by dragging, one corner at a time.**
-
-    - *Number*: 4 independent radii per rectangle (M1, shipped late on the 6th).
-    - *Cause*: `borderRadius` was already an animatable property, so this was
-      exposure, not a new engine.
-    - *Hard part*: the drag handle has to live in composition space and read back
-      through the same anchor, rotation and scale math the renderer uses, or the
-      handle drifts off the corner as soon as the layer is rotated.
-
-    **The four boolean operations and Flatten now have keyboard shortcuts.**
-
-    - *Number*: Alt+Shift+U/S/I/E, plus Ctrl+E. Before today 1 of the 4
-      operations had a binding; now all 4 do, and so does flatten.
-    - *Hard part*: subtract was using selection order, so which shape survived
-      depended on the order they were clicked. Fixed to z-order, bottom shape
-      wins, matching Figma. Alt also mangles `e.key` on some layouts, so every
-      Alt combo matches the physical `e.code` instead.
-
-    **A readout of position, size and rotation appears while moving, resizing or
-    rotating a layer.**
-
-    - *Number*: `verify:transformhud`, 13 assertions.
-    - *Hard part*: the numbers have to come out of the exact same transform
-      pipeline the shader uses (scale, then anchor-relative, then rotate, then
-      translate), or the readout disagrees with what is on screen for any layer
-      that has been rotated or scaled.
-
-    **Holding Alt while hovering shows pixel distances to neighbouring objects,
-    and dragging snaps to equal gaps.**
-
-    - *Number*: `verify:measure`, 9 assertions; `verify:equalgap`, 7.
-    - *Hard part*: equal-gap detection is a fuzzy match over the gaps between
-      bounding boxes: find the run of objects that are nearly evenly spaced, then
-      snap to complete it, without the snap fighting the pointer.
-
-    **Arrow-key nudging, align and distribute are wired up, along with several
-    actions that had no shortcut at all.**
-
-    - *Number*: Shift for a larger step, Alt+A/D/W/S/H/V to align, Ctrl+Alt+H/V
-      to distribute. `verify:nudge`, 4 assertions; the nudge amounts are
-      configurable in Settings.
-    - *Hard part*: Alt+S already meant "trim clip down". Resolved by gating the
-      align keys to a selection of 2 or more and ordering them ahead of the trim
-      keys, so Alt+S aligns to the bottom only when it cannot mean trim.
-
-    **A command palette opens on Ctrl+/ or Ctrl+K.**
-
-    - *Number*: `verify:fuzzy`, 10 assertions, covering the palette's matcher.
-    - *Hard part*: the value is the registry, not the popup. Commands had to be
-      described as data (id, label, when-enabled, run) so the palette, and later
-      the menus and the shortcut layer, all read one source instead of each
-      re-deriving state.
-
-    **Alt-dragging duplicates a layer; Ctrl+D duplicates and repeats the last
-    transform.**
-
-    - *Number*: the offset carries, so a second Ctrl+D re-applies the same delta,
-      which builds an array.
-    - *Hard part*: power duplicate means remembering the last move or rotate as a
-      delta and re-applying it on every Ctrl+D, while Alt-drag instead leaves a
-      copy behind at the origin. Two different notions of "the thing that just
-      happened", tracked separately.
-
-    **Pressing Enter converts any shape into an editable path, with full control
-    of the curve handles.**
-
-    - *Number*: `verify:tangent`, 6 assertions. Handle modes are mirrored,
-      angle-only and independent, with Alt to break a tangent for one drag.
-    - *Hard part*: `normalizeAngle(-360)` returned `-0`, which fails `deepEqual`
-      against `0` because that compares with `Object.is`, and it broke the
-      harness; fixed by normalising to `+0`. The handle-mode UI also had to go in
-      `ShapeProperties`, not `InspectorTabContent`: the polygon inspector section
-      lives in a different component than it looks like it does.
-
-    **A point on a segment can be grabbed and dragged to curve it.**
-
-    - *Number*: M9. `verify:bend`, 4 assertions.
-    - *Hard part*: to make a cubic pass through the cursor at parameter `t` you
-      add `d / (3(1-t)t)` to both endpoint handles, and that delta has to be
-      applied to the pre-drag handles on every move, not to the live ones, or it
-      compounds.
-
-    **An anchor point can be deleted and the curve healed across the gap, and
-    paths can be joined or closed.**
-
-    - *Number*: Shift+Delete to heal, Ctrl+J to join or close (M10).
-      `verify:pathcleanup`, 9 assertions.
-    - *Hard part*: healing is the interesting one. Drop an anchor, reconnect the
-      neighbours, and you get a kink. Figma's actual fix is a Schneider (1990)
-      least-squares refit: hold the two endpoints and their tangent directions
-      fixed, then solve only for the two handle lengths that best fit the
-      original two-curve span. My first version just passed the curve through
-      where the point used to be, which is cheaper but changes the tangents and
-      kinks anyway; it was replaced with the least-squares solve before shipping.
-
-- date: 2026-08-06
-  text: Folded the articles section into a real newsletter and gave the devlog its own page.
-  detail: |
-    `/articles` held exactly one post and that post was placeholder text.
-    Two thin writing surfaces compete for the same entity, which is the
-    mistake `story.html` made against the homepage before it became
-    `/about`, so it is now one publication at `/newsletter` with the old
-    URLs 301ing across.
-
-    Issues are `.mdx` so the body can call real components. `<Figure>` takes
-    a width of `column`, `wide` or `full`, which maps to named columns on a
-    CSS grid; that grid is the entire mechanism, and it only reaches the
-    figures because MDX renders them as direct children of the slot. Wrap
-    that slot and every figure silently snaps back to the text width with
-    nothing failing.
+  text: Folded articles into a real newsletter here, and found the landing page sitemap had never once run on Netlify.
+  detail:
+    site: |
+      `/articles` held exactly one post and that post was placeholder text.
+      Two thin writing surfaces compete for the same entity, which is the
+      mistake `story.html` made against the homepage before it became
+      `/about`, so it is now one publication at `/newsletter` with the old
+      URLs 301ing across.
+
+      Issues are `.mdx` so the body can call real components. `<Figure>` takes
+      a width of `column`, `wide` or `full`, which maps to named columns on a
+      CSS grid; that grid is the entire mechanism, and it only reaches the
+      figures because MDX renders them as direct children of the slot. Wrap
+      that slot and every figure silently snaps back to the text width with
+      nothing failing.
+    landing: |
+      Scope of the session: the routes the site claimed to have, and the weight
+      of the ones it did. 22 commits, 137 files changed, +7481/−464, fifteen new
+      routes.
+
+      **Fixed the deploy command so the sitemap regenerates.**
+
+      - *Number*: the deployed sitemap held six URLs, missing every route added
+        since it was committed.
+      - *Hard part*: `netlify.toml` ran `npx next build`, which invokes the
+        `next` binary directly, and npm only fires `pre` and `post` lifecycle
+        scripts for scripts run through `npm run`. So `postbuild` never executed
+        and `next-sitemap` had never run on Netlify: production served whatever
+        happened to be committed to `public/`. The failure is completely silent.
+        The build stays green, the file exists, it just stops tracking reality.
+        This is now the one thing CLAUDE.md says must not change about the build
+        command.
+
+      **Added fifteen routes.**
+
+      - *Number*: `/pricing`, `/features`, `/faq`, `/changelog`, `/brand`,
+        `/careers`, `/download`, `/your-data`, three Termly policy pages, a
+        three-way comparison page, a YouTube-specific landing page, and a branded
+        404.
+      - *Hard part*: the footer had been linking to about 18 routes that did not
+        exist. Building them was the straightforward half; deciding which to
+        build and which to delete was not. `/status` was removed rather than
+        faked, `/security` became `/your-data`, and `/roadmap` was repointed
+        rather than invented. A 404 a real visitor reaches from your own footer
+        is worse than a missing link, so the branded 404 lists the routes that do
+        exist.
+
+      **Expanded the capability matrix from 16 rows to 27, and corrected the
+      cloud storage figures.**
+
+      - *Hard part*: 50 MB, 500 MB and 20 GB are not in conflict, they are
+        different states: no account, free tier, paid. Copy quoting a storage
+        number without saying which state it means reads as a contradiction,
+        which is exactly what `editorFeatures.ts` had been doing.
+
+      **Performance steps P1 through P6.**
+
+      - *Number*: images 6.56 MB to 0.45 MB (P3); homepage First Load JS 316 kB
+        to 176 kB and route JS 178 kB to 37.6 kB (P5); animated paths 72 to 24
+        (P6). Also stopped the loader blocking first paint, lazy-loaded every
+        embed, paused off-screen WebGL and moved three.js off the initial bundle.
+      - *Hard part*: the old splash gated first paint on `window.load` plus five
+        YouTube `onLoad` events, and `Hero` returned `null` until it finished,
+        which kept the LCP element out of the DOM for the entire load. The
+        replacement is a server component with no JavaScript at all, fading via
+        CSS so it begins at first paint and cannot hang waiting on anything.
+      - *Hard part*: the plan's under-150 kB target was not met and was
+        abandoned, which P5 records rather than quietly dropping. The remaining
+        weight above the shared baseline is mostly framer-motion, imported by 93
+        components; removing it means rewriting every reveal animation on the
+        site for roughly 26 kB. Two components on the original lazy-load list,
+        `BackgroundPaths` and `RadialOrbitalTimeline`, were wrong to include,
+        because both wrap real content rather than decoration.
 
 - date: 2026-08-05
   text: A video freeze that turned out to be a hardware decoder limit, plus audio-synced preview and the six fixes that came with it.
-  detail: |
-    Scope of the session: video playback and audio sync. 14 files changed,
-    +373/−119, with about 392 new lines of engine code across 6 files and 4 Node
-    verification harnesses.
+  detail:
+    app: |
+      Scope of the session: video playback and audio sync. 14 files changed,
+      +373/−119, with about 392 new lines of engine code across 6 files and 4 Node
+      verification harnesses.
 
-    **Video playback no longer freezes a few seconds in.**
+      **Video playback no longer freezes a few seconds in.**
 
-    - *Number*: cap of 12 open decoded frames per asset. Before, only a 512MB
-      byte budget bounded it, so around 60 frames could pile up.
-    - *Hard part*: it wasn't a leak or a logic error. A hardware `VideoDecoder`
-      silently stops emitting once too many output frames are held open
-      (~16–24), and a `VideoFrame` that's been transferred still holds its
-      decoder pool slot until `.close()`. The fix is a frame-COUNT cap plus an
-      eviction order that keeps the frames nearest each layer's playhead. Byte
-      accounting alone never touched it.
+      - *Number*: cap of 12 open decoded frames per asset. Before, only a 512MB
+        byte budget bounded it, so around 60 frames could pile up.
+      - *Hard part*: it wasn't a leak or a logic error. A hardware `VideoDecoder`
+        silently stops emitting once too many output frames are held open
+        (~16–24), and a `VideoFrame` that's been transferred still holds its
+        decoder pool slot until `.close()`. The fix is a frame-COUNT cap plus an
+        eviction order that keeps the frames nearest each layer's playhead. Byte
+        accounting alone never touched it.
 
-    **Added a toggle for audio-synced playback, as a button in the preview bar,
-    off by default.**
+      **Added a toggle for audio-synced playback, as a button in the preview bar,
+      off by default.**
 
-    - *Number*: 392 lines of new engine code; 3 pure-logic harnesses, 24
-      assertions. Old path unchanged when off.
-    - *Hard part*: none of it runs in the dev environment: no WebAudio,
-      WebCodecs or WebGPU. So the clock, the frame-selection and the
-      audio-scheduling math were pulled out into pure functions and proven in
-      Node instead. Also the picture has to be shown at the clock reading minus
-      output latency, not the raw reading, or it leads the sound by 20–200ms.
+      - *Number*: 392 lines of new engine code; 3 pure-logic harnesses, 24
+        assertions. Old path unchanged when off.
+      - *Hard part*: none of it runs in the dev environment: no WebAudio,
+        WebCodecs or WebGPU. So the clock, the frame-selection and the
+        audio-scheduling math were pulled out into pure functions and proven in
+        Node instead. Also the picture has to be shown at the clock reading minus
+        output latency, not the raw reading, or it leads the sound by 20–200ms.
 
-    **Video clips that carry sound now play their audio on load, and the level
-    meters move.**
+      **Video clips that carry sound now play their audio on load, and the level
+      meters move.**
 
-    - *Number*: collapsed onto 1 shared `AudioContext` (was a second, private
-      one).
-    - *Cause*: the second audio context was created in a paused state and never
-      resumed, so clip audio was silent and the meters read zero. This ships
-      whether or not the toggle is on.
+      - *Number*: collapsed onto 1 shared `AudioContext` (was a second, private
+        one).
+      - *Cause*: the second audio context was created in a paused state and never
+        resumed, so clip audio was silent and the meters read zero. This ships
+        whether or not the toggle is on.
 
-    **Pausing, seeking, or crossing a clip boundary no longer produces a click.**
+      **Pausing, seeking, or crossing a clip boundary no longer produces a click.**
 
-    - *Number*: 8ms gain ramp to zero before every stop.
-    - *Hard part*: a source with a fixed duration ends on its own and fires its
-      `ended` event before the stop path runs, so attaching teardown only in the
-      stop path leaked the audio nodes on the master graph. An adversarial
-      review found it; fixed by attaching teardown when the source is scheduled,
-      not when it's stopped.
+      - *Number*: 8ms gain ramp to zero before every stop.
+      - *Hard part*: a source with a fixed duration ends on its own and fires its
+        `ended` event before the stop path runs, so attaching teardown only in the
+        stop path leaked the audio nodes on the master graph. An adversarial
+        review found it; fixed by attaching teardown when the source is scheduled,
+        not when it's stopped.
 
-    **Deleting one half of a split clip no longer freezes or mutes the other
-    half.**
+      **Deleting one half of a split clip no longer freezes or mutes the other
+      half.**
 
-    - *Number*: +17/−2 in the delete action.
-    - *Hard part*: the texture is per-layer so it's always safe to drop, but the
-      decoder registration and audio element are per-asset: they must only be
-      torn down when no surviving layer still points at that asset, and the
-      release has to be deduped so deleting both halves at once doesn't
-      over-release the audio refcount.
+      - *Number*: +17/−2 in the delete action.
+      - *Hard part*: the texture is per-layer so it's always safe to drop, but the
+        decoder registration and audio element are per-asset: they must only be
+        torn down when no surviving layer still points at that asset, and the
+        release has to be deduped so deleting both halves at once doesn't
+        over-release the audio refcount.
 
-    **Pressing play with the playhead parked mid-clip on a pitch-shifted audio
-    clip now starts at the correct sample.**
+      **Pressing play with the playhead parked mid-clip on a pitch-shifted audio
+      clip now starts at the correct sample.**
 
-    - *Number*: one shared scheduling function now used by preview; export left
-      alone (its bounding is already exact, and a harness proves the two agree).
-    - *Hard part*: pitch shift is a resample, so it changes how fast the buffer
-      is consumed. The resume offset into the buffer has to be scaled by that
-      rate. The old code advanced it unscaled.
+      - *Number*: one shared scheduling function now used by preview; export left
+        alone (its bounding is already exact, and a harness proves the two agree).
+      - *Hard part*: pitch shift is a resample, so it changes how fast the buffer
+        is consumed. The resume offset into the buffer has to be scaled by that
+        rate. The old code advanced it unscaled.
 
-    **Field-sampled layers now run at the composition frame rate and show their
-    inspector tab.**
+      **Field-sampled layers now run at the composition frame rate and show their
+      inspector tab.**
 
-    - *Number*: 2-line type/resolve change; 1-line renderer change; 1-line
-      inspector condition.
-    - *Cause*: the CPU field renderer was fixed at 30fps and the Field tab was
-      hidden in all cases.
+      - *Number*: 2-line type/resolve change; 1-line renderer change; 1-line
+        inspector condition.
+      - *Cause*: the CPU field renderer was fixed at 30fps and the Field tab was
+        hidden in all cases.
 
 - date: 2026-08-04
   text: Rebuilt how this site handles images, folded the articles section into a newsletter, and gave the devlog the page you are reading.
-  detail: |
-    Scope of the session: image SEO, publishing surfaces, and this log. 59 files
-    changed, +3795/−568, across 7 commits. 19 files added, 19 renamed, 12 pages
-    now building.
+  detail:
+    app: |
+      Scope of the session: image SEO, publishing surfaces, and this log. 59 files
+      changed, +3795/−568, across 7 commits. 19 files added, 19 renamed, 12 pages
+      now building.
 
-    **Searching my own name returns three or four images, and one of them is the
-    portrait from this site.**
+      **Searching my own name returns three or four images, and one of them is the
+      portrait from this site.**
 
-    - *Number*: 18 assets renamed; before this, every image on the site shipped
-      as `1.png`, `33.png` or `1010.png`.
-    - *Cause*: Astro emits each asset as `<source-basename>.<hash>.webp`, so the
-      filename I choose is the filename Google sees. It is the only keyword
-      signal an image carries besides its alt text, and I was throwing it away
-      for free on all 18.
-    - *Hard part*: the real problem is not naming, it is that exactly one
-      photograph of a human being exists on this entire domain. Everything else
-      is a product screenshot. No amount of renaming fixes an inventory of one.
+      - *Number*: 18 assets renamed; before this, every image on the site shipped
+        as `1.png`, `33.png` or `1010.png`.
+      - *Cause*: Astro emits each asset as `<source-basename>.<hash>.webp`, so the
+        filename I choose is the filename Google sees. It is the only keyword
+        signal an image carries besides its alt text, and I was throwing it away
+        for free on all 18.
+      - *Hard part*: the real problem is not naming, it is that exactly one
+        photograph of a human being exists on this entire domain. Everything else
+        is a product screenshot. No amount of renaming fixes an inventory of one.
 
-    **Every screenshot is now declared in an image sitemap.**
+      **Every screenshot is now declared in an image sitemap.**
 
-    - *Number*: 21 image URLs across 4 routes, all resolved against a clean
-      build to prove none of them 404.
-    - *Hard part*: `@astrojs/sitemap` emits page URLs only and has no
-      `<image:image>` support, so the only path to an image was a crawler
-      parsing a lazy-loaded `<img>` inside a carousel, which is the weakest
-      discovery there is. The sitemap has to ask `getImage()` for the same width
-      the page renders, or it points at a variant that exists in the build but
-      appears on no page and carries none of that page's context.
+      - *Number*: 21 image URLs across 4 routes, all resolved against a clean
+        build to prove none of them 404.
+      - *Hard part*: `@astrojs/sitemap` emits page URLs only and has no
+        `<image:image>` support, so the only path to an image was a crawler
+        parsing a lazy-loaded `<img>` inside a carousel, which is the weakest
+        discovery there is. The sitemap has to ask `getImage()` for the same width
+        the page renders, or it points at a variant that exists in the build but
+        appears on no page and carries none of that page's context.
 
-    **Images now carry a licence in the structured data, and there is a page for
-    it to point at.**
+      **Images now carry a licence in the structured data, and there is a page for
+      it to point at.**
 
-    - *Number*: 4 pages emitting `acquireLicensePage`; 1 new `/license` route.
-    - *Hard part*: Google deprecated `image:license` in sitemaps, so the licence
-      cannot live where the images are declared. It has to ride on the
-      `ImageObject` instead, and both `license` and `acquireLicensePage` must be
-      live URLs or the enhancement is dropped silently, the same way a dead
-      `sameAs` entry devalues that whole array. Nothing fails loudly if you get
-      this wrong.
+      - *Number*: 4 pages emitting `acquireLicensePage`; 1 new `/license` route.
+      - *Hard part*: Google deprecated `image:license` in sitemaps, so the licence
+        cannot live where the images are declared. It has to ride on the
+        `ImageObject` instead, and both `license` and `acquireLicensePage` must be
+        live URLs or the enhancement is dropped silently, the same way a dead
+        `sameAs` entry devalues that whole array. Nothing fails loudly if you get
+        this wrong.
 
-    **Two images on this site have always been the same picture.**
+      **Two images on this site have always been the same picture.**
 
-    - *Number*: `7.png` and `111.png`, byte-identical.
-    - *Cause*: Astro dedupes on content, so they have always collapsed into one
-      emitted file. The homepage captions it "AI features" and `/about` captions
-      the same pixels "the Bolt hackathon prototype". Both cannot be true. Left
-      standing, because fixing it needs a screenshot, not a code change.
+      - *Number*: `7.png` and `111.png`, byte-identical.
+      - *Cause*: Astro dedupes on content, so they have always collapsed into one
+        emitted file. The homepage captions it "AI features" and `/about` captions
+        the same pixels "the Bolt hackathon prototype". Both cannot be true. Left
+        standing, because fixing it needs a screenshot, not a code change.
 
-    **The articles section is gone; there is a newsletter instead.**
+      **The articles section is gone; there is a newsletter instead.**
 
-    - *Number*: +1994/−422 in one commit. `/articles` held exactly one post,
-      and that post was placeholder text.
-    - *Cause*: two thin writing surfaces compete for the same entity. That is
-      the mistake `story.html` made against the homepage before it became
-      `/about`, and I was about to make it again with a second section.
+      - *Number*: +1994/−422 in one commit. `/articles` held exactly one post,
+        and that post was placeholder text.
+      - *Cause*: two thin writing surfaces compete for the same entity. That is
+        the mistake `story.html` made against the homepage before it became
+        `/about`, and I was about to make it again with a second section.
 
-    **Issues can finally place an image properly.**
+      **Issues can finally place an image properly.**
 
-    - *Number*: 3 widths: 680px, 1040px, full bleed. Figures number themselves
-      from a CSS counter.
-    - *Hard part*: the mechanism is a named-column grid, and it only reaches the
-      figures because MDX renders them as direct children of the slot. Wrap that
-      slot in anything and every figure silently snaps back to the text width
-      with nothing failing and no error to notice. `@astrojs/mdx` also had to be
-      pinned to 6.x: version 7 peers `astro@^7` and this project is on 6.4.8, so
-      npm refused the install rather than resolving it.
+      - *Number*: 3 widths: 680px, 1040px, full bleed. Figures number themselves
+        from a CSS counter.
+      - *Hard part*: the mechanism is a named-column grid, and it only reaches the
+        figures because MDX renders them as direct children of the slot. Wrap that
+        slot in anything and every figure silently snaps back to the text width
+        with nothing failing and no error to notice. `@astrojs/mdx` also had to be
+        pinned to 6.x: version 7 peers `astro@^7` and this project is on 6.4.8, so
+        npm refused the install rather than resolving it.
 
-    **The feed was advertising URLs the rest of the site disagreed with.**
+      **The feed was advertising URLs the rest of the site disagreed with.**
 
-    - *Number*: 1 line, every item.
-    - *Cause*: `@astrojs/rss` joins a bare path onto `site` and appends a
-      trailing slash. This site is `trailingSlash: 'never'`, so every feed item
-      pointed at a URL that contradicted its own canonical and the sitemap.
+      - *Number*: 1 line, every item.
+      - *Cause*: `@astrojs/rss` joins a bare path onto `site` and appends a
+        trailing slash. This site is `trailingSlash: 'never'`, so every feed item
+        pointed at a URL that contradicted its own canonical and the sitemap.
 
-    **This log exists, on one page.**
+      **This log exists, on one page.**
 
-    - *Number*: 1 URL, 1 yaml file. Posting is: open the file, add a block at
-      the top, commit.
-    - *Cause*: one page per entry would be 365 pages of two sentences a year,
-      which is thin content on a domain whose whole purpose is being read as one
-      credible entity. One page that deepens daily is the stronger signal, and
-      anchors keep entries linkable.
-    - *Hard part*: the `file()` loader requires an id on every item and does not
-      derive one from array position, which I assumed it did and which failed
-      the first build. The parser returns an object instead of an array so its
-      keys become the ids, keyed by date, so there is no `id:` line to type
-      daily that would only duplicate `date:`. `js-yaml` v5 also has no default
-      export in its ESM build.
+      - *Number*: 1 URL, 1 yaml file. Posting is: open the file, add a block at
+        the top, commit.
+      - *Cause*: one page per entry would be 365 pages of two sentences a year,
+        which is thin content on a domain whose whole purpose is being read as one
+        credible entity. One page that deepens daily is the stronger signal, and
+        anchors keep entries linkable.
+      - *Hard part*: the `file()` loader requires an id on every item and does not
+        derive one from array position, which I assumed it did and which failed
+        the first build. The parser returns an object instead of an array so its
+        keys become the ids, keyed by date, so there is no `id:` line to type
+        daily that would only duplicate `date:`. `js-yaml` v5 also has no default
+        export in its ESM build.

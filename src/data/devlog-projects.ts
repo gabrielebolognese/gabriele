@@ -1,32 +1,31 @@
 /* ============================================================================
-   devlog-projects.ts: the things the devlog is a log OF.
+   devlog-projects.ts: the things a day's work can be in.
 
-   Until 2026-08-06 there was one project and no need to say which, so entries
-   carried no project at all. `app` is therefore the default, and it keeps the
-   bare date anchor (/devlog#2026-08-06) that every entry written before this
-   existed was already linkable by. Anything else takes a suffixed anchor. No
-   link that worked yesterday stops working.
+   One entry per DAY, with a column per project inside it. Not one entry per
+   project: a day is the unit a devlog is read in, and two entries dated the
+   same day produced two "Day 6" rails one above the other, which reads as a
+   duplicate rather than as two projects.
 
-   `order` decides which entry sits first when a day carries more than one.
-   The app leads because it is the product; the site is what points at it.
+   `order` is the left-to-right order of the columns. The editor leads because
+   it is the product; the landing page points at it; this site is neither.
 
-   Adding a project is: a key here, then `project: <key>` on the entries. The
-   schema in content.config.ts reads KEYS, so an unknown value fails the build
-   rather than rendering an unlabelled entry.
+   Adding a project is a key here plus a key under `detail:` in the yaml. The
+   schema reads KEYS, so a typo fails the build rather than silently dropping a
+   column nobody notices is missing.
    ========================================================================= */
 
 export interface DevlogProject {
-  /** Shown as a chip on the entry. Short: it sits next to a date. */
+  /** Column heading. Short: it sits above a wall of prose. */
   label: string;
-  /** Sort position within a single day, lowest first. */
+  /** Column order, left to right, lowest first. */
   order: number;
-  /** Where the work happened, for the title attribute on the chip. */
+  /** Where the work happened, for the column heading's title attribute. */
   repo: string;
 }
 
 export const DEVLOG_PROJECTS = {
   app: {
-    label: 'App',
+    label: 'FlashFX',
     order: 0,
     repo: 'The FlashFX editor',
   },
@@ -35,12 +34,21 @@ export const DEVLOG_PROJECTS = {
     order: 1,
     repo: 'gabrielebolognese/FlashFX-landing-page',
   },
+  site: {
+    label: 'This site',
+    order: 2,
+    repo: 'gabrielebolognese.blog',
+  },
 } as const satisfies Record<string, DevlogProject>;
 
 export type DevlogProjectKey = keyof typeof DEVLOG_PROJECTS;
 
 /** A tuple, because z.enum() needs literals rather than a string[]. */
-export const DEVLOG_PROJECT_KEYS = ['app', 'landing'] as const;
+export const DEVLOG_PROJECT_KEYS = ['app', 'landing', 'site'] as const;
 
-/** The project every entry written before the split belongs to. */
-export const DEFAULT_PROJECT: DevlogProjectKey = 'app';
+/** Column order for a day, given the projects it actually carries. */
+export function orderedProjects(keys: string[]): DevlogProjectKey[] {
+  return (keys as DevlogProjectKey[])
+    .filter((k) => k in DEVLOG_PROJECTS)
+    .sort((a, b) => DEVLOG_PROJECTS[a].order - DEVLOG_PROJECTS[b].order);
+}

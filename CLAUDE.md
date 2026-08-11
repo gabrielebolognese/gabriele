@@ -157,17 +157,18 @@ across separate URLs is 365 pages of two sentences a year, which is thin content
 purpose is being read as one credible entity. `DevlogTimeline.astro` renders both the full page and the
 truncated homepage section, so the two cannot drift.
 
-**A date can carry more than one entry, one per project.** Since 2026-08-06 the log covers the FlashFX
-editor and the FlashFX landing page, so `date` alone stopped being unique. `src/data/devlog-projects.ts`
-holds the keys, labels and within-a-day sort order; the schema reads `DEVLOG_PROJECT_KEYS`, so an
-unknown `project:` fails the build rather than rendering an unlabelled entry. Three consequences that
-are easy to undo by accident: the loader keys on `${date}--${project}`, because two items sharing an id
-silently drop one instead of failing; `app` is the default and keeps the **bare** date anchor
-(`/devlog#2026-08-06`) that every pre-split entry was already linkable by, while other projects are
-suffixed (`/devlog#2026-08-06-landing`); and the sort needs the project tiebreak, since `Array.sort` is
-only stable for equal keys and two entries on one date would otherwise sit in yaml order on some days
-and reversed on others. `DEVLOG.homepageLimit` counts entries, not days, so it needs raising by one per
-project added or the newest day stops fitting on the homepage.
+**A day is one entry, and projects are columns inside it.** Since 2026-08-06 the log covers the
+FlashFX editor, the FlashFX landing page and this site, so `detail` is keyed by project rather than
+being one string: each key renders as a column under the shared headline. It was briefly one entry per
+project instead, which put two "Day 6" rails one above the other and read as a duplicate rather than as
+two projects. `src/data/devlog-projects.ts` holds the keys, the column labels and the left-to-right
+order, and the schema builds its shape from `DEVLOG_PROJECT_KEYS`, so an unknown key fails the build.
+
+Two things there are easy to get wrong. The detail schema is **not** `z.record(z.enum(...))`: a record
+keyed by an enum is exhaustive in zod, so it demands every project on every day and any single-project
+entry fails to parse. And the columns are `repeat(2, 1fr)`, not `auto-fit`, because with `auto-fit` a
+one-project day would stretch to full width while a two-project day sat at half, and the same prose
+would change measure between adjacent entries.
 
 Every entry lives in `src/content/devlog.yaml`, one file, loaded with `file()` rather than `glob()`,
 because publishing has to be "add a block at the top and commit" or a daily log dies in week two. The
