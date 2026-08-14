@@ -118,6 +118,18 @@ const lcFigures = [
     label: 'Current streak',
     note: lc.lastActive ? `Last solved ${longDate(lc.lastActive)}` : 'Not running',
   },
+  /* The rank tile is wired to the real field and fills itself in the moment
+     LeetCode places the account. Until then it says so: their API returns
+     5,000,001 for everyone it has not ranked, and formatting that as
+     "#5,000,001" would be a fabricated number rather than a missing one. */
+  {
+    value: lc.ranking === null ? 'Unranked' : `#${nf.format(lc.ranking)}`,
+    label: 'Global rank',
+    note: lc.ranking === null
+      ? 'LeetCode ranks an account once it has solved enough'
+      : 'Across every LeetCode account',
+    muted: lc.ranking === null,
+  },
 ];
 
 /** Days since the first solve. The copy calls the account new; this is what
@@ -380,19 +392,54 @@ const FLAME_CORE =
             </div>
         </header>
 
-        <div class="stat-figures">
-            {lcFigures.map((f) => (
-                <div class="stat-figure">
-                    <p class="stat-value">
-                        {f.value}{f.unit && <span class="stat-unit">{f.unit}</span>}
-                    </p>
-                    <p class="stat-label">{f.label}</p>
-                    {f.note && <p class="stat-note">{f.note}</p>}
-                </div>
-            ))}
-        </div>
+        {/* The calendar first, at the full width of the block. It used to sit
+            in a column beside the donut, which squeezed 53 weeks into about
+            half the measure. The grid has a min-width, so it scrolled instead
+            of shrinking, and the right-hand edge, the recent submissions
+            anyone actually looks for, was the part off screen. */}
+        <figure class="contrib lc-calendar">
+            <figcaption class="contrib-heading">
+                <h4 class="stat-subheading">Submission history</h4>
+                <p class="stat-note">
+                    The last 12 months, drawn on the same scale as the GitHub grid above so the
+                    two can be compared honestly. {nf.format(lc.activeDays)} active
+                    {lc.activeDays === 1 ? ' day' : ' days'} in it.
+                </p>
+            </figcaption>
 
-        <div class="lc-charts">
+            <div class="contrib-plot">
+                <div class="contrib-grid" role="img"
+                     aria-label={`LeetCode submission activity for the last 12 months, ${lc.activeDays} active days.`}>
+                    {/* Only days with something in them carry a title. On this
+                        account that is 2 cells against 369 empty ones, and "No
+                        submissions on 4 March" written 369 times is around
+                        17 KB of HTML saying nothing. The GitHub grid above
+                        titles every day because there almost every day has
+                        something to say. */}
+                    {lc.weeks.map((week) => (
+                        <div class="contrib-week">
+                            {week.map((day) => (
+                                day === null
+                                    ? <span class="contrib-day is-empty"></span>
+                                    : <span class="contrib-day" data-level={day.level}
+                                            title={day.count > 0
+                                                ? `${nf.format(day.count)} submission${day.count === 1 ? '' : 's'} on ${longDate(day.date)}`
+                                                : undefined}></span>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div class="contrib-foot">
+                <p class="stat-note">
+                    {lc.live ? 'Live at build' : 'Snapshot'}, {longDate(lc.capturedAt)}.
+                    {lc.ranking === null && ' Not ranked yet.'}
+                </p>
+            </div>
+        </figure>
+
+        <div class="lc-summary">
             <figure class="lc-donut-figure">
                 <figcaption class="contrib-heading">
                     <h4 class="stat-subheading">Solved by difficulty</h4>
@@ -457,47 +504,20 @@ const FLAME_CORE =
                 </table>
             </figure>
 
-            <figure class="contrib lc-calendar">
-                <figcaption class="contrib-heading">
-                    <h4 class="stat-subheading">Submission history</h4>
-                    <p class="stat-note">
-                        The last 12 months, drawn on the same scale as the GitHub grid above so the
-                        two can be compared honestly. {nf.format(lc.activeDays)} active
-                        {lc.activeDays === 1 ? ' day' : ' days'} in it.
-                    </p>
-                </figcaption>
-
-                <div class="contrib-plot">
-                    <div class="contrib-grid" role="img"
-                         aria-label={`LeetCode submission activity for the last 12 months, ${lc.activeDays} active days.`}>
-                        {/* Only days with something in them carry a title. On
-                            this account that is 2 cells against 369 empty ones,
-                            and "No submissions on 4 March" written 369 times is
-                            around 17 KB of HTML saying nothing. The GitHub grid
-                            above titles every day because there almost every
-                            day has something to say. */}
-                        {lc.weeks.map((week) => (
-                            <div class="contrib-week">
-                                {week.map((day) => (
-                                    day === null
-                                        ? <span class="contrib-day is-empty"></span>
-                                        : <span class="contrib-day" data-level={day.level}
-                                                title={day.count > 0
-                                                    ? `${nf.format(day.count)} submission${day.count === 1 ? '' : 's'} on ${longDate(day.date)}`
-                                                    : undefined}></span>
-                                ))}
-                            </div>
-                        ))}
+            {/* Four tiles in two rows beside the donut rather than a row of
+                four across the block: at full width each would be ~250px of
+                empty card around one short number. */}
+            <div class="stat-figures lc-figures">
+                {lcFigures.map((f) => (
+                    <div class="stat-figure">
+                        <p class={`stat-value${f.muted ? ' is-muted' : ''}`}>
+                            {f.value}{f.unit && <span class="stat-unit">{f.unit}</span>}
+                        </p>
+                        <p class="stat-label">{f.label}</p>
+                        {f.note && <p class="stat-note">{f.note}</p>}
                     </div>
-                </div>
-
-                <div class="contrib-foot">
-                    <p class="stat-note">
-                        {lc.live ? 'Live at build' : 'Snapshot'}, {longDate(lc.capturedAt)}.
-                        {lc.ranking === null && ' Not ranked yet.'}
-                    </p>
-                </div>
-            </figure>
+                ))}
+            </div>
         </div>
     </div>
 </section>

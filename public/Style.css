@@ -3633,12 +3633,43 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 .stat-block-head .stat-note { max-width: 620px; }
 
-/* ── The two LeetCode charts ─────────────────────────────────────────────── */
-.lc-charts {
+/* ── The LeetCode charts ─────────────────────────────────────────────────
+   The calendar is NOT in this grid. It is a full-width figure above it: 53
+   weeks carry a min-width, so in a half-measure column the grid scrolled
+   rather than shrank, and the recent end (the right edge, which is the part
+   anyone looks for) was the part off screen.
+   ------------------------------------------------------------------------- */
+.lc-summary {
     display: grid;
-    grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
     gap: 48px;
-    margin-top: 48px;
+    margin-top: 52px;
+    padding-top: 44px;
+    border-top: 1px solid var(--gray-line);
+}
+
+/* Two by two. The shared .stat-figures is three across, which would leave the
+   fourth tile alone on a second row. */
+.lc-figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    margin-top: 0;
+}
+
+.lc-figures .stat-figure {
+    padding: 0 0 22px 28px;
+    border: 0;
+    border-left: 1px solid var(--gray-line);
+}
+
+.lc-figures .stat-figure:nth-child(odd) { padding-left: 0; border-left: 0; }
+.lc-figures .stat-figure:nth-child(n+3) { padding-top: 24px; border-top: 1px solid var(--gray-line); }
+
+/* A word, not a number, so it is set at the size of one. Grey because it is
+   the absence of a rank rather than a low one. */
+.stat-value.is-muted {
+    font-size: clamp(22px, 2.6vw, 30px);
+    color: var(--gray-mid);
 }
 
 .lc-donut { margin: 8px 0 20px; }
@@ -3746,8 +3777,8 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .stat-block-head { gap: 14px; }
     .stat-block-mark { width: 44px; height: 44px; }
 
-    /* One column: 320px of donut beside a scrolling year is already the
-       narrowest either can be. */
-    .lc-charts { grid-template-columns: minmax(0, 1fr); gap: 40px; }
-    .lc-donut { max-width: 300px; }
+    /* One column, and the tiles stay two across: four stacked tiles is a very
+       long scroll for four short numbers. */
+    .lc-summary { grid-template-columns: minmax(0, 1fr); gap: 40px; margin-top: 40px; padding-top: 36px; }
+    .lc-donut { max-width: 280px; }
 }
