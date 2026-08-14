@@ -379,10 +379,15 @@ const FLAME_CORE =
                 </svg>
             </span>
             <div>
-                <h3 class="stat-block-title" id="leetcode-heading">LeetCode</h3>
+                <h3 class="stat-block-title" id="leetcode-heading">
+                    LeetCode <span class="stat-block-caveat">new account</span>
+                </h3>
                 <p class="stat-note">
-                    A new account, and it shows.
-                    {accountAgeDays !== null && ` It is ${accountAgeDays} ${accountAgeDays === 1 ? 'day' : 'days'} old.`}
+                    {/* The title now carries "new account", so the note opens on
+                        the measurement instead of repeating the words. */}
+                    {accountAgeDays !== null
+                        ? `${accountAgeDays} ${accountAgeDays === 1 ? 'day' : 'days'} old, and it shows.`
+                        : 'Opened recently, and it shows.'}
                     {' '}Read from
                     <a href={lc.profileUrl} target="_blank" rel="noopener noreferrer me">@{lc.login}</a>
                     {' '}at build time. There is nothing here to be impressed by yet, which is the

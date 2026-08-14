@@ -3633,6 +3633,28 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 .stat-block-head .stat-note { max-width: 620px; }
 
+/* The caveat is part of the title, not a subtitle: an empty statistics block
+   with a neutral heading invites the reader to work out for themselves why it
+   is empty, and they will reach a worse conclusion than the true one. Red, and
+   smaller than the name it qualifies, so it reads as a condition on the title
+   rather than as half of it. */
+.stat-block-caveat {
+    display: inline-block;
+    margin-left: 4px;
+    font-family: var(--font-wide);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    vertical-align: middle;
+}
+
+@media (max-width: 520px) {
+    /* Onto its own line rather than wrapping mid-phrase. */
+    .stat-block-caveat { display: block; margin-left: 0; margin-top: 6px; }
+}
+
 /* ── The LeetCode charts ─────────────────────────────────────────────────
    The calendar is NOT in this grid. It is a full-width figure above it: 53
    weeks carry a min-width, so in a half-measure column the grid scrolled
