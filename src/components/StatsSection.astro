@@ -179,6 +179,14 @@ const figures: {
   },
 ];
 
+/* The external-link mark, drawn once and used by both block titles: a box with
+   an arrow leaving its top-right corner. Split into three paths rather than one
+   so the corner the arrow escapes from is genuinely open, which is what makes
+   it read as "leaves this page" rather than as a box with a tick in it. */
+const OUT_BOX = 'M18 13.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5.5';
+const OUT_ARROW = 'M10.5 13.5 21 3';
+const OUT_CORNER = 'M15 3h6v6';
+
 /** The same silhouette at both sizes, so the two flames read as one family. */
 const FLAME_BODY =
   'M12 1.6c.6 3.3-1.4 4.7-2.9 6.2C7.4 9.5 6.6 11.2 6.6 13.2c0 4 3 6.6 5.4 9.2 '
@@ -201,11 +209,26 @@ const FLAME_CORE =
                 <SocialIcon name="github" size={30} />
             </span>
             <div>
-                <h3 class="stat-block-title" id="github-statistics-heading">GitHub statistics</h3>
+                {/* The heading IS the link out. It was a plain heading with the
+                    profile linked from the prose underneath, which put the one
+                    thing a reader wants from this block (the account itself)
+                    in the least prominent place on it. */}
+                <h3 class="stat-block-title" id="github-statistics-heading">
+                    <a class="stat-block-link" href={stats.profileUrl}
+                       target="_blank" rel="noopener noreferrer me">
+                        GitHub statistics
+                        <svg class="stat-block-out" width="15" height="15" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             aria-hidden="true" focusable="false">
+                            <path d={OUT_BOX} />
+                            <path d={OUT_ARROW} />
+                            <path d={OUT_CORNER} />
+                        </svg>
+                    </a>
+                </h3>
                 <p class="stat-note">
-                    Every number below is read from
-                    <a href={stats.profileUrl} target="_blank" rel="noopener noreferrer me">@{stats.login}</a>
-                    at build time.
+                    Every number below is read from @{stats.login} at build time.
                 </p>
             </div>
         </header>
@@ -302,10 +325,11 @@ const FLAME_CORE =
 
         <div class="contrib-foot">
             <p class="stat-note">
+                {/* The handle is text, not a link: the block title above is
+                    already a link to the same profile, and two of them a few
+                    hundred pixels apart is one destination sold twice. */}
                 {stats.live ? 'Live at build' : 'Snapshot'}, {longDate(stats.capturedAt)}.
-                <a href={stats.profileUrl} target="_blank" rel="noopener noreferrer me">
-                    @{stats.login}
-                </a>
+                @{stats.login}
             </p>
             <p class="contrib-legend" aria-hidden="true">
                 <span>Less</span>
@@ -380,7 +404,21 @@ const FLAME_CORE =
             </span>
             <div>
                 <h3 class="stat-block-title" id="leetcode-heading">
-                    LeetCode <span class="stat-block-caveat">new account</span>
+                    <a class="stat-block-link" href={lc.profileUrl}
+                       target="_blank" rel="noopener noreferrer me">
+                        LeetCode
+                        <svg class="stat-block-out" width="15" height="15" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             aria-hidden="true" focusable="false">
+                            <path d={OUT_BOX} />
+                            <path d={OUT_ARROW} />
+                            <path d={OUT_CORNER} />
+                        </svg>
+                    </a>
+                    {/* Outside the link on purpose: it qualifies the account, it
+                        is not part of what the link is called. */}
+                    <span class="stat-block-caveat">new account</span>
                 </h3>
                 <p class="stat-note">
                     {/* The title now carries "new account", so the note opens on
@@ -388,8 +426,7 @@ const FLAME_CORE =
                     {accountAgeDays !== null
                         ? `${accountAgeDays} ${accountAgeDays === 1 ? 'day' : 'days'} old, and it shows.`
                         : 'Opened recently, and it shows.'}
-                    {' '}Read from
-                    <a href={lc.profileUrl} target="_blank" rel="noopener noreferrer me">@{lc.login}</a>
+                    {' '}Read from @{lc.login}
                     {' '}at build time. There is nothing here to be impressed by yet, which is the
                     reason to publish it: the interesting version of this block is the one in six
                     months, and it is only interesting if this one exists.

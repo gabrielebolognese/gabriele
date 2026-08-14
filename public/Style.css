@@ -3633,6 +3633,48 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 .stat-block-head .stat-note { max-width: 620px; }
 
+/* The heading is the link out to the account. A very light ground rather than
+   a border: at this size a bordered heading reads as a form field, and the
+   whole point is that it should be obviously pressable without competing with
+   the section label above it. inline-flex so the ground wraps the words and
+   the mark rather than the whole line box. */
+.stat-block-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 14px;
+    margin: -7px -14px;          /* the ground grows outward, so the title text
+                                    stays optically aligned with the note */
+    border-radius: 6px;
+    background: var(--gray-soft);
+    color: var(--black);
+    transition:
+        background var(--dur) var(--ease),
+        color      var(--dur) var(--ease);
+}
+
+.stat-block-link:hover,
+.stat-block-link:focus-visible {
+    background: var(--black);
+    color: var(--white);
+}
+
+/* Recessive at rest: the words are the heading, the mark only says where they
+   go. It comes up to full strength with the rest of the button on hover. */
+.stat-block-out {
+    flex: none;
+    opacity: 0.55;
+    transition:
+        opacity   var(--dur) var(--ease),
+        transform var(--dur) var(--ease);
+}
+
+.stat-block-link:hover .stat-block-out,
+.stat-block-link:focus-visible .stat-block-out {
+    opacity: 1;
+    transform: translate3d(1px, -1px, 0);
+}
+
 /* The caveat is part of the title, not a subtitle: an empty statistics block
    with a neutral heading invites the reader to work out for themselves why it
    is empty, and they will reach a worse conclusion than the true one. Red, and
@@ -3640,7 +3682,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
    rather than as half of it. */
 .stat-block-caveat {
     display: inline-block;
-    margin-left: 4px;
+    margin-left: 14px;
     font-family: var(--font-wide);
     font-size: 10px;
     font-weight: 300;
