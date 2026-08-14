@@ -16,8 +16,11 @@
  */
 import { getCollection } from 'astro:content';
 import { getGithubStats } from '../data/github';
+import { getLeetcodeStats } from '../data/leetcode';
+import SocialIcon from './SocialIcon.astro';
 
 const stats = await getGithubStats();
+const lc = await getLeetcodeStats();
 
 const devlog = await getCollection('devlog');
 const latest = [...devlog].sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0];
@@ -46,6 +49,86 @@ const span = (from: string | null, to: string | null) => {
 };
 
 const anchor = (date: Date) => date.toISOString().slice(0, 10);
+
+/* ── The difficulty donut ───────────────────────────────────────────────────
+   Three arcs on one ring, drawn with stroke-dasharray rather than paths: an
+   arc is a dash and a gap on a circle, which needs no arc-flag arithmetic and
+   no path rewriting when a count changes.
+
+   The palette is NOT LeetCode's own #00b8a3 / #ffc01e / #ef4743. Those pass
+   colour-blind separation comfortably but the amber sits at 1.6:1 against a
+   white page, which is illegible, and darkening it collapses the amber-to-red
+   pair to a deutan separation of 3.5, well under the floor of 8. These three
+   were stepped until all six checks pass on a light surface: lightness band,
+   chroma floor, CVD separation (worst adjacent pair 11.2 protan), normal
+   vision (20.5), and 3:1 contrast. Same hue families, so it still reads as
+   easy / medium / hard.
+
+   Identity never rests on colour alone regardless: every arc is directly
+   labelled and the same numbers are a real list underneath. */
+const DIFFICULTY_COLOURS: Record<string, string> = {
+  Easy: '#00947f',
+  Medium: '#c97a00',
+  Hard: '#c2255c',
+};
+
+const RADIUS = 54;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+/* A 2px gap of surface between fills, per the mark spec, so two arcs that
+   happen to be adjacent never read as one. */
+const ARC_GAP = 2;
+
+let cursor = 0;
+const arcs = lc.breakdown
+  .filter((row) => row.solved > 0)
+  .map((row) => {
+    const share = lc.totalSolved > 0 ? row.solved / lc.totalSolved : 0;
+    const length = share * CIRCUMFERENCE;
+    /* Mid-angle, measured from 12 o'clock, for the direct label. */
+    const midAngle = ((cursor + length / 2) / CIRCUMFERENCE) * 360 - 90;
+    const arc = {
+      ...row,
+      share,
+      colour: DIFFICULTY_COLOURS[row.difficulty] ?? 'var(--gray-mid)',
+      dash: `${Math.max(0, length - ARC_GAP)} ${CIRCUMFERENCE - Math.max(0, length - ARC_GAP)}`,
+      offset: -cursor,
+      labelX: 50 + Math.cos((midAngle * Math.PI) / 180) * 74,
+      labelY: 50 + Math.sin((midAngle * Math.PI) / 180) * 74,
+      percent: Math.round(share * 100),
+    };
+    cursor += length;
+    return arc;
+  });
+
+const lcFigures = [
+  {
+    value: nf.format(lc.totalSolved),
+    label: 'Problems solved',
+    note: `of ${nf.format(lc.totalAvailable)} on the site`,
+  },
+  {
+    value: nf.format(lc.activeDays),
+    unit: lc.activeDays === 1 ? 'day' : 'days',
+    label: 'Days active',
+    note: lc.firstActive ? `Since ${longDate(lc.firstActive)}` : null,
+  },
+  {
+    value: nf.format(lc.streak),
+    unit: lc.streak === 1 ? 'day' : 'days',
+    label: 'Current streak',
+    note: lc.lastActive ? `Last solved ${longDate(lc.lastActive)}` : 'Not running',
+  },
+];
+
+/** Days since the first solve. The copy calls the account new; this is what
+ *  makes that a measurement rather than a sentence that quietly goes stale. */
+const accountAgeDays = lc.firstActive
+  ? Math.max(
+      0,
+      Math.round((Date.parse(`${lc.capturedAt.slice(0, 10)}T00:00:00Z`)
+        - Date.parse(`${lc.firstActive}T00:00:00Z`)) / 86_400_000),
+    )
+  : null;
 
 /* One icon per figure, and only three of them on the whole page, so they are
  * written out here rather than pulled through a generic icon component. The
@@ -95,7 +178,25 @@ const FLAME_CORE =
 
 <section class="section stats-section" id="stats" aria-labelledby="stats-heading">
     <h2 class="section-label" id="stats-heading">Statistics</h2>
-    <p class="section-intro">Read from GitHub at build time, not typed in by hand.</p>
+    <p class="section-intro">Read from GitHub and LeetCode at build time, not typed in by hand.</p>
+
+    {/* Two blocks, kept firmly apart: one account has two years of history and
+        the other is days old, and running their numbers together would let the
+        full one flatter the empty one. */}
+    <div class="stat-block" id="github-statistics" aria-labelledby="github-statistics-heading">
+        <header class="stat-block-head">
+            <span class="stat-block-mark" aria-hidden="true">
+                <SocialIcon name="github" size={30} />
+            </span>
+            <div>
+                <h3 class="stat-block-title" id="github-statistics-heading">GitHub statistics</h3>
+                <p class="stat-note">
+                    Every number below is read from
+                    <a href={stats.profileUrl} target="_blank" rel="noopener noreferrer me">@{stats.login}</a>
+                    at build time.
+                </p>
+            </div>
+        </header>
 
     <div class="stat-figures">
         {figures.map((f) => (
@@ -250,5 +351,153 @@ const FLAME_CORE =
                 </a>
             </div>
         )}
+    </div>
+    </div>
+
+    <div class="stat-block" id="leetcode" aria-labelledby="leetcode-heading">
+        <header class="stat-block-head">
+            <span class="stat-block-mark stat-block-mark--leetcode" aria-hidden="true">
+                {/* LeetCode's mark, redrawn: the two strokes of a bracket with a
+                    bar through them. */}
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
+                     stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M14.7 2.6 7.4 10a4.6 4.6 0 0 0 0 6.5l3.3 3.3a4.6 4.6 0 0 0 6.5 0l1.6-1.6" />
+                    <path d="M9.4 13.2h10.2" />
+                </svg>
+            </span>
+            <div>
+                <h3 class="stat-block-title" id="leetcode-heading">LeetCode</h3>
+                <p class="stat-note">
+                    A new account, and it shows.
+                    {accountAgeDays !== null && ` It is ${accountAgeDays} ${accountAgeDays === 1 ? 'day' : 'days'} old.`}
+                    {' '}Read from
+                    <a href={lc.profileUrl} target="_blank" rel="noopener noreferrer me">@{lc.login}</a>
+                    {' '}at build time. There is nothing here to be impressed by yet, which is the
+                    reason to publish it: the interesting version of this block is the one in six
+                    months, and it is only interesting if this one exists.
+                </p>
+            </div>
+        </header>
+
+        <div class="stat-figures">
+            {lcFigures.map((f) => (
+                <div class="stat-figure">
+                    <p class="stat-value">
+                        {f.value}{f.unit && <span class="stat-unit">{f.unit}</span>}
+                    </p>
+                    <p class="stat-label">{f.label}</p>
+                    {f.note && <p class="stat-note">{f.note}</p>}
+                </div>
+            ))}
+        </div>
+
+        <div class="lc-charts">
+            <figure class="lc-donut-figure">
+                <figcaption class="contrib-heading">
+                    <h4 class="stat-subheading">Solved by difficulty</h4>
+                </figcaption>
+
+                {arcs.length === 0 ? (
+                    <p class="stat-note">Nothing solved yet.</p>
+                ) : (
+                    <div class="lc-donut">
+                        {/* The viewBox is wider than the ring on purpose: the
+                            direct labels sit outside it, and a tight box would
+                            clip them at every width. */}
+                        <svg viewBox="-42 -20 184 140" role="img"
+                             aria-label={`${lc.totalSolved} problems solved: ${arcs.map((a) => `${a.solved} ${a.difficulty.toLowerCase()}`).join(', ')}.`}>
+                            <g transform="rotate(-90 50 50)">
+                                {arcs.map((arc) => (
+                                    <circle class="lc-arc" cx="50" cy="50" r={RADIUS}
+                                            stroke={arc.colour}
+                                            stroke-dasharray={arc.dash}
+                                            stroke-dashoffset={arc.offset} />
+                                ))}
+                            </g>
+
+                            <text class="lc-donut-total" x="50" y="52">{nf.format(lc.totalSolved)}</text>
+                            <text class="lc-donut-sub" x="50" y="68">solved</text>
+
+                            {/* A direct label on every arc, not just the biggest.
+                                Three slices is few enough that a legend box would
+                                be a second thing to read for no gain, and the
+                                labels are the relief the contrast check needs. */}
+                            {arcs.map((arc) => (
+                                <text class="lc-arc-label" x={arc.labelX} y={arc.labelY} fill={arc.colour}>
+                                    {arc.difficulty} {arc.solved}
+                                </text>
+                            ))}
+                        </svg>
+                    </div>
+                )}
+
+                {/* The same numbers as text. A donut of six problems is a shape;
+                    this is the part that can be read and compared. */}
+                <table class="lc-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Difficulty</th>
+                            <th scope="col">Solved</th>
+                            <th scope="col">Available</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {lc.breakdown.map((row) => (
+                            <tr>
+                                <th scope="row">
+                                    <span class="lc-swatch" style={`--swatch:${DIFFICULTY_COLOURS[row.difficulty]}`} aria-hidden="true"></span>
+                                    {row.difficulty}
+                                </th>
+                                <td>{nf.format(row.solved)}</td>
+                                <td>{nf.format(row.available)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </figure>
+
+            <figure class="contrib lc-calendar">
+                <figcaption class="contrib-heading">
+                    <h4 class="stat-subheading">Submission history</h4>
+                    <p class="stat-note">
+                        The last 12 months, drawn on the same scale as the GitHub grid above so the
+                        two can be compared honestly. {nf.format(lc.activeDays)} active
+                        {lc.activeDays === 1 ? ' day' : ' days'} in it.
+                    </p>
+                </figcaption>
+
+                <div class="contrib-plot">
+                    <div class="contrib-grid" role="img"
+                         aria-label={`LeetCode submission activity for the last 12 months, ${lc.activeDays} active days.`}>
+                        {/* Only days with something in them carry a title. On
+                            this account that is 2 cells against 369 empty ones,
+                            and "No submissions on 4 March" written 369 times is
+                            around 17 KB of HTML saying nothing. The GitHub grid
+                            above titles every day because there almost every
+                            day has something to say. */}
+                        {lc.weeks.map((week) => (
+                            <div class="contrib-week">
+                                {week.map((day) => (
+                                    day === null
+                                        ? <span class="contrib-day is-empty"></span>
+                                        : <span class="contrib-day" data-level={day.level}
+                                                title={day.count > 0
+                                                    ? `${nf.format(day.count)} submission${day.count === 1 ? '' : 's'} on ${longDate(day.date)}`
+                                                    : undefined}></span>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div class="contrib-foot">
+                    <p class="stat-note">
+                        {lc.live ? 'Live at build' : 'Snapshot'}, {longDate(lc.capturedAt)}.
+                        {lc.ranking === null && ' Not ranked yet.'}
+                    </p>
+                </div>
+            </figure>
+        </div>
     </div>
 </section>

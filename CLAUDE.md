@@ -152,6 +152,26 @@ sitemap at a URL that appears on no page.
 comma or bracket pair. If you write one, you are reintroducing something that was deliberately swept.
 En dashes in numeric ranges (`€150–400`, `01–04`) are untouched and fine.
 
+**The statistics section reads two accounts, and keeps them apart.** `src/data/github.ts` and
+`src/data/leetcode.ts` are the same contract: fetch live at build, fall back to a committed snapshot on
+any failure, and never fail the build. GitHub has no API for what is needed (contributions are not in
+REST, pinned repos are GraphQL-only), so it parses public HTML; LeetCode has a real unauthenticated
+GraphQL endpoint, so it queries that. Both refresh with `npm run stats:refresh`, and
+`GITHUB_STATS_OFFLINE=1` skips the network for both.
+
+Two accounts on one page is a presentation problem as much as a data one: one has two years of history
+and the other is days old, so they get separate headed blocks with a 2px rule between them rather than
+one run of figures where the full account flatters the empty one. The LeetCode copy calls the account
+new and derives its age from `firstActive`, so the sentence cannot go stale, and LeetCode’s sentinel
+rank for unplaced accounts (5,000,001) is mapped to null rather than printed as a number.
+
+**The difficulty donut does not use LeetCode’s own colours.** #00b8a3 / #ffc01e / #ef4743 separate
+well for colour-blind readers but the amber is 1.6:1 against a white page, and darkening it collapses
+the amber-to-red pair to a deutan separation of 3.5, under the floor of 8. #00947f / #c97a00 / #c2255c
+was stepped until all six checks pass on a light surface. Every arc is directly labelled and the same
+numbers are a real `<table>` underneath, so identity never rests on colour alone. The submission grid
+keeps GitHub’s greens, because it answers the same question the grid above it answers.
+
 **The devlog is one page, never one page per entry.** `/devlog` holds every entry; a daily log split
 across separate URLs is 365 pages of two sentences a year, which is thin content on a site whose whole
 purpose is being read as one credible entity. `DevlogTimeline.astro` renders both the full page and the

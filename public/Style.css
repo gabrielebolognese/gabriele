@@ -25,6 +25,7 @@
    20. Statistics  (component: src/components/StatsSection.astro)
    21. Award banner
    22. Tech stack  (component: src/components/TechStack.astro)
+   23. Statistics blocks and the LeetCode charts
 
    Conventions: each section owns its own media queries; breakpoints are
    860px (tablet) and 520px (phone).
@@ -227,6 +228,8 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .js .cd-display,
 .js .cd-deadline,
 .js .cd-goal,
+.js .stat-block-head,
+.js .lc-donut-figure,
 .js .stack-group,
 .js .contrib,
 .js .repo-list,
@@ -345,6 +348,8 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     .js .cd-display,
     .js .cd-deadline,
     .js .cd-goal,
+    .js .stat-block-head,
+    .js .lc-donut-figure,
     .js .stack-group,
     .js .contrib,
     .js .repo-list,
@@ -3581,4 +3586,168 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     /* Full width once .bio-split collapses to one column, so the pills stop
        being a narrow ragged rail and lay out across the page instead. */
     .stack { margin-top: 40px; }
+}
+
+
+/* ── 23. STATISTICS BLOCKS AND THE LEETCODE CHARTS ───────────────────────────
+   Two accounts on one page, one with two years of history and one days old.
+   They are separated hard: their own headed block, their own rule, their own
+   band of space. Run together, the full one flatters the empty one.
+   ------------------------------------------------------------------------- */
+.stat-block + .stat-block {
+    margin-top: 76px;
+    padding-top: 60px;
+    border-top: 2px solid var(--black);
+}
+
+.stat-block-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 8px;
+}
+
+/* Boxed rather than bare: the mark is the thing that tells you which account
+   you are reading, so it gets the weight of a label, not of an ornament. */
+.stat-block-mark {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border: 1px solid var(--gray-line);
+    color: var(--black);
+}
+
+.stat-block-mark--leetcode { color: #c97a00; }
+
+.stat-block-title {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.4vw, 28px);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: var(--black);
+}
+
+.stat-block-head .stat-note { max-width: 620px; }
+
+/* ── The two LeetCode charts ─────────────────────────────────────────────── */
+.lc-charts {
+    display: grid;
+    grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+    gap: 48px;
+    margin-top: 48px;
+}
+
+.lc-donut { margin: 8px 0 20px; }
+
+/* overflow is visible by default and has to stay that way: the arc labels are
+   drawn outside the ring and a clipped SVG would cut them off. */
+.lc-donut svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+/* Thin marks, per the spec. butt caps rather than round: a rounded cap eats
+   into the 2px gap between arcs and two neighbours re-merge. */
+.lc-arc {
+    fill: none;
+    stroke-width: 13;
+    stroke-linecap: butt;
+}
+
+.lc-donut-total {
+    text-anchor: middle;
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 200;
+    fill: var(--black);
+}
+
+.lc-donut-sub {
+    text-anchor: middle;
+    font-family: var(--font-wide);
+    font-size: 8px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    fill: var(--gray-mid);
+}
+
+/* The label carries the series colour because it IS the legend. Every other
+   number on the page stays in an ink token. */
+.lc-arc-label {
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-family: var(--font-wide);
+    font-size: 8.5px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+}
+
+.lc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-xs);
+}
+
+.lc-table th,
+.lc-table td {
+    padding: 9px 0;
+    text-align: right;
+    border-bottom: 1px solid var(--gray-line);
+    font-weight: 400;
+    color: var(--gray-dark);
+}
+
+.lc-table thead th {
+    font-family: var(--font-wide);
+    font-size: 8px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+}
+
+.lc-table th:first-child,
+.lc-table tbody th {
+    text-align: left;
+    color: var(--black);
+}
+
+.lc-table tbody th {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.lc-swatch {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: var(--swatch, var(--gray-mid));
+    flex: none;
+}
+
+.lc-calendar { margin-top: 0; }
+
+/* The grid keeps GitHub's greens rather than taking the difficulty palette:
+   it answers "did anything happen on this day", which is the same question
+   the grid above it answers, and two identical questions should not be two
+   colour schemes. */
+
+@media (max-width: 860px) {
+    .stat-block + .stat-block { margin-top: 56px; padding-top: 44px; }
+
+    .stat-block-head { gap: 14px; }
+    .stat-block-mark { width: 44px; height: 44px; }
+
+    /* One column: 320px of donut beside a scrolling year is already the
+       narrowest either can be. */
+    .lc-charts { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .lc-donut { max-width: 300px; }
 }
