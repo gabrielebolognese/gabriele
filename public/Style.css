@@ -26,6 +26,7 @@
    21. Award banner
    22. Tech stack  (component: src/components/TechStack.astro)
    23. Statistics blocks and the LeetCode charts
+   24. YouTube block
 
    Conventions: each section owns its own media queries; breakpoints are
    860px (tablet) and 520px (phone).
@@ -3845,4 +3846,93 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
        long scroll for four short numbers. */
     .lc-summary { grid-template-columns: minmax(0, 1fr); gap: 40px; margin-top: 40px; padding-top: 36px; }
     .lc-donut { max-width: 280px; }
+}
+
+
+/* ── 24. YOUTUBE BLOCK ───────────────────────────────────────────────────────
+   Figures left, videos right: the mirror of the LeetCode row above it, because
+   here the list is the substance and the counts are the caption. Reuses
+   .lc-summary for the grid so the two blocks share one set of breakpoints.
+   ------------------------------------------------------------------------- */
+.yt-summary { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); }
+
+/* One column, stacked. Three tiles side by side under a 300px cap would be
+   ~90px each, which is narrower than the numbers in them. */
+.yt-figures {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    margin-top: 0;
+}
+
+.yt-figures .stat-figure {
+    padding: 0 0 22px;
+    border: 0;
+}
+
+.yt-figures .stat-figure + .stat-figure {
+    padding-top: 22px;
+    border-top: 1px solid var(--gray-line);
+}
+
+.stat-block-mark--youtube { color: #ff0000; }
+
+.yt-list {
+    margin-top: 22px;
+    list-style: none;
+    counter-reset: yt;
+}
+
+/* Numbered by CSS: the rank is the point of the list, and a browser's own
+   <ol> marker sits outside the border and cannot be styled to match. */
+.yt-item {
+    counter-increment: yt;
+    position: relative;
+    padding: 18px 0 18px 38px;
+    border-top: 1px solid var(--gray-line);
+}
+
+.yt-item:last-child { border-bottom: 1px solid var(--gray-line); }
+
+.yt-item::before {
+    content: counter(yt);
+    position: absolute;
+    left: 0;
+    top: 18px;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 200;
+    line-height: 1.35;
+    color: var(--gray-line);
+}
+
+.yt-title {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--black);
+}
+
+.yt-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.yt-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 8px;
+    font-size: var(--text-xs);
+    color: var(--gray-mid);
+}
+
+@media (max-width: 860px) {
+    .yt-summary { grid-template-columns: minmax(0, 1fr); }
+    .yt-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+
+    /* Two across, so only the third needs a rule above it. */
+    .yt-figures .stat-figure + .stat-figure { padding-top: 0; border-top: 0; }
+    .yt-figures .stat-figure:nth-child(3) {
+        padding-top: 22px;
+        border-top: 1px solid var(--gray-line);
+        grid-column: 1 / -1;
+    }
 }

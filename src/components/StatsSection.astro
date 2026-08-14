@@ -17,10 +17,12 @@
 import { getCollection } from 'astro:content';
 import { getGithubStats } from '../data/github';
 import { getLeetcodeStats } from '../data/leetcode';
+import { getYoutubeStats } from '../data/youtube';
 import SocialIcon from './SocialIcon.astro';
 
 const stats = await getGithubStats();
 const lc = await getLeetcodeStats();
+const yt = await getYoutubeStats();
 
 const devlog = await getCollection('devlog');
 const latest = [...devlog].sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0];
@@ -129,6 +131,32 @@ const lcFigures = [
       ? 'LeetCode ranks an account once it has solved enough'
       : 'Across every LeetCode account',
     muted: lc.ranking === null,
+  },
+];
+
+const ytFigures = [
+  {
+    /* The scraped path gives YouTube's own rounded string ("1.2K
+       subscribers"); the API path gives an integer. Preferring the string when
+       it exists means the page shows exactly what the channel page shows,
+       rather than a number that disagrees with it by rounding. */
+    value: yt.subscriberText
+      ? yt.subscriberText.replace(/\s*subscribers?$/i, '')
+      : yt.subscribers === null ? 'Hidden' : nf.format(yt.subscribers),
+    label: 'Subscribers',
+    note: yt.joined ? `Channel opened ${yt.joined}` : null,
+    muted: yt.subscribers === null,
+  },
+  {
+    value: yt.videoCount === null ? '?' : nf.format(yt.videoCount),
+    unit: yt.videoCount === 1 ? 'video' : 'videos',
+    label: 'Published',
+    note: yt.topVideos[0] ? `Latest ${longDate(yt.topVideos[0].published)}` : null,
+  },
+  {
+    value: yt.viewCount === null ? '?' : nf.format(yt.viewCount),
+    label: 'Total views',
+    note: 'Across the whole channel',
   },
 ];
 
@@ -559,6 +587,87 @@ const FLAME_CORE =
                         {f.note && <p class="stat-note">{f.note}</p>}
                     </div>
                 ))}
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-block" id="youtube" aria-labelledby="youtube-heading">
+        <header class="stat-block-head">
+            <span class="stat-block-mark stat-block-mark--youtube" aria-hidden="true">
+                <SocialIcon name="youtube" size={30} />
+            </span>
+            <div>
+                <h3 class="stat-block-title" id="youtube-heading">
+                    <a class="stat-block-link" href={yt.profileUrl}
+                       target="_blank" rel="noopener noreferrer me">
+                        YouTube
+                        <svg class="stat-block-out" width="15" height="15" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             aria-hidden="true" focusable="false">
+                            <path d={OUT_BOX} />
+                            <path d={OUT_ARROW} />
+                            <path d={OUT_CORNER} />
+                        </svg>
+                    </a>
+                    {yt.videoCount !== null && yt.videoCount < 5 && (
+                        <span class="stat-block-caveat">barely started</span>
+                    )}
+                </h3>
+                <p class="stat-note">
+                    Long form on building FlashFX, when something is worth more than a paragraph.
+                    Read from @{yt.handle} at build time.
+                </p>
+            </div>
+        </header>
+
+        <div class="lc-summary yt-summary">
+            <div class="stat-figures yt-figures">
+                {ytFigures.map((f) => (
+                    <div class="stat-figure">
+                        <p class={`stat-value${f.muted ? ' is-muted' : ''}`}>
+                            {f.value}{f.unit && <span class="stat-unit">{f.unit}</span>}
+                        </p>
+                        <p class="stat-label">{f.label}</p>
+                        {f.note && <p class="stat-note">{f.note}</p>}
+                    </div>
+                ))}
+            </div>
+
+            <div class="yt-videos">
+                <h4 class="stat-subheading">
+                    {yt.topVideos.length > 1 ? 'Most watched' : 'The channel so far'}
+                </h4>
+
+                {yt.topVideos.length === 0 ? (
+                    <p class="stat-note">No videos published yet.</p>
+                ) : (
+                    <ol class="yt-list">
+                        {yt.topVideos.map((video) => (
+                            <li class="yt-item">
+                                <a class="yt-title" href={video.url} target="_blank" rel="noopener noreferrer">
+                                    {video.title}
+                                </a>
+                                <p class="yt-meta">
+                                    <span>{nf.format(video.views)} view{video.views === 1 ? '' : 's'}</span>
+                                    <span>{longDate(video.published)}</span>
+                                </p>
+                            </li>
+                        ))}
+                    </ol>
+                )}
+
+                <p class="stat-note">
+                    {/* Says what it ranked over. The channel feed carries the 15
+                        most recent uploads at most, so "most watched" is most
+                        watched of those, and on a channel this size that is
+                        every video there is. */}
+                    {yt.rankedFrom === 1
+                        ? 'One video on the channel, so there is nothing to rank yet.'
+                        : `Ranked by views across the ${nf.format(yt.rankedFrom)} most recent uploads.`}
+                    {' '}{yt.live ? 'Live at build' : 'Snapshot'}, {longDate(yt.capturedAt)}.
+                    {yt.source === 'public' && ' Counts read from the channel page, not the Data API.'}
+                </p>
             </div>
         </div>
     </div>

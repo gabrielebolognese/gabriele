@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "stats:refresh": "node scripts/refresh-github-stats.mjs && node scripts/refresh-leetcode-stats.mjs"
+    "stats:refresh": "node scripts/refresh-github-stats.mjs && node scripts/refresh-leetcode-stats.mjs && node scripts/refresh-youtube-stats.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.3",
