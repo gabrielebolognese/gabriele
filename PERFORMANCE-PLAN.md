@@ -85,7 +85,7 @@ it says so.
 
 ---
 
-## Phase 1 — Free wins
+## Phase 1: Free wins
 
 Two configuration lines. No markup changes, no risk to appearance, and both are pure loss today.
 
@@ -177,7 +177,7 @@ visible CSS change and confirm it appears immediately, because the hash moved.
 
 ---
 
-## Phase 2 — DOM size
+## Phase 2: DOM size
 
 ### 2.1 The homepage serves 7,270 DOM elements (High)
 
@@ -246,7 +246,7 @@ stopped erroring.
 
 ---
 
-## Phase 3 — The critical path
+## Phase 3: The critical path
 
 ### 3.1 Google Fonts is a render-blocking third-party request (High)
 
@@ -342,7 +342,7 @@ resolve to the same file. A mismatch downloads the image twice.
 
 ---
 
-## Phase 4 — Payload
+## Phase 4: Payload
 
 ### 4.1 920 KB of images on the homepage (Medium)
 
@@ -401,7 +401,7 @@ worth one audit pass.
 
 ---
 
-## Phase 5 — Headers and best practices
+## Phase 5: Headers and best practices
 
 ### 5.1 No Content-Security-Policy (Medium)
 
@@ -435,7 +435,7 @@ then switch.
 
 ---
 
-## Phase 6 — Accessibility
+## Phase 6: Accessibility
 
 ### 6.1 No skip link (Medium)
 
@@ -483,7 +483,7 @@ That is a genuinely good baseline. What still needs a real audit, because it nee
 
 ---
 
-## Phase 7 — Keep it fixed
+## Phase 7: Keep it fixed
 
 ### 7.1 Adopt the landing page's budget guard (Low)
 
