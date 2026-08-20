@@ -32,6 +32,7 @@ import gni from '../assets/gara-nazionale-informatica-2026-logo.jpg';
 import {HOMEPAGE_FAQ} from '../data/faq';
 import {homepageSchema} from '../data/schema';
 import {PERSON, ORGANIZATION, FACTS, DEVLOG, SOCIALS, absoluteUrl} from '../data/identity';
+import { PORTRAIT, CAROUSEL, schemaImageUrl } from '../data/images';
 import SocialIcon from '../components/SocialIcon.astro';
 
 const articles = await getCollection('newsletter', ({ data }) => !data.draft);
@@ -43,8 +44,8 @@ const sorted = articles.sort((a, b) => b.data.issue - a.data.issue);
 const latest = sorted.slice(0, 2);
 
 const schema = homepageSchema({
-    portraitUrl: absoluteUrl(portrait.src, Astro.site),
-    softwareImage: absoluteUrl(animatorTimeline.src, Astro.site),
+    portraitUrl: await schemaImageUrl(portrait, PORTRAIT, Astro.site),
+    softwareImage: await schemaImageUrl(animatorTimeline, CAROUSEL, Astro.site),
     faq: HOMEPAGE_FAQ,
 });
 

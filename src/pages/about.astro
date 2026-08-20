@@ -11,6 +11,7 @@ import LifeSection from '../components/LifeSection.astro';
 import { aboutPageSchema } from '../data/schema';
 import { HOMEPAGE_FAQ } from '../data/faq';
 import { PERSON, FACTS, SAME_AS, absoluteUrl } from '../data/identity';
+import { PORTRAIT, schemaImageUrl } from '../data/images';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 import imgVision from '../assets/vision-ai-demo-video-editor-2024.png';
 import imgPivot from '../assets/flashfx-early-motion-design-interface-2024.png';
@@ -23,7 +24,7 @@ const description =
     'My full story: Italian founder of FlashFX, from a hacked Minecraft channel in 2020 to a browser-based motion graphics platform used by thousands.';
 
 const schema = aboutPageSchema({
-    portraitUrl: absoluteUrl(portrait.src, Astro.site),
+    portraitUrl: await schemaImageUrl(portrait, PORTRAIT, Astro.site),
     path: Astro.url.pathname,
     // No FAQPage node here on purpose: the homepage already owns that entity,
     // and the same FAQPage on two indexable URLs is what made story.html and

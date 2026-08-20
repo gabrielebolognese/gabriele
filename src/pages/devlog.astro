@@ -8,6 +8,7 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import DevlogTimeline from '../components/DevlogTimeline.astro';
 import { PERSON, DEVLOG, absoluteUrl } from '../data/identity';
+import { PORTRAIT, schemaImageUrl } from '../data/images';
 import { devlogSchema } from '../data/schema';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 
@@ -25,7 +26,7 @@ const days = first && latest
 
 const schema = devlogSchema({
   path: Astro.url.pathname,
-  portraitUrl: absoluteUrl(portrait.src, Astro.site),
+  portraitUrl: await schemaImageUrl(portrait, PORTRAIT, Astro.site),
   entries: sorted.map((entry) => ({
     text: entry.data.text,
     date: entry.data.date,

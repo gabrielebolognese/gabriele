@@ -36,10 +36,11 @@ const BUDGETS = {
   homepageDomElements: 7500,   // measured 7,270. Phase 2 should bring this far down.
   homepageHtmlBrotliKb: 60,    // measured 50.7
   aboutDomElements: 5400,      // measured 5,159
-  totalImagesMb: 10,           // measured 9.72: 5.99 MB webp + 3.73 MB of
-                               // originals that JSON-LD and og:image point at.
-                               // See PERFORMANCE-PLAN.md 4.3; lower this once
-                               // the schema stops citing the raw PNGs.
+  totalImagesMb: 9,            // measured 8.55: 5.99 MB webp + 2.56 MB of
+                               // originals, ALL of them og:image cards. Open
+                               // Graph consumers do not reliably render webp,
+                               // so those nine are correct. Phase 4.2 is what
+                               // brings this down next.
   renderBlockingRequests: 3,   // measured 3, one of them third-party. Phase 3 -> 1.
 };
 

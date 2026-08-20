@@ -77,7 +77,7 @@ it says so.
 | 3.3 | LCP image is not preloaded | Medium | Low |
 | 4.1 | 920 KB of images, carousels may defeat lazy-loading | Medium | Medium |
 | 4.2 | One emitted image is 832 KB | Medium | Low |
-| 4.3 | JSON-LD cites 1.19 MB originals when WebP exists | Medium | Low |
+| 4.3 | ~~JSON-LD cites 1.19 MB originals when WebP exists~~ | **Done** | |
 | 5.1 | No Content-Security-Policy | Medium | Medium |
 | 5.2 | No `X-Frame-Options` / `frame-ancestors` | Low | Low |
 | 6.1 | No skip link | Medium | Low |
@@ -414,7 +414,7 @@ worth one audit pass.
 
 ---
 
-### 4.3 JSON-LD cites the raw originals, not the processed images (Medium)
+### 4.3 JSON-LD cites the raw originals, not the processed images (DONE, 20 Aug 2026)
 
 **Evidence.** Found by the budget guard from 7.1 on its first run, which is the entire argument for
 having one. `dist/_astro` holds **3.73 MB of PNG and JPEG originals** alongside the 5.99 MB of
@@ -445,6 +445,16 @@ as it stands and would be easy to sweep up by accident.
 
 **Verify.** No `.png` or `.jpg` under `/_astro` except the OG card. The images budget drops from
 9.72 MB to roughly 6.2 MB, and the budget in `check-budgets.mjs` comes down with it.
+
+**Outcome.** Fixed in `schemaImageUrl()` in `images.ts`, used by all six schema call sites. The
+portrait in structured data went from **1,192 KB to 13 KB**, and the emitted total from 9.72 MB to
+**8.55 MB**. Verified the new URL is one that genuinely appears in the page's `srcset`, so it is
+not an orphan variant generated for the schema alone, and that `og:image` still points at the PNG
+card.
+
+The nine originals still emitted are now **all** `og:image` targets, which is correct and should
+stay: Open Graph consumers do not reliably render WebP. Their combined 2.56 MB is what 4.2 should
+look at next, since several are full-size screenshots doing duty as social cards.
 
 ---
 

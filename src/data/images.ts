@@ -18,6 +18,8 @@
    ========================================================================= */
 
 import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import { absoluteUrl } from './identity';
 
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 import animatorTimeline from '../assets/flashfx-animator-timeline-canvas.png';
@@ -45,9 +47,9 @@ export interface IndexedImage {
 
 /** Widest rendered width per context, kept as names so a change to a page's
  *  `widths` array has one obvious place to land here. */
-const CAROUSEL = 1440; // index.astro project carousels
+export const CAROUSEL = 1440; // index.astro project carousels
 const FIGURE = 960; // about.astro bio figures
-const PORTRAIT = 640; // LifeSection portrait
+export const PORTRAIT = 640; // LifeSection portrait
 const AWARD = 560; // index.astro award banner logo
 // No card width of any kind: both the archive and the homepage newsletter
 // section render IssueCard, which carries no image (see IssueCard.astro).
@@ -82,3 +84,28 @@ export const PAGE_IMAGES: Record<string, IndexedImage[]> = {
     { src: boltPrototype, width: FIGURE },
   ],
 };
+
+
+/* ── Schema image URLs ───────────────────────────────────────────────────────
+   JSON-LD used to cite `image.src` straight off the import, which for a PNG
+   source is the ORIGINAL: the portrait went into structured data at 1,192 KB
+   while a ~100 KB WebP of the same picture sat beside it in _astro. Nobody
+   loads those URLs in a browser, so no Core Web Vital ever noticed, but
+   imageObject() stamps `license` and `acquireLicensePage` on exactly these
+   nodes for the licensable-image feature, which makes them the URLs Google
+   Images fetches. It also forced Astro to emit 3.7 MB of originals that no
+   page renders.
+
+   Same treatment the image sitemap already gives its <image:loc> entries, and
+   for the same reason: pass the width the page really renders, so the URL is
+   one that is genuinely in that page's srcset rather than an orphan variant
+   generated for the schema alone.
+   ------------------------------------------------------------------------- */
+export async function schemaImageUrl(
+  src: ImageMetadata,
+  width: number,
+  site?: URL,
+): Promise<string> {
+  const processed = await getImage({ src, width, format: 'webp' });
+  return absoluteUrl(processed.src, site);
+}

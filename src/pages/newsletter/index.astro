@@ -10,6 +10,7 @@ import IssueCard from '../../components/newsletter/IssueCard.astro';
 import SubscribeForm from '../../components/SubscribeForm.astro';
 import { newsletterIndexSchema } from '../../data/schema';
 import { PERSON, NEWSLETTER, absoluteUrl } from '../../data/identity';
+import { PORTRAIT, schemaImageUrl } from '../../data/images';
 import portrait from '../../assets/gabriele-bolognese-portrait.png';
 
 const issues = await getCollection('newsletter', ({ data }) => !data.draft);
@@ -19,7 +20,7 @@ const sorted = issues.sort((a, b) => b.data.issue - a.data.issue);
 
 const schema = newsletterIndexSchema({
     path: Astro.url.pathname,
-    portraitUrl: absoluteUrl(portrait.src, Astro.site),
+    portraitUrl: await schemaImageUrl(portrait, PORTRAIT, Astro.site),
     posts: sorted.map(issue => ({
         title: issue.data.title,
         description: issue.data.description,

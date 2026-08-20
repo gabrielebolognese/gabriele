@@ -14,6 +14,7 @@ import Nav from '../components/Nav.astro';
 import SubscribeForm from '../components/SubscribeForm.astro';
 import { issueSchema } from '../data/schema';
 import { NEWSLETTER, absoluteUrl } from '../data/identity';
+import { PORTRAIT, COVER, schemaImageUrl } from '../data/images';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 
 interface Props {
@@ -48,12 +49,12 @@ const schema = issueSchema({
   title,
   description,
   path: Astro.url.pathname,
-  imageUrl: absoluteUrl(image.src, Astro.site),
+  imageUrl: await schemaImageUrl(image, COVER, Astro.site),
   published: date,
   modified: updated,
   wordCount,
   issue,
-  portraitUrl: absoluteUrl(portrait.src, Astro.site),
+  portraitUrl: await schemaImageUrl(portrait, PORTRAIT, Astro.site),
 });
 ---
 <Layout
