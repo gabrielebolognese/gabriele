@@ -63,7 +63,7 @@ it says so.
 | Scripts | 2 (`motion.js` deferred, one Astro chunk) |
 | TTFB (cached edge hit) | 0.21 s |
 | TTFB (cold) | 0.42 to 0.55 s |
-| Total `.webp` emitted by the build | 5.99 MB across 125 files |
+| Total images emitted by the build | 9.72 MB across 135 files (5.99 MB webp + 3.73 MB originals) |
 
 ### Severity summary
 
@@ -77,6 +77,7 @@ it says so.
 | 3.3 | LCP image is not preloaded | Medium | Low |
 | 4.1 | 920 KB of images, carousels may defeat lazy-loading | Medium | Medium |
 | 4.2 | One emitted image is 832 KB | Medium | Low |
+| 4.3 | JSON-LD cites 1.19 MB originals when WebP exists | Medium | Low |
 | 5.1 | No Content-Security-Policy | Medium | Medium |
 | 5.2 | No `X-Frame-Options` / `frame-ancestors` | Low | Low |
 | 6.1 | No skip link | Medium | Low |
@@ -233,8 +234,20 @@ remaining problem is the node count itself, which none of them address.
   and it costs the homepage a feature.
 - **C. CSS `content-visibility: auto` with `contain-intrinsic-size` on the grid rows.** Keeps the
   nodes but lets the browser skip layout and paint for off-screen rows. The landing-page devlog
-  records the trap: `content-visibility` alone collapses the element to zero height and the
-  scrollbar jumps, so the intrinsic size is mandatory, not optional. Cheap, partial, safe.
+  records one trap already: `content-visibility` alone collapses the element to zero height and the
+  scrollbar jumps, so the intrinsic size is mandatory, not optional.
+
+  **Attempted 20 August 2026 and withdrawn before shipping, for a second trap.**
+  `content-visibility: auto` implies `contain: layout style paint`, and **paint containment clips
+  to the padding box**. The year markers are `.life-year` elements positioned at `left: 100%` with
+  an 11px margin, deliberately sitting in the 40px gutter `.life-grid` reserves for them, which is
+  **outside** each row's box. Containing the rows would clip all thirty of them and the grid would
+  silently lose its scale.
+
+  Salvageable, but not as a one-line CSS change: the markers would have to move out of the rows
+  into a sibling column, which is the arrangement `Style.css` explicitly rejected because a 53rd
+  column has to be sized against 52 squares at every breakpoint and the squares stop being square
+  the moment it is wrong. Treat C as blocked and go to A.
 - **D. Trim what is above the fold.** The statistics block is now 25% of the page and sits high.
   Two 371-cell contribution grids plus a 27-pill stack plus a donut is a lot of nodes for one
   section.
@@ -398,6 +411,40 @@ photographs do not.
 
 **Check the whole set** while there: 5.99 MB of emitted images for a site with this many pages is
 worth one audit pass.
+
+---
+
+### 4.3 JSON-LD cites the raw originals, not the processed images (Medium)
+
+**Evidence.** Found by the budget guard from 7.1 on its first run, which is the entire argument for
+having one. `dist/_astro` holds **3.73 MB of PNG and JPEG originals** alongside the 5.99 MB of
+WebP. All ten are referenced, so none is dead weight that can simply be deleted. Tracing them:
+
+| Reference | File | Verdict |
+| :--- | :--- | :--- |
+| `og:image`, `twitter:image` | `gabriele-bolognese-og-card.png`, 202 KB | **Correct.** Open Graph consumers do not reliably render WebP. Leave it. |
+| JSON-LD `ImageObject.url` and `contentUrl` | `gabriele-bolognese-portrait.png`, **1,192 KB** | **Wrong.** |
+| JSON-LD, `/about/` and issue pages | 8 more originals, up to 539 KB each | **Wrong.** |
+
+**Why it matters.** These URLs are never fetched by a visitor, so this is not page weight and no
+Core Web Vital moves. It is a Search problem: the structured data hands Google a **1.19 MB PNG** of
+the portrait when a ~100 KB WebP of the same picture sits next to it in the same directory.
+`imageObject()` in `schema.ts` also stamps `license` and `acquireLicensePage` on these nodes for
+the licensable-image feature, so these are exactly the URLs Google Images will fetch and rank.
+
+**Fix.** Resolve the schema's image URLs through `getImage()`, the same way
+`image-sitemap.xml.ts` already does for its `<image:loc>` entries, so JSON-LD and the image sitemap
+cite the identical processed file. The pattern is already in the codebase; this is making the
+schema use it.
+
+**Do not simply delete the originals.** Astro emits them *because* something references them.
+Change the reference and the emit follows.
+
+**Risk.** Low, but verify `og:image` keeps pointing at the PNG card afterwards. That one is correct
+as it stands and would be easy to sweep up by accident.
+
+**Verify.** No `.png` or `.jpg` under `/_astro` except the OG card. The images budget drops from
+9.72 MB to roughly 6.2 MB, and the budget in `check-budgets.mjs` comes down with it.
 
 ---
 

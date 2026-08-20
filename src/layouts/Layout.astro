@@ -80,6 +80,14 @@ const {
   <script is:inline defer src={motionHref}></script>
 </head>
 <body class={bodyClass}>
+  {/* First focusable element on every page. This site has a sticky nav and,
+      on the homepage, 7,000+ DOM elements with a 4,680-cell grid in the
+      middle of them, so a keyboard or screen-reader user currently tabs
+      through the whole navigation on every page before reaching anything.
+      Every page renders <main id="main">, so the target already existed;
+      only the link was missing. */}
+  <a class="skip-to-content" href="#main">Skip to content</a>
+
   <a href="#main" class="skip-link">Skip to content</a>
   <slot />
 </body>
