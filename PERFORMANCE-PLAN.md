@@ -72,8 +72,8 @@ it says so.
 | 1.1 | Every internal route 301-redirects | High | Low |
 | 1.2 | `Style.css` and `motion.js` are served uncacheable | High | Low |
 | 2.1 | 7,270 DOM elements (Lighthouse errors above 1,400) | High | Medium |
-| 3.1 | Google Fonts is a render-blocking third-party request | High | Medium |
-| 3.2 | Four font families, 58 `@font-face` blocks | Medium | Low |
+| 3.1 | ~~Google Fonts is a render-blocking third-party request~~ | **Done** | |
+| 3.2 | ~~Four font families, 58 `@font-face` blocks~~ | **Done** | |
 | 3.3 | LCP image is not preloaded | Medium | Low |
 | 4.1 | 920 KB of images, carousels may defeat lazy-loading | Medium | Medium |
 | 4.2 | One emitted image is 832 KB | Medium | Low |
@@ -261,7 +261,7 @@ stopped erroring.
 
 ## Phase 3: The critical path
 
-### 3.1 Google Fonts is a render-blocking third-party request (High)
+### 3.1 Google Fonts is a render-blocking third-party request (DONE, 20 Aug 2026)
 
 **Evidence.** The head contains, in this order:
 
@@ -297,9 +297,28 @@ and a `€` sign.
 face. `SEO.astro` is the only file that references the fonts, per `CLAUDE.md`, so there is one
 place to change.
 
+**Outcome.** Ten `.woff2` in `public/fonts/`, 433 KB total, declared in section 01 of `Style.css`.
+Verified no built file references a `fonts.g*` origin in any rule.
+
+| | Before | After |
+| :--- | :--- | :--- |
+| Origins on the critical path | 3 | **1** |
+| Render-blocking stylesheets | 3, one cross-origin | **2, both local** |
+| Third-party font CSS | 23 KB | **0** |
+| Bytes preloaded | 0 | 75 KB, the two faces the hero uses |
+
+**Ten files, not thirty**, because all four families are variable: one file per family per subset
+covers the whole weight range, Cormorant's italic included. Google's own CSS declares each weight
+separately while serving the identical file; those were collapsed into `font-weight: 300 400` style
+ranges here.
+
+Only `latin` and `latin-ext` are shipped. `unicode-range` is what makes that safe rather than
+reckless: latin-ext downloads only when a glyph actually needs it, and Italian accents and the euro
+sign are inside latin. The other 358 KB is therefore not on anyone's critical path.
+
 ---
 
-### 3.2 Four families and 58 `@font-face` blocks (Medium)
+### 3.2 Four families and 58 `@font-face` blocks (DONE, 20 Aug 2026)
 
 **Evidence.** The served CSS is 23,375 bytes with 58 `@font-face` blocks:
 
@@ -325,6 +344,35 @@ Grep every `font-weight` against the requested variants and delete the rest. Do 
 
 **Also reconsider Cormorant Garamond.** It is a serif used for the newsletter standfirst and the
 life-chart note. If that is its whole job, it is one family's download for two elements.
+
+**Outcome.** The audit was worth doing on its own: parsing every rule that sets a family and the
+weight in the same block gave the real usage, and it found two faces being **synthesised** rather
+than loaded.
+
+| Family | Weights actually used | Shipped |
+| :--- | :--- | :--- |
+| Lexend | 200, 300, 400, 500 | 200-500 |
+| DM Sans | 300, 400, **500** | 300-500 |
+| Unbounded | 200, 300, 400, 500 | 200-500 |
+| Cormorant Garamond | 300, 400 + italic 300, 400 | 300-400, both styles |
+
+**Fixed: `.stack-pill` asked for `font-weight: 600`.** It sets no family, so it inherits DM Sans,
+whose range stops at 500. The browser was synthesising a faux bold on 10px uppercase text. Now 500,
+which is inside the range and was already being downloaded.
+
+**Not fixed, because it is a design call: Lexend has no italic.** Not in this subset, not on Google
+Fonts, not anywhere; Lexend ships a weight axis and nothing else. `.chapter-pull` (the story pull
+quotes) and `.issue-body blockquote` both set `--font-display` with `font-style: italic`, so both
+have always rendered a browser-synthesised oblique of a geometric sans. Self-hosting neither caused
+nor cured it.
+
+Two honest options, and picking between them is a taste question, not a technical one:
+
+- **Point both at `--font-serif`.** Cormorant Garamond italic is the site's real italic, it is
+  already loaded at 300 and 400, and it is what `.pull-quote` and `.issue-standfirst` already use.
+  This makes the pull quotes match the standfirsts.
+- **Drop the italic** and let the pull quotes be upright Lexend, distinguished by the rule and the
+  size they already have.
 
 ---
 

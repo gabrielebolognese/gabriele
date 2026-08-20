@@ -99,15 +99,21 @@ const robots = noindex
 
 <link rel="alternate" type="application/rss+xml" title={`${SITE.name}, Articles`} href={absoluteUrl('/rss.xml', Astro.site)} />
 
-{/* Fonts: preconnect + direct stylesheet link. The @import that used to live
-    inside Style.css could not even be discovered until 36 KB of CSS had
-    parsed, serialising three round trips before any text could render. */}
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Lexend:wght@200;300;400;500&family=Unbounded:wght@200;300;400;500&display=swap"
-/>
+{/* Fonts are self-hosted, so there is no third-party stylesheet to preconnect
+    to any more; the @font-face declarations are section 01 of Style.css.
+
+    These two are preloaded because they are the only faces the first screen
+    needs: Lexend for the hero headline and DM Sans for everything under it.
+    Preloading is what stops font discovery waiting on Style.css to download
+    and parse. The latin-ext subsets and the other two families are NOT
+    preloaded on purpose, since preloading a file the page may never use costs
+    exactly as much as one it does.
+
+    crossorigin is mandatory even though these are same-origin: fonts are
+    fetched in CORS mode, and a preload without it is a second, separate
+    request rather than a warm cache entry. */}
+<link rel="preload" href="/fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
 
 {schema && (
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />

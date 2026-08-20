@@ -41,7 +41,7 @@ pending confirmation from the site owner.
 first person), while `PERSON.longDescription` is third person because it describes the Person entity to
 a machine in JSON-LD.
 
-**One head, one canonical.** `src/components/SEO.astro` owns every meta tag, the font `<link>`, and the
+**One head, one canonical.** `src/components/SEO.astro` owns every meta tag, the font preloads, and the
 JSON-LD script. Canonical and `og:url` are derived from `Astro.url.pathname` via `absoluteUrl()`, never
 written by hand, a hardcoded canonical in `Layout.astro` previously made every article declare itself
 a duplicate of the homepage. `astro.config.mjs` must keep `site` set, or `Astro.site` is undefined and
@@ -147,6 +147,31 @@ rather than at its own issue, while the titles still link to the issues. `Card.a
 with that change, and so was the homepage cover declaration in `image-sitemap.xml.ts`: no page
 renders an issue cover except the issue itself, and declaring one anywhere else would point the
 sitemap at a URL that appears on no page.
+
+**Fonts are self-hosted, and all four are variable.** `public/fonts/` holds ten `.woff2` files and
+section 01 of `Style.css` declares them. They came from fonts.googleapis.com until 20 August 2026,
+which put a render-blocking stylesheet on a third-party origin in the critical path: two extra DNS
+lookups and TLS handshakes plus 23 KB of CSS before any text could reach its final face, on a site
+with no other third-party request.
+
+Three things there are easy to break. **Ten files, not thirty**, because one variable file per family
+per subset spans the whole weight range; Google's CSS declares each weight separately while serving
+the identical file, and those were collapsed into ranges. **Only latin and latin-ext** are shipped,
+which `unicode-range` makes safe: latin-ext downloads solely when a glyph needs it, and Italian
+accents and the euro sign are inside latin. And **a weight outside a declared range is synthesised,
+not loaded**: `.stack-pill` asked DM Sans for 600 against a 300-500 range and got a faux bold at
+10px uppercase.
+
+Only two faces are preloaded, in `SEO.astro`: Lexend and DM Sans latin, the two the first screen
+needs. `crossorigin` on those preloads is mandatory even though they are same-origin, because fonts
+are fetched in CORS mode and a preload without it is a second request rather than a warm cache
+entry.
+
+**Lexend has no italic**, on Google Fonts or anywhere. `.chapter-pull` and `.issue-body blockquote`
+set `--font-display` with `font-style: italic`, so both have always rendered a browser-synthesised
+oblique and still do. Self-hosting did not change that either way. The real fix is a design call:
+point those two at `--font-serif`, which is the site's actual italic and is loaded, or drop the
+italic. See PERFORMANCE-PLAN.md 3.2.
 
 **No em dashes.** Every one on the site, and in this repo, was replaced with a colon, semicolon,
 comma or bracket pair. If you write one, you are reintroducing something that was deliberately swept.

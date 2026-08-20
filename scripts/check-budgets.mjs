@@ -41,7 +41,9 @@ const BUDGETS = {
                                // Graph consumers do not reliably render webp,
                                // so those nine are correct. Phase 4.2 is what
                                // brings this down next.
-  renderBlockingRequests: 3,   // measured 3, one of them third-party. Phase 3 -> 1.
+  renderBlockingRequests: 2,   // was 3 with a third-party Google Fonts sheet.
+                               // Now 2, both same-origin: Style.css and one
+                               // scoped component sheet.
 };
 
 const results = [];

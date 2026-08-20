@@ -33,6 +33,14 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Font files never change in place. If one is ever re-subset or replaced with a
+# different cut, give it a new filename rather than editing this: the URL is the
+# only cache key here, since these are not content-hashed the way /_astro is.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 [[headers]]
   for = "/*"
   [headers.values]
