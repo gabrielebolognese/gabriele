@@ -23,7 +23,7 @@ const schema = newsletterIndexSchema({
     posts: sorted.map(issue => ({
         title: issue.data.title,
         description: issue.data.description,
-        path: `/newsletter/${issue.id}`,
+        path: `/newsletter/${issue.id}/`,
         published: issue.data.date,
         issue: issue.data.issue,
     })),
@@ -78,9 +78,9 @@ const schema = newsletterIndexSchema({
     <div class="footer-inner">
         <span>© 2026 Gabriele Bolognese</span>
         <span class="dot">·</span>
-        <a href="/license">Image licence</a>
+        <a href="/license/">Image licence</a>
         <span class="dot">·</span>
-        <a href="/about">About</a>
+        <a href="/about/">About</a>
         <span class="dot">·</span>
         <a href="/rss.xml">RSS</a>
         <span class="dot">·</span>

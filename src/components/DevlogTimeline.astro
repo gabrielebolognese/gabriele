@@ -86,7 +86,7 @@ const anchor = (date: Date) =>
           })}
         </time>
         {/* Anchors an entry without turning it into its own page. */}
-        <a class="devlog-permalink" href={`/devlog#${anchor(entry.data.date)}`}
+        <a class="devlog-permalink" href={`/devlog/#${anchor(entry.data.date)}`}
            aria-label={`Link to the entry for ${entry.data.date.toLocaleDateString('en-GB')}`}>#</a>
       </div>
 

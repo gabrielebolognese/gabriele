@@ -13,9 +13,14 @@ export default defineConfig({
   // refuses to run.
   site: 'https://gabrielebolognese.blog',
 
-  // Netlify's default "Pretty URLs" strips the trailing slash, so canonicals,
-  // the sitemap, and the served URL all have to agree on the slash-less form.
-  trailingSlash: 'never',
+  // 'always', because that is what the host actually serves. This said 'never'
+  // on the belief that Netlify strips the trailing slash; measured against
+  // production it does the opposite, 301ing /about to /about/. The result was
+  // that every canonical on the site pointed at a URL that redirected, and
+  // every internal click paid a round trip before a byte of the destination
+  // arrived. build.format is 'directory', so /about/ is the file that exists;
+  // the slash-less form was never the real URL.
+  trailingSlash: 'always',
 
   integrations: [
     mdx(),

@@ -1,10 +1,10 @@
 # story.html became a real Astro page at /about. 301 preserves any equity the
 # old URL had picked up while it was sitting in the sitemap.
-/story.html    /about    301!
-/story         /about    301!
+/story.html    /about/   301!
+/story         /about/   301!
 
 # /articles was folded into the newsletter. The splat rule has to come after
 # the bare one, and both are needed: /articles itself is not matched by
 # /articles/*.
-/articles           /newsletter           301!
-/articles/*         /newsletter/:splat    301!
+/articles           /newsletter/          301!
+/articles/*         /newsletter/:splat/   301!

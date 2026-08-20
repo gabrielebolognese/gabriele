@@ -322,8 +322,11 @@ export const IMAGE_LICENSE = {
 export function absoluteUrl(path: string, site?: URL): string {
   const base = site ?? new URL(SITE.url);
   const url = new URL(path, base);
-  if (url.pathname !== '/' && url.pathname.endsWith('/')) {
-    url.pathname = url.pathname.slice(0, -1);
+  /* Keep the trailing slash: build.format is 'directory' and the host 301s the
+     slash-less form onto it, so stripping it here pointed every canonical at a
+     redirect. Extensions and the root are left alone. */
+  if (!url.pathname.endsWith('/') && !url.pathname.split('/').pop().includes('.')) {
+    url.pathname += '/';
   }
   return url.href;
 }

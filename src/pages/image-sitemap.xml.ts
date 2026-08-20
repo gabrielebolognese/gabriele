@@ -64,7 +64,7 @@ export const GET: APIRoute = async ({ site }) => {
   const issues = await getCollection('newsletter', ({ data }) => !data.draft && !data.noindex);
 
   for (const issue of issues) {
-    add(`/newsletter/${issue.id}`, await built(issue.data.image, COVER));
+    add(`/newsletter/${issue.id}/`, await built(issue.data.image, COVER));
   }
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

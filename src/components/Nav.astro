@@ -29,12 +29,12 @@ const to = (hash: string) => (isHome ? hash : `/${hash}`);
     {!isHome && (
       <li><a href="/">Home</a></li>
     )}
-    <li><a href="/about">About</a></li>
+    <li><a href="/about/">About</a></li>
     <li><a href={to('#projects')}>Projects</a></li>
     <li><a href={to('#story')}>Story</a></li>
     <li><a href={to('#timeline')}>Timeline</a></li>
-    <li><a href="/devlog">Devlog</a></li>
-    <li><a href="/newsletter">Newsletter</a></li>
+    <li><a href="/devlog/">Devlog</a></li>
+    <li><a href="/newsletter/">Newsletter</a></li>
     <li><a href={to('#contact')}>Contact</a></li>
   </ul>
 </nav>

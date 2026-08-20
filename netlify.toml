@@ -12,24 +12,26 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# These two are served verbatim from public/ with STABLE names — no content hash
-# — so a cached copy can never be invalidated by the URL changing. max-age=3600
-# meant a style change was invisible for up to an hour after deploy, with the
-# browser serving the old file without even asking. That is an hour of looking
-# at a deploy and reporting bugs that were already fixed.
+# These two are served verbatim from public/ with stable filenames, but the URL
+# in the HTML is NOT stable: Layout.astro appends a sha256 of the file itself
+# (assetVersion()), so /Style.css?v=96a8df1c becomes a different URL the moment
+# a byte changes. A cached copy therefore cannot go stale, because a changed
+# file is never the same URL.
 #
-# max-age=0 + must-revalidate makes the browser check every time. When nothing
-# changed the answer is a 304 with no body, which costs a round trip and no
-# bytes. Cheap insurance against debugging a stale stylesheet.
+# This used to be max-age=0 + must-revalidate, guarding against a stale
+# stylesheet after deploy. That guard predates the content hash and now costs a
+# revalidation round trip on the largest render-blocking asset on the site,
+# every visit, to prevent something that can no longer happen. Do not put it
+# back without first removing the hash from Layout.astro.
 [[headers]]
   for = "/Style.css"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "/motion.js"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "/*"
@@ -38,3 +40,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    # Nothing on this site is meant to be embedded, and clickjacking a page
+    # whose whole purpose is being believed is a cheap attack. frame-ancestors
+    # in a CSP supersedes this, so when that lands this line can go.
+    X-Frame-Options = "DENY"
