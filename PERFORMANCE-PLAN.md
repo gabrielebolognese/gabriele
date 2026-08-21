@@ -566,39 +566,11 @@ first thing anyone reaches for when something breaks and would quietly void the 
 > `Content-Security-Policy` and delete the `X-Frame-Options` line above it, which
 > `frame-ancestors 'none'` then supersedes.
 
-**Outcome.** `scripts/generate-csp.mjs`, run as `postbuild`, writes the policy into `dist/_headers`
-with a sha256 for every inline `<script>` in the output. Currently **report-only**: it blocks
-nothing and reports to the browser console.
-
-**Generated, not written, on purpose.** The policy carries 15 hashes, and 14 of them are JSON-LD
-blocks that change whenever any content on the page changes. A hash pasted into `netlify.toml`
-would be correct for exactly one deploy and silently wrong afterwards, and silently wrong for a CSP
-means silently broken. Verified all **29 inline scripts across 15 pages** are covered.
-
-Three decisions inside it worth keeping:
-
-- **JSON-LD is hashed even though it should not need to be.** A `type="application/ld+json"` block
-  is never executed, so `script-src` should not gate it, and browsers do not. Hashing it costs ~60
-  bytes per page and removes the one failure that would be both bad and completely silent: a
-  browser that does enforce drops every structured-data block on a site whose whole purpose is
-  being resolved as one entity.
-- **`style-src` is `'unsafe-inline'` with no hash.** 242 inline `style=""` attributes ship, and
-  they are load-bearing (`--brand` per social card, `--pill` per stack pill, `--r` per life-grid
-  row). Hashes cover style *elements*, never style *attributes*. Worse, adding any style hash makes
-  browsers **ignore** `'unsafe-inline'`, which would break all 242 at once. Injected CSS is a much
-  smaller problem than injected script, and `script-src` stays strict.
-- **`form-action` already allows buttondown.email.** `SubscribeForm` renders disabled until
-  `NEWSLETTER.buttondownUser` is set, and the day it is set the form posts cross-origin. Without
-  this line it would fail on that deploy, with the cause in a header nobody was looking at.
-
-**One thing had to change to make it possible.** `onsubmit="return false"` on the disabled
-placeholder form was the only inline event handler on the site, and a single one forces
-`script-src-attr 'unsafe-inline'`, which gives away most of the value. It was also unreachable:
-every control in that form is `disabled`, so nothing can be focused or pressed. Removed.
-
-**To enforce it:** flip `REPORT_ONLY` to `false` in `scripts/generate-csp.mjs`. Before doing that,
-load the deployed site with the console open and confirm there are no `Report Only` violations, on
-the homepage, `/about/` and one newsletter issue.
+**One thing had to change to make a strict `script-src` worth having.** `onsubmit="return false"`
+on the disabled placeholder form was the only inline event handler on the site, and a single one
+forces `script-src-attr 'unsafe-inline'`, which gives away most of the value. It was also
+unreachable: every control in that form is `disabled`, so nothing can be focused or pressed.
+Removed rather than whitelisted.
 
 ---
 

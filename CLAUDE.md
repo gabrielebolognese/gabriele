@@ -173,18 +173,25 @@ oblique and still do. Self-hosting did not change that either way. The real fix 
 point those two at `--font-serif`, which is the site's actual italic and is loaded, or drop the
 italic. See PERFORMANCE-PLAN.md 3.2.
 
-**The CSP is generated at build time, not written by hand.** `scripts/generate-csp.mjs` runs as
-`postbuild` and writes `dist/_headers`, because the policy carries a sha256 for every inline
-`<script>` and fourteen of those are JSON-LD blocks that change with any content edit. A hash in
-`netlify.toml` would be right for one deploy and silently wrong after. Everything else stays in
-`netlify.toml`; Netlify merges the two.
+**The CSP lives in `netlify.toml` and `scripts/check-csp.mjs` keeps it true.** The policy hashes the
+one executable inline script on the site, `classList.add('js')`, which never changes, so a static
+hash is stable. What is not stable is somebody editing that script by a character: the hash stops
+matching, the browser refuses to run it, and **nothing fails**. The header is still valid, the page
+still renders, and the only symptom is that the reveal rules never engage so everything just stays
+visible. It looks fine. The guard runs on every build and fails it instead.
 
-It is **report-only** until someone loads the deploy with the console open; flip `REPORT_ONLY` in
-that script to enforce. Two rules there are easy to undo: `style-src` is `'unsafe-inline'` with **no
-hash**, because 242 load-bearing inline `style=""` attributes ship (`--brand`, `--pill`, `--r`) and
-adding any style hash makes browsers ignore `'unsafe-inline'` and break all of them; and no inline
-event handler may be added anywhere, because one forces `script-src-attr 'unsafe-inline'` and gives
-away most of what the policy is for.
+JSON-LD blocks are deliberately **not** hashed: `type="application/ld+json"` is never executed, so
+`script-src` does not gate it. Hashing them would mean a new hash on every content edit for no gain.
+
+It is **report-only**. To enforce: rename the key to `Content-Security-Policy` and delete the
+`X-Frame-Options` line, which `frame-ancestors 'none'` supersedes, after loading the deploy once
+with the console open.
+
+Two rules there are easy to undo. `style-src` is `'unsafe-inline'` with **no hash**, because 242
+load-bearing inline `style=""` attributes ship (`--brand`, `--pill`, `--r`) and adding any style
+hash makes browsers ignore `'unsafe-inline'` and break all of them. And **no inline event handler
+may be added anywhere**: one forces `script-src-attr 'unsafe-inline'` and gives away most of what
+the policy is for, which is why `SubscribeForm`'s `onsubmit` was removed rather than allowed.
 
 **No em dashes.** Every one on the site, and in this repo, was replaced with a colon, semicolon,
 comma or bracket pair. If you write one, you are reintroducing something that was deliberately swept.
