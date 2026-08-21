@@ -78,8 +78,8 @@ it says so.
 | 4.1 | 920 KB of images, carousels may defeat lazy-loading | Medium | Medium |
 | 4.2 | One emitted image is 832 KB | Medium | Low |
 | 4.3 | ~~JSON-LD cites 1.19 MB originals when WebP exists~~ | **Done** | |
-| 5.1 | No Content-Security-Policy | Medium | Medium |
-| 5.2 | No `X-Frame-Options` / `frame-ancestors` | Low | Low |
+| 5.1 | ~~No Content-Security-Policy~~ | **Report-only, shipped** | |
+| 5.2 | ~~No `X-Frame-Options` / `frame-ancestors`~~ | **Done** | |
 | 6.1 | No skip link | Medium | Low |
 | 6.2 | Unverifiable a11y items needing a real audit | Unknown | Medium |
 | 7.1 | No performance budget, unlike the landing page | Low | Medium |
@@ -508,7 +508,7 @@ look at next, since several are full-size screenshots doing duty as social cards
 
 ## Phase 5: Headers and best practices
 
-### 5.1 No Content-Security-Policy (Medium)
+### 5.1 No Content-Security-Policy (REPORT-ONLY SHIPPED, 21 Aug 2026)
 
 **Evidence.** The measured response carries `Strict-Transport-Security`, `X-Content-Type-Options`,
 `Referrer-Policy` and `Permissions-Policy`. There is **no `Content-Security-Policy`**.
@@ -529,9 +529,80 @@ policy, so writing it first means writing it twice.
 layer or the fonts. Deploy it as `Content-Security-Policy-Report-Only` first, watch for violations,
 then switch.
 
+**Outcome.** Shipped report-only, built from an inventory of all 15 built pages rather than from a
+template. What the inventory found:
+
+- **Exactly one executable inline script exists**, 45 characters, identical on every page. It is
+  hashed, so `script-src` needs no `'unsafe-inline'` and the directive that actually matters is
+  fully locked. Nonces are not available on a static host, which cannot vary a header per request.
+- **`style-src 'unsafe-inline'` is unavoidable and deliberate.** Astro inlines 7 scoped `<style>`
+  blocks and the design passes per-item data through **151 inline custom properties on the homepage
+  alone** (`--brand`, `--pill`, `--r`, `--mid`). Hashing those would break on every stylesheet edit.
+  Style injection is a far weaker vector than script injection, which stays locked.
+- **`form-action` lists `buttondown.email` before anything uses it.** The subscribe form renders
+  with no action until `NEWSLETTER.buttondownUser` is set, and the day it is set the form posts
+  cross-origin. Omitting it would break the newsletter signup silently, weeks later, for a reason
+  nobody would connect to this file.
+- Everything else is same-origin. No iframes, no `<object>`, no `data:` URIs, no `eval`, and
+  `motion.js` issues no network request of any kind. All verified against the build.
+
+**`scripts/check-csp.mjs` keeps it honest.** A hashed CSP is correct only until somebody edits that
+script by one character; then the browser refuses to run it and **nothing fails**, because the
+header is still valid and the page still renders. On this site the failure is quiet in the worst
+way: a blocked `classList.add('js')` means the reveal rules never engage and everything stays
+visible, which looks fine. The guard hashes every inline script in the real output on every build,
+fails if one is not in the policy, and also fails on a policy hash that matches nothing. Verified by
+deliberately drifting the script and confirming the build exits 1 with the correct replacement hash
+printed.
+
+It also refuses to let an **enforcing** policy carry `'unsafe-inline'` in `script-src`, which is the
+first thing anyone reaches for when something breaks and would quietly void the whole exercise.
+
+> ### This protects nothing until you flip it
+>
+> A report-only policy reports violations to the browser console and blocks none of them. To
+> enforce it: load the site once with the console open, confirm there are no CSP violations, then
+> in `netlify.toml` rename the key `Content-Security-Policy-Report-Only` to
+> `Content-Security-Policy` and delete the `X-Frame-Options` line above it, which
+> `frame-ancestors 'none'` then supersedes.
+
+**Outcome.** `scripts/generate-csp.mjs`, run as `postbuild`, writes the policy into `dist/_headers`
+with a sha256 for every inline `<script>` in the output. Currently **report-only**: it blocks
+nothing and reports to the browser console.
+
+**Generated, not written, on purpose.** The policy carries 15 hashes, and 14 of them are JSON-LD
+blocks that change whenever any content on the page changes. A hash pasted into `netlify.toml`
+would be correct for exactly one deploy and silently wrong afterwards, and silently wrong for a CSP
+means silently broken. Verified all **29 inline scripts across 15 pages** are covered.
+
+Three decisions inside it worth keeping:
+
+- **JSON-LD is hashed even though it should not need to be.** A `type="application/ld+json"` block
+  is never executed, so `script-src` should not gate it, and browsers do not. Hashing it costs ~60
+  bytes per page and removes the one failure that would be both bad and completely silent: a
+  browser that does enforce drops every structured-data block on a site whose whole purpose is
+  being resolved as one entity.
+- **`style-src` is `'unsafe-inline'` with no hash.** 242 inline `style=""` attributes ship, and
+  they are load-bearing (`--brand` per social card, `--pill` per stack pill, `--r` per life-grid
+  row). Hashes cover style *elements*, never style *attributes*. Worse, adding any style hash makes
+  browsers **ignore** `'unsafe-inline'`, which would break all 242 at once. Injected CSS is a much
+  smaller problem than injected script, and `script-src` stays strict.
+- **`form-action` already allows buttondown.email.** `SubscribeForm` renders disabled until
+  `NEWSLETTER.buttondownUser` is set, and the day it is set the form posts cross-origin. Without
+  this line it would fail on that deploy, with the cause in a header nobody was looking at.
+
+**One thing had to change to make it possible.** `onsubmit="return false"` on the disabled
+placeholder form was the only inline event handler on the site, and a single one forces
+`script-src-attr 'unsafe-inline'`, which gives away most of the value. It was also unreachable:
+every control in that form is `disabled`, so nothing can be focused or pressed. Removed.
+
+**To enforce it:** flip `REPORT_ONLY` to `false` in `scripts/generate-csp.mjs`. Before doing that,
+load the deployed site with the console open and confirm there are no `Report Only` violations, on
+the homepage, `/about/` and one newsletter issue.
+
 ---
 
-### 5.2 No `X-Frame-Options` or `frame-ancestors` (Low)
+### 5.2 No `X-Frame-Options` or `frame-ancestors` (DONE, 20 Aug 2026)
 
 **Evidence.** Neither header is present, so nothing prevents the site being framed.
 

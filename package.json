@@ -11,8 +11,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "stats:refresh": "node scripts/refresh-github-stats.mjs && node scripts/refresh-leetcode-stats.mjs && node scripts/refresh-youtube-stats.mjs",
-    "postbuild": "node scripts/check-budgets.mjs",
-    "check:budgets": "node scripts/check-budgets.mjs"
+    "postbuild": "node scripts/check-budgets.mjs && node scripts/check-csp.mjs",
+    "check:budgets": "node scripts/check-budgets.mjs",
+    "check:csp": "node scripts/check-csp.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.3",

@@ -50,5 +50,43 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
     # Nothing on this site is meant to be embedded, and clickjacking a page
     # whose whole purpose is being believed is a cheap attack. frame-ancestors
-    # in a CSP supersedes this, so when that lands this line can go.
+    # in the CSP below supersedes this, but that policy is REPORT-ONLY and
+    # therefore enforces nothing, so this stays until it is switched over.
     X-Frame-Options = "DENY"
+
+    # ── Content-Security-Policy ──────────────────────────────────────────────
+    # REPORT-ONLY. It blocks nothing; it reports violations to the browser
+    # console. To enforce it, rename this one key to `Content-Security-Policy`
+    # and delete the X-Frame-Options line above. Do that after loading the site
+    # once with the console open and seeing no violations.
+    #
+    # Built from an inventory of all 15 built pages rather than from a
+    # template. What that inventory found:
+    #
+    #   script-src  ONE executable inline script exists, 45 characters,
+    #               identical on every page, so it is hashed rather than
+    #               waved through with 'unsafe-inline'. That is the whole
+    #               point of the policy: script injection is the attack this
+    #               defends against. Nonces are not an option on a static
+    #               host, which cannot vary a header per request.
+    #               scripts/check-csp.mjs fails the build if that hash and the
+    #               script ever disagree.
+    #
+    #   style-src   'unsafe-inline' is unavoidable and deliberate. Astro
+    #               inlines 7 scoped <style> blocks, and the design passes
+    #               per-item data through 151 inline custom properties on the
+    #               homepage alone (--brand, --pill, --r, --mid). Hashing those
+    #               would break on every stylesheet edit. Style injection is a
+    #               far weaker vector than script injection, which stays locked.
+    #
+    #   form-action buttondown.email is listed BEFORE it is used. The subscribe
+    #               form renders without an action until NEWSLETTER.buttondownUser
+    #               is set, and the day it is set the form would post
+    #               cross-origin. Omitting it now means the newsletter signup
+    #               breaks silently, weeks later, for reasons nobody connects
+    #               to this file.
+    #
+    #   img/font/   All same-origin since the fonts were self-hosted. No data:
+    #   connect     URIs, no iframes, no object/embed, and motion.js issues no
+    #               network request of any kind. All verified against the build.
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action 'self' https://buttondown.email; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests"
