@@ -173,6 +173,19 @@ oblique and still do. Self-hosting did not change that either way. The real fix 
 point those two at `--font-serif`, which is the site's actual italic and is loaded, or drop the
 italic. See PERFORMANCE-PLAN.md 3.2.
 
+**The CSP is generated at build time, not written by hand.** `scripts/generate-csp.mjs` runs as
+`postbuild` and writes `dist/_headers`, because the policy carries a sha256 for every inline
+`<script>` and fourteen of those are JSON-LD blocks that change with any content edit. A hash in
+`netlify.toml` would be right for one deploy and silently wrong after. Everything else stays in
+`netlify.toml`; Netlify merges the two.
+
+It is **report-only** until someone loads the deploy with the console open; flip `REPORT_ONLY` in
+that script to enforce. Two rules there are easy to undo: `style-src` is `'unsafe-inline'` with **no
+hash**, because 242 load-bearing inline `style=""` attributes ship (`--brand`, `--pill`, `--r`) and
+adding any style hash makes browsers ignore `'unsafe-inline'` and break all of them; and no inline
+event handler may be added anywhere, because one forces `script-src-attr 'unsafe-inline'` and gives
+away most of what the policy is for.
+
 **No em dashes.** Every one on the site, and in this repo, was replaced with a colon, semicolon,
 comma or bracket pair. If you write one, you are reintroducing something that was deliberately swept.
 En dashes in numeric ranges (`€150–400`, `01–04`) are untouched and fine.

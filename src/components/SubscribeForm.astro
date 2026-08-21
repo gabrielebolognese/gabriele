@@ -47,7 +47,12 @@ const heading =
       <button class="subscribe-btn" type="submit">Subscribe</button>
     </form>
   ) : (
-    <form class="subscribe-form" aria-disabled="true" onsubmit="return false">
+    <form class="subscribe-form" aria-disabled="true">
+      {/* No onsubmit="return false" here. Every control below is `disabled`, so
+          a disabled input cannot be focused and the button cannot be pressed:
+          there is no path to a submit that would need cancelling. It was the
+          only inline event handler on the site, and one of those forces
+          script-src-attr 'unsafe-inline', which is most of what a CSP is for. */}
       <label class="visually-hidden" for={`sub-email-${variant}`}>Email address</label>
       <input
         class="subscribe-input"
