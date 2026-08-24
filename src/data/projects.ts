@@ -79,7 +79,7 @@ export const PROJECTS: Project[] = [
     /* Full version: like FlashFX but for fast carousels. Creates them
        procedurally rather than with AI, and keeps full customisation. Newly
        created. The no-AI part is the differentiator, so it stays in the line. */
-    summary: 'FlashFX for carousels: built procedurally and fast, fully editable, with no AI anywhere in it.',
+    summary: 'FlashFX for carousels. Built procedurally rather than generated, fast, fully editable, with no AI anywhere in it.',
     stack: ['TypeScript'],
     // TODO: no homepage is set on the repo, so the site button is disabled.
     repo: 'https://github.com/gabrielebolognese/FlashCC',
