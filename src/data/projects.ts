@@ -8,11 +8,11 @@
    machine-learning course. Nobody spots that in 211 lines of JSX. Here it
    would be one obviously wrong line.
 
-   The three summaries that are not FlashFX are YOUR OWN GitHub repository
-   descriptions, lifted on 2026-08-24 rather than invented here, with obvious
-   typos fixed and a capital on the front. Each one records what it was taken
-   from, so you can see exactly what was changed. `since` is the repository's
-   creation year, and `stack` is the language GitHub reports.
+   Every summary is now written from what the site owner said the product is,
+   condensed to the one or two lines the card has room for. The fuller version
+   sits in a comment above each, so what was cut is visible and nothing has to
+   be remembered. `since` is the repository's creation year and `stack` is the
+   language GitHub reports; both come from the API rather than being guessed.
 
    ⚠️  The IMAGES are still placeholders: old FlashFX screenshots standing in
    for three products that look nothing like it. `site` is unset on those three
@@ -76,8 +76,10 @@ export const PROJECTS: Project[] = [
     name: 'FlashCC',
     status: 'building',
     since: '2026',
-    // GitHub: "fast and easy carousel creator website."
-    summary: 'A fast, easy carousel creator that runs in the browser.',
+    /* Full version: like FlashFX but for fast carousels. Creates them
+       procedurally rather than with AI, and keeps full customisation. Newly
+       created. The no-AI part is the differentiator, so it stays in the line. */
+    summary: 'FlashFX for carousels: built procedurally and fast, fully editable, with no AI anywhere in it.',
     stack: ['TypeScript'],
     // TODO: no homepage is set on the repo, so the site button is disabled.
     repo: 'https://github.com/gabrielebolognese/FlashCC',
@@ -88,9 +90,11 @@ export const PROJECTS: Project[] = [
     name: 'BrandBoard',
     status: 'building',
     since: '2026',
-    // GitHub: "Buyable board for personal brands to feature it on your grid and
-    // get more clicks"
-    summary: 'A buyable board for personal brands: feature it on your grid and get more clicks.',
+    /* Full version: a board of tiles you buy to feature a personal brand, X,
+       Instagram, YouTube or all of them. $2 a square, up to 20x20, resets every
+       month, marketed on X. The price and the reset are the two facts that
+       explain the whole thing, so they are what the line keeps. */
+    summary: 'A board where you buy a square to feature your X, Instagram or YouTube. $2 each, up to 20 by 20, cleared every month.',
     stack: ['TypeScript'],
     // TODO: no homepage is set on the repo, so the site button is disabled.
     repo: 'https://github.com/gabrielebolognese/BrandBoard',
@@ -101,9 +105,13 @@ export const PROJECTS: Project[] = [
     name: 'Threshold',
     status: 'building',
     since: '2026',
-    // GitHub: "pp to reach monetization plan". Read as a truncated "App"; if
-    // that is wrong, this line is the one to correct.
-    summary: 'An app for reaching a monetization plan.',
+    /* Full version: the biggest hurdle for a creator is monetization, and not
+       knowing when it comes or what to do to get there. Threshold reads your
+       profile with AI, builds a dynamic plan, then holds you to it with
+       reminders, progress and inspiration boards. The line leads on the
+       problem, because the product only makes sense once that is stated.
+       "monetization" is the site owner's own spelling. */
+    summary: 'Creators rarely know when monetization comes or what to do next. Threshold reads your profile and builds a plan that answers both.',
     stack: [],            // GitHub reports no language on the repo yet.
     // TODO: no homepage is set on the repo, so the site button is disabled.
     // Note the repository is spelled "threashold"; the product is "Threshold".
