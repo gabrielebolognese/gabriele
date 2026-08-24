@@ -37,16 +37,19 @@ export interface Project {
   status: ProjectStatus;
   /** When work started. Shown beside the status. */
   since: string;
-  /** ONE line. Null renders a visible placeholder instead of a description
-   *  nobody has written yet, which is the honest state for three of these. */
+  /** Two lines at most. Null still renders the block, with a visibly
+   *  provisional line in it: the card design requires a description, and an
+   *  empty slot would collapse the card while an invented one would be a claim
+   *  about a real product that nobody has made. */
   summary: string | null;
   /** Three at most: past three it is a list, not a signal. */
   stack: string[];
-  /** Omit and the card is not a link. A card that looks clickable and is not
-   *  is worse than a card that plainly is not. */
-  href?: string;
-  /** The label under the card when `href` is set. */
-  hrefLabel?: string;
+  /** The two buttons at the foot of the card. A missing URL renders the button
+   *  disabled rather than hiding it: the four cards keep the same shape, and a
+   *  greyed "Go to repository" is an honest "there is not one yet" where a
+   *  missing button just looks like an oversight. */
+  site?: string;
+  repo?: string;
   image: ImageMetadata;
   imageAlt: string;
 }
@@ -59,13 +62,16 @@ export const PROJECTS: Project[] = [
     summary:
       'A browser-native motion graphics and video editor. The After Effects workflow, with nothing to install and no licence.',
     stack: ['TypeScript', 'WebGPU', 'WebCodecs'],
-    href: 'https://flashfx.app',
-    hrefLabel: 'flashfx.app',
+    site: 'https://flashfx.app',
+    // TODO: the FlashFX repo, if there is a public one. Left out so the button
+    // renders disabled rather than pointing somewhere wrong.
+    repo: undefined,
     image: animatorTimeline,
     imageAlt: 'The FlashFX Animator, timeline and canvas view',
   },
   {
     name: 'FlashCC',
+    // TODO: site and repo URLs. Both buttons render disabled until they exist.
     // TODO: what FlashCC is, in one line. Left null on purpose rather than
     // guessed at from the name.
     status: 'building',   // TODO: confirm. 'building' is the safe default, not a fact.
@@ -77,6 +83,7 @@ export const PROJECTS: Project[] = [
   },
   {
     name: 'BrandBoard',
+    // TODO: site and repo URLs. Both buttons render disabled until they exist.
     status: 'building',   // TODO: confirm.
     since: '2026',        // TODO: confirm.
     summary: null,        // TODO: one line on what BrandBoard is.
@@ -86,6 +93,7 @@ export const PROJECTS: Project[] = [
   },
   {
     name: 'Threshold',
+    // TODO: site and repo URLs. Both buttons render disabled until they exist.
     status: 'building',   // TODO: confirm.
     since: '2026',        // TODO: confirm.
     summary: null,        // TODO: one line on what Threshold is.

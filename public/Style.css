@@ -1026,35 +1026,43 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 
 /* ── 10. PROJECTS ────────────────────────────────────────────────────────────
-   Four cards, two up. This replaced a section of hand-written cards at two
-   different sizes with a six-image carousel inside the first one: the featured
-   card alone ran the height of a screen and a half, and the four "cards" had
-   three different shapes between them.
+   Four cards, two up, separated. They were a 1px-gap hairline grid, which made
+   the four read as one table; a real gap and a border each makes them four
+   objects. Radius 14px, the only rounded surface on the site apart from the
+   hero code block, and the shots are full saturation rather than the grayscale
+   the rest of the imagery uses.
 
-   The grid is `repeat(2, 1fr)`, not auto-fit. auto-fit would reflow to three
-   across on a wide screen and leave one card orphaned on the second row, and
-   four items read as a set only while they stay a rectangle.
+   `repeat(2, 1fr)`, not auto-fit: auto-fit would reflow to three across on a
+   wide screen and orphan the fourth on its own row, and four items read as a
+   set only while they stay a rectangle.
    ------------------------------------------------------------------------- */
 .project-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1px;                    /* the gap IS the hairline between cards */
-    margin-top: 48px;
-    background: var(--gray-line);
-    border: 1px solid var(--gray-line);
+    gap: 32px;
+    margin-top: 52px;
 }
 
-/* position: relative is load-bearing: .project-link stretches its ::after to
-   these bounds to make the whole card one target. */
 .project-card {
-    position: relative;
     display: flex;
     flex-direction: column;
     background: var(--white);
-    transition: background var(--dur) var(--ease);
+    border: 1px solid var(--gray-line);
+    border-radius: 14px;
+    /* Clips the shot to the radius. The card has no absolutely positioned
+       children, so nothing is at risk of being clipped by it. */
+    overflow: hidden;
+    transition:
+        border-color var(--dur) var(--ease),
+        transform    var(--dur) var(--ease),
+        box-shadow   var(--dur) var(--ease);
 }
 
-.project-card.is-linked:hover { background: var(--gray-soft); }
+.project-card:hover {
+    border-color: var(--gray-mid);
+    transform: translate3d(0, -3px, 0);
+    box-shadow: 0 10px 30px rgba(10, 10, 10, 0.07);
+}
 
 .project-shot {
     aspect-ratio: 16 / 9;
@@ -1063,36 +1071,32 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     background: var(--gray-soft);
 }
 
-/* Grayscale at rest, colour on hover, the same treatment the portrait gets.
-   It also hides that all four screenshots are currently the same product. */
+/* Full saturation, always. The portrait and the story imagery are grayscale by
+   design; product screenshots are not, because the colour IS the product. */
 .project-shot img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(100%);
-    transition: filter var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+    transition: transform var(--dur-slow) var(--ease);
 }
 
-.project-card:hover .project-shot img {
-    filter: grayscale(0%);
-    transform: scale(1.03);
-}
+.project-card:hover .project-shot img { transform: scale(1.04); }
 
+/* Roughly 15% up on the previous card: 26/28 padding became 30/32, and the
+   name, summary and buttons moved up a step with it. */
 .project-body {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 26px 28px 24px;
+    padding: 30px 32px 28px;
 }
 
-/* Index, status and date on one line above the name, so the name itself is
-   never competing with a badge for the same row. */
 .project-rail {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     font-family: var(--font-wide);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 300;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -1112,7 +1116,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     transform: translateY(-1px);
 }
 
-/* Three states, three colours, and the dot is not the only cue: the label
+/* Three states, three colours, and the dot is never the only cue: the label
    spells the state out beside it. */
 .project-status[data-status="live"]     { color: #0f7a3d; }
 .project-status[data-status="building"] { color: #c97a00; }
@@ -1121,24 +1125,24 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .project-since { margin-left: auto; }
 
 .project-name {
-    margin-top: 14px;
+    margin-top: 16px;
     font-family: var(--font-display);
-    font-size: var(--text-2xl);
+    font-size: clamp(24px, 2.6vw, 30px);
     font-weight: 300;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    letter-spacing: -0.015em;
+    line-height: 1.18;
     color: var(--black);
 }
 
 .project-summary {
-    margin-top: 10px;
-    font-size: var(--text-sm);
-    line-height: 1.8;
+    margin-top: 12px;
+    font-size: var(--text-base);
+    line-height: 1.75;
     color: var(--gray-dark);
 }
 
-/* Three of the four have no description yet. This is deliberately visible: a
-   blank card reads as a layout bug and an invented one reads as fact. */
+/* Three of the four have no description yet. Deliberately visible: a blank
+   slot reads as a layout bug and an invented one reads as fact. */
 .project-summary.is-placeholder {
     font-style: italic;
     color: var(--gray-mid);
@@ -1147,59 +1151,81 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .project-stack {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 16px;
+    gap: 7px;
+    margin-top: 18px;
     list-style: none;
 }
 
 .project-stack li {
-    padding: 4px 9px;
+    padding: 5px 11px;
     border: 1px solid var(--gray-line);
-    border-radius: 3px;
+    border-radius: 999px;
     font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--gray-dark);
 }
 
-/* margin-top: auto pins this to the bottom edge whatever the summary length,
-   so the four cards line their footers up. */
-.project-link {
+/* margin-top: auto pins the buttons to the bottom edge whatever the summary
+   length, so all four cards line their footers up. */
+.project-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 26px;
+}
+
+.project-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin-top: auto;
-    padding-top: 20px;
+    justify-content: center;
+    gap: 9px;
+    padding: 15px 16px;
+    border-radius: 8px;
+    background: var(--black);
+    color: var(--white);
     font-family: var(--font-wide);
     font-size: 10px;
     font-weight: 300;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--black);
-    align-self: flex-start;
+    white-space: nowrap;
+    transition:
+        background var(--dur) var(--ease),
+        color      var(--dur) var(--ease);
 }
 
-.project-link svg { transition: transform var(--dur) var(--ease); }
-.project-card:hover .project-link svg { transform: translate3d(2px, -2px, 0); }
+.project-btn:hover:not(.is-disabled),
+.project-btn:focus-visible:not(.is-disabled) {
+    background: var(--gray-dark);
+}
 
-/* The whole card is the hit area, stretched from the one link inside it. No
-   second <a> around the card, which would nest a link in a link, and no click
-   handler, which the CSP blocks and a keyboard cannot reach. */
-.project-link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
+.project-btn svg { flex: none; transition: transform var(--dur) var(--ease); }
+
+.project-btn:hover:not(.is-disabled) svg { transform: translate3d(2px, -2px, 0); }
+
+/* No href, so it is not focusable and not clickable already. This makes that
+   visible rather than leaving a button that silently does nothing. */
+.project-btn.is-disabled {
+    background: var(--gray-soft);
+    color: var(--gray-mid);
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 @media (max-width: 860px) {
-    .project-grid { grid-template-columns: minmax(0, 1fr); }
-    .project-body { padding: 22px 20px 20px; }
+    .project-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .project-body { padding: 24px 22px 22px; }
 }
 
 @media (max-width: 520px) {
-    /* The rail runs out of room for three items at this width; the date is the
-       one that can go, since the status is the thing being scanned for. */
+    /* The rail runs out of room for three items here; the date goes, since the
+       status is the thing being scanned for. */
     .project-since { display: none; }
+
+    /* Two buttons side by side at this width leaves four characters a line. */
+    .project-actions { grid-template-columns: 1fr; }
 }
 
 

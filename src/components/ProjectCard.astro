@@ -2,11 +2,10 @@
 /* One project. Rendered four times from PROJECTS in src/data/projects.ts, so
  * the four cannot drift the way the hand-written ones did.
  *
- * The whole card is the hit area when the project has a URL, stretched from
- * the one link inside it the same way the contact cards do it: no second <a>
- * wrapping the card (a link inside a link is invalid and gets announced
- * twice), and no click handler (not keyboard reachable, no URL on hover, and
- * dead under the CSP).
+ * The card is NOT a link. It carries two buttons, and a card-wide stretched
+ * link sitting under them would either swallow their clicks or be swallowed by
+ * them depending on stacking order. Two explicit targets beat one ambiguous
+ * one.
  */
 import { Image } from 'astro:assets';
 import { STATUS_LABEL, type Project } from '../data/projects';
@@ -22,7 +21,7 @@ const { project, index } = Astro.props;
 const n = String(index + 1).padStart(2, '0');
 ---
 
-<article class={`project-card${project.href ? ' is-linked' : ''}`}>
+<article class="project-card">
   <figure class="project-shot">
     <Image
       src={project.image}
@@ -58,9 +57,19 @@ const n = String(index + 1).padStart(2, '0');
       </ul>
     )}
 
-    {project.href && (
-      <a class="project-link" href={project.href} target="_blank" rel="noopener noreferrer">
-        {project.hrefLabel ?? project.href}
+    {/* Both buttons always render. A missing URL is disabled rather than
+        hidden, so the four cards keep one shape and "no repository yet" reads
+        as a fact rather than as a card someone forgot to finish. */}
+    <div class="project-actions">
+      <a
+        class={`project-btn${project.site ? '' : ' is-disabled'}`}
+        href={project.site}
+        target={project.site ? '_blank' : undefined}
+        rel={project.site ? 'noopener noreferrer' : undefined}
+        aria-disabled={project.site ? undefined : 'true'}
+        tabindex={project.site ? undefined : '-1'}
+      >
+        Go to site
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
              aria-hidden="true" focusable="false">
@@ -69,6 +78,25 @@ const n = String(index + 1).padStart(2, '0');
           <path d="M15 3h6v6" />
         </svg>
       </a>
-    )}
+
+      <a
+        class={`project-btn${project.repo ? '' : ' is-disabled'}`}
+        href={project.repo}
+        target={project.repo ? '_blank' : undefined}
+        rel={project.repo ? 'noopener noreferrer' : undefined}
+        aria-disabled={project.repo ? undefined : 'true'}
+        tabindex={project.repo ? undefined : '-1'}
+      >
+        Go to repository
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true" focusable="false">
+          <path d="M18 13.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5.5" />
+          <path d="M10.5 13.5 21 3" />
+          <path d="M15 3h6v6" />
+        </svg>
+      </a>
+    </div>
+
   </div>
 </article>
