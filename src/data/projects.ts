@@ -8,11 +8,16 @@
    machine-learning course. Nobody spots that in 211 lines of JSX. Here it
    would be one obviously wrong line.
 
-   ⚠️  ONLY FlashFX IS WRITTEN FROM FACT. The other three are structure with
-   placeholder text, marked `summary: null`, which renders a visibly
-   provisional line rather than inventing a description of a real product. The
-   images are deliberately the old FlashFX screenshots, standing in until the
-   real ones exist. Every field below marked `TODO:` needs your answer.
+   The three summaries that are not FlashFX are YOUR OWN GitHub repository
+   descriptions, lifted on 2026-08-24 rather than invented here, with obvious
+   typos fixed and a capital on the front. Each one records what it was taken
+   from, so you can see exactly what was changed. `since` is the repository's
+   creation year, and `stack` is the language GitHub reports.
+
+   ⚠️  The IMAGES are still placeholders: old FlashFX screenshots standing in
+   for three products that look nothing like it. `site` is unset on those three
+   because none of the repositories declares a homepage, so their "Go to site"
+   button renders disabled rather than pointing somewhere wrong.
    ========================================================================= */
 
 import type { ImageMetadata } from 'astro';
@@ -63,41 +68,46 @@ export const PROJECTS: Project[] = [
       'A browser-native motion graphics and video editor. The After Effects workflow, with nothing to install and no licence.',
     stack: ['TypeScript', 'WebGPU', 'WebCodecs'],
     site: 'https://flashfx.app',
-    // TODO: the FlashFX repo, if there is a public one. Left out so the button
-    // renders disabled rather than pointing somewhere wrong.
-    repo: undefined,
+    repo: 'https://github.com/gabrielebolognese/FlashFX-v2',
     image: animatorTimeline,
     imageAlt: 'The FlashFX Animator, timeline and canvas view',
   },
   {
     name: 'FlashCC',
-    // TODO: site and repo URLs. Both buttons render disabled until they exist.
-    // TODO: what FlashCC is, in one line. Left null on purpose rather than
-    // guessed at from the name.
-    status: 'building',   // TODO: confirm. 'building' is the safe default, not a fact.
-    since: '2026',        // TODO: confirm.
-    summary: null,
-    stack: [],
+    status: 'building',
+    since: '2026',
+    // GitHub: "fast and easy carousel creator website."
+    summary: 'A fast, easy carousel creator that runs in the browser.',
+    stack: ['TypeScript'],
+    // TODO: no homepage is set on the repo, so the site button is disabled.
+    repo: 'https://github.com/gabrielebolognese/FlashCC',
     image: editorColor,   // TODO: placeholder, a FlashFX screenshot.
     imageAlt: 'Placeholder screenshot, to be replaced with FlashCC',
   },
   {
     name: 'BrandBoard',
-    // TODO: site and repo URLs. Both buttons render disabled until they exist.
-    status: 'building',   // TODO: confirm.
-    since: '2026',        // TODO: confirm.
-    summary: null,        // TODO: one line on what BrandBoard is.
-    stack: [],
+    status: 'building',
+    since: '2026',
+    // GitHub: "Buyable board for personal brands to feature it on your grid and
+    // get more clicks"
+    summary: 'A buyable board for personal brands: feature it on your grid and get more clicks.',
+    stack: ['TypeScript'],
+    // TODO: no homepage is set on the repo, so the site button is disabled.
+    repo: 'https://github.com/gabrielebolognese/BrandBoard',
     image: animatorLayers, // TODO: placeholder, a FlashFX screenshot.
     imageAlt: 'Placeholder screenshot, to be replaced with BrandBoard',
   },
   {
     name: 'Threshold',
-    // TODO: site and repo URLs. Both buttons render disabled until they exist.
-    status: 'building',   // TODO: confirm.
-    since: '2026',        // TODO: confirm.
-    summary: null,        // TODO: one line on what Threshold is.
-    stack: [],
+    status: 'building',
+    since: '2026',
+    // GitHub: "pp to reach monetization plan". Read as a truncated "App"; if
+    // that is wrong, this line is the one to correct.
+    summary: 'An app for reaching a monetization plan.',
+    stack: [],            // GitHub reports no language on the repo yet.
+    // TODO: no homepage is set on the repo, so the site button is disabled.
+    // Note the repository is spelled "threashold"; the product is "Threshold".
+    repo: 'https://github.com/gabrielebolognese/threashold',
     image: mledApp,       // TODO: placeholder, an old MLed screenshot.
     imageAlt: 'Placeholder screenshot, to be replaced with Threshold',
   },
