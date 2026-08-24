@@ -14,15 +14,22 @@
    be remembered. `since` is the repository's creation year and `stack` is the
    language GitHub reports; both come from the API rather than being guessed.
 
-   ⚠️  The IMAGES are still placeholders: old FlashFX screenshots standing in
-   for three products that look nothing like it. `site` is unset on those three
-   because none of the repositories declares a homepage, so their "Go to site"
-   button renders disabled rather than pointing somewhere wrong.
+   Ordered by maturity, not by preference: live, then in development, then
+   concept. The status badge then agrees with the reading order instead of
+   fighting it, and 01 is always something that exists.
+
+   ⚠️  The IMAGES are placeholders on four of the six: old FlashFX screenshots
+   standing in for products that look nothing like it. FlashFX and FlashFX
+   Roadmap use their own. `site` is unset wherever the repository declares no
+   homepage, so that button renders disabled rather than pointing somewhere
+   wrong.
    ========================================================================= */
 
 import type { ImageMetadata } from 'astro';
 
 import animatorTimeline from '../assets/flashfx-animator-timeline-canvas.png';
+import flashfxRoadmap from '../assets/flashfx-roadmap-page.png';
+import animator3d from '../assets/flashfx-animator-3d-objects-browser.png';
 import editorColor from '../assets/flashfx-editor-color-grading.png';
 import animatorLayers from '../assets/flashfx-animator-layer-panel-effects.png';
 import mledApp from '../assets/mled-machine-learning-app-interface.png';
@@ -73,6 +80,20 @@ export const PROJECTS: Project[] = [
     imageAlt: 'The FlashFX Animator, timeline and canvas view',
   },
   {
+    name: 'FlashFX Roadmap',
+    status: 'live',
+    since: '2026',        // repo created 2026-06-29
+    /* Kept general on purpose: the page is a client-rendered app, so its
+       contents were not read here and this describes what a roadmap is for
+       rather than claiming what is currently on it. */
+    summary: 'The public roadmap for FlashFX. What has shipped, what is being built, and what is queued behind that, on one page.',
+    stack: [],            // GitHub reports no language on the repo.
+    site: 'https://roadmap.flashfx.app',
+    repo: 'https://github.com/gabrielebolognese/FFXroadmap',
+    image: flashfxRoadmap,
+    imageAlt: 'The FlashFX roadmap page',
+  },
+  {
     name: 'FlashCC',
     status: 'building',
     since: '2026',
@@ -118,5 +139,21 @@ export const PROJECTS: Project[] = [
     repo: 'https://github.com/gabrielebolognese/threashold',
     image: mledApp,       // TODO: placeholder, an old MLed screenshot.
     imageAlt: 'Placeholder screenshot, to be replaced with Threshold',
+  },
+  {
+    name: 'Flash3D',
+    /* 'concept', not 'building': there is no repository on the account and no
+       site, so there is nothing to point either button at. The badge says that
+       rather than the two dead buttons having to imply it. */
+    status: 'concept',
+    since: '2026',        // TODO: confirm, nothing to derive it from yet.
+    /* Stated as intent, not as features. Nothing is built, so "the same
+       timeline and compositing stack" would be describing software that does
+       not exist. The 2.5D camera it contrasts with is real and in the devlog. */
+    summary: 'FlashFX aimed at 3D motion graphics rather than 2D, with depth as a first-class axis instead of a 2.5D camera bolted on.',
+    stack: [],
+    // TODO: no repository and no site yet, so both buttons render disabled.
+    image: animator3d,    // TODO: placeholder, a FlashFX screenshot.
+    imageAlt: 'Placeholder screenshot, to be replaced with Flash3D',
   },
 ];
