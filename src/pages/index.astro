@@ -7,6 +7,8 @@ import Faq from '../components/Faq.astro';
 import LifeSection from '../components/LifeSection.astro';
 import DevlogTimeline from '../components/DevlogTimeline.astro';
 import StatsSection from '../components/StatsSection.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { PROJECTS } from '../data/projects';
 import TechStack from '../components/TechStack.astro';
 import { Image } from 'astro:assets';
 /* Asset filenames are load-bearing: Astro emits each one as
@@ -15,24 +17,12 @@ import { Image } from 'astro:assets';
    `1.png`, `33.png`, `1010.png`, descriptive names cost nothing. Keep the
    local identifier and the filename describing the same thing. */
 import animatorTimeline from '../assets/flashfx-animator-timeline-canvas.png';
-import animatorKeyframes from '../assets/flashfx-animator-keyframe-controls.png';
-import animatorLayers from '../assets/flashfx-animator-layer-panel-effects.png';
-import animator3d from '../assets/flashfx-animator-3d-objects-browser.png';
-import animatorAi from '../assets/flashfx-animator-ai-animation-tools.png';
-import animatorDashboard from '../assets/flashfx-animator-dashboard-projects.png';
-import editorTimeline from '../assets/flashfx-editor-timeline-multitrack.png';
-import editor3d from '../assets/flashfx-editor-3d-compositing.png';
-import editorColor from '../assets/flashfx-editor-color-grading.png';
-import mledApp from '../assets/mled-machine-learning-app-interface.png';
-import flashfxDocs from '../assets/flashfx-documentation-site.png';
-import flashfxRoadmap from '../assets/flashfx-roadmap-page.png';
-import portfolioSite from '../assets/video-editing-portfolio-site.png';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 import gni from '../assets/gara-nazionale-informatica-2026-logo.jpg';
 import {HOMEPAGE_FAQ} from '../data/faq';
 import {homepageSchema} from '../data/schema';
 import {PERSON, ORGANIZATION, FACTS, DEVLOG, SOCIALS, absoluteUrl} from '../data/identity';
-import { PORTRAIT, CAROUSEL, schemaImageUrl } from '../data/images';
+import { PORTRAIT, PROJECT, schemaImageUrl } from '../data/images';
 import SocialIcon from '../components/SocialIcon.astro';
 
 const articles = await getCollection('newsletter', ({ data }) => !data.draft);
@@ -45,7 +35,7 @@ const latest = sorted.slice(0, 2);
 
 const schema = homepageSchema({
     portraitUrl: await schemaImageUrl(portrait, PORTRAIT, Astro.site),
-    softwareImage: await schemaImageUrl(animatorTimeline, CAROUSEL, Astro.site),
+    softwareImage: await schemaImageUrl(animatorTimeline, PROJECT, Astro.site),
     faq: HOMEPAGE_FAQ,
 });
 
@@ -230,215 +220,18 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <!-- ─── 3. PROJECTS ─── -->
     <section class="section section-projects" id="projects" aria-labelledby="projects-heading">
         <h2 id="projects-heading" class="section-label">Projects</h2>
+        <p class="section-intro">Four things, one of them finished.</p>
 
-        <div class="projects-grid">
-
-            <!-- ── Row 1 ── -->
-            <article class="project-card project-featured" aria-label="FlashFX, featured project">
-                <div class="featured-badge">Featured Project</div>
-                <header class="project-header">
-                    <div class="project-logo-placeholder flashfx-logo" aria-hidden="true">FX</div>
-                    <div>
-                        <h3 class="project-name">FlashFX</h3>
-                        <span class="project-status status-live">Live · v1</span>
-                    </div>
-                </header>
-                <dl class="project-meta">
-                    <dt>Industry</dt>
-                    <dd>Creative Software / Motion Graphics</dd>
-                    <dt>Problem Solved</dt>
-                    <dd>Professional motion graphics tools like Adobe After Effects are expensive, desktop-locked,
-                        and too complex for the modern creator. FlashFX brings the full workflow to the browser, for
-                        free.
-                    </dd>
-                    <dt>Competitors</dt>
-                    <dd>After Effects, Canva, Rive, LottieFiles, Pikimov, CapCut web</dd>
-                </dl>
-                <p class="project-desc">
-                    FlashFX is a browser-native creative suite. The <strong>Animator</strong> is an After Effects-like
-                    tool with a layer system, compositing, and effects presets. Built from scratch over two years and
-                    four
-                    complete rebuilds, ~300,000 lines of code, {FACTS.usersShort} organic users,
-                    {FACTS.discordLabel} Discord members, and 2,000 waitlist sign-ups. Photoshop became Canva.
-                    Premiere became CapCut. Now After Effects becomes FlashFX.
-                </p>
-                <div class="carousel" aria-label="FlashFX screenshot gallery">
-                    <div class="carousel-track" id="flashfx-track">
-                        <Image src={animatorTimeline} alt="FlashFX Animator interface, timeline and canvas view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={animatorKeyframes} alt="FlashFX motion graphics editor with keyframe controls" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={animatorLayers} alt="FlashFX Animator, layer panel and effects toolbar" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={animator3d} alt="FlashFX 3D object integration in browser" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={animatorAi} alt="FlashFX AI features and smart animation tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={animatorDashboard} alt="FlashFX dashboard and project management view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                    </div>
-                    <div class="carousel-controls">
-                        <button class="carousel-btn" id="flashfx-prev" aria-label="Previous screenshot">&#8592;</button>
-                        <span class="carousel-counter"><span id="flashfx-current">1</span> / 6</span>
-                        <button class="carousel-btn" id="flashfx-next" aria-label="Next screenshot">&#8594;</button>
-                    </div>
-                </div>
-            </article>
-
-            <article class="project-card project-featured" aria-label="FlashFX Editor, featured project">
-                <div class="featured-badge">Featured Project</div>
-                <header class="project-header">
-                    <div class="project-logo-placeholder flashfx-logo" aria-hidden="true">FE</div>
-                    <div>
-                        <h3 class="project-name">FlashFX Editor</h3>
-                        <span class="project-status status-live">Live · v1</span>
-                    </div>
-                </header>
-                <dl class="project-meta">
-                    <dt>Industry</dt>
-                    <dd>Creative Software / Video Compositing</dd>
-                    <dt>Problem Solved</dt>
-                    <dd>Premiere Pro and DaVinci Resolve are overkill and desktop-bound. FlashFX Editor brings
-                        professional video compositing, color grading, and node-based editing to the browser.
-                    </dd>
-                    <dt>Competitors</dt>
-                    <dd>Premiere Pro, DaVinci Resolve, CapCut, Clideo, Veed.io</dd>
-                </dl>
-                <p class="project-desc">
-                    The <strong>Editor</strong> is FlashFX's Premiere Pro alternative, a full video sequencing and
-                    compositing suite in the browser. Includes a timeline, multi-track video and audio editing,
-                    color grading, and node-based animation controls. Designed to sit alongside the Animator as the
-                    second pillar of the FlashFX creative suite.
-                </p>
-                <div class="carousel" aria-label="FlashFX Editor screenshot gallery">
-                    <div class="carousel-track" id="fxeditor-track">
-                        <Image src={editorTimeline} alt="FlashFX Editor timeline and multi-track view" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={editor3d} alt="FlashFX Editor 3D compositing interface" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                        <Image src={editorColor} alt="FlashFX Editor color grading tools" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                    </div>
-                    <div class="carousel-controls">
-                        <button class="carousel-btn" id="fxeditor-prev" aria-label="Previous screenshot">&#8592;
-                        </button>
-                        <span class="carousel-counter"><span id="fxeditor-current">1</span> / 3</span>
-                        <button class="carousel-btn" id="fxeditor-next" aria-label="Next screenshot">&#8594;</button>
-                    </div>
-                </div>
-            </article>
-
-            <!-- ── Row 2 ── -->
-            <article class="project-card project-side" aria-label="MLed project">
-                <header class="project-header">
-                    <div class="project-logo-placeholder" aria-hidden="true">FB</div>
-                    <div>
-                        <h3 class="project-name">FlashFX blog</h3>
-                        <span class="project-status status-active">In Development</span>
-                    </div>
-                </header>
-                <dl class="project-meta">
-                    <dt>Industry</dt>
-                    <dd>Education / Machine Learning</dd>
-                    <dt>Problem</dt>
-                    <dd>Machine learning education is fragmented with no linear, fully practical learning path.
-                        MLed is a free app that fixes this.
-                    </dd>
-                    <dt>Competitors</dt>
-                    <dd>fast.ai, Coursera, Khan Academy</dd>
-                </dl>
-                <p class="project-desc">
-                    An interactive platform for learning machine learning concepts through guided exercises,
-                    visual explanations, and hands-on code. Built for self-taught learners who want depth
-                    without a degree.
-                </p>
-                <div class="carousel" aria-label="MLed screenshot gallery">
-                    <Image src={mledApp} alt="MLed app interface" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                </div>
-            </article>
-
-            <article class="project-card project-side" aria-label="FlashFX Documentation project">
-                <header class="project-header">
-                    <div class="project-logo-placeholder" aria-hidden="true">CT</div>
-                    <div>
-                        <h3 class="project-name">FlashFX Documentation</h3>
-                        <span class="project-status status-concept">In Progress, avaliable</span>
-                    </div>
-                </header>
-                <dl class="project-meta">
-                    <dt>Industry</dt>
-                    <dd>AI / Content Automation</dd>
-                    <dt>Problem</dt>
-                    <dd>Creators and small businesses spend disproportionate time repurposing content across
-                        platforms. Automation pipelines are too technical without an engineering background.
-                    </dd>
-                    <dt>Competitors</dt>
-                    <dd>Zapier, Make.com, Buffer, Lately.ai</dd>
-                </dl>
-                <p class="project-desc">
-                    An AI-powered content automation platform that turns one piece of source content into
-                    a full multi-platform distribution pipeline, adapted for tone, format, and audience
-                    per channel, with zero manual reformatting.
-                </p>
-                <div class="carousel" aria-label="FlashFX Documentation screenshot gallery">
-                    <Image src={flashfxDocs} alt="FlashFX documentation site" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                </div>
-            </article>
-
-            <!-- ── Row 3 ── -->
-            <article class="project-card project-side" aria-label="FlashFX Roadmap project">
-                <header class="project-header">
-                    <div class="project-logo-placeholder" aria-hidden="true">FR</div>
-                    <div>
-                        <h3 class="project-name">FlashFX Roadmap</h3>
-                        <span class="project-status status-concept">Live, complete</span>
-                    </div>
-                </header>
-                <dl class="project-meta">
-                    <dt>Industry</dt>
-                    <dd>Creative Software / AI Tools</dd>
-                    <dt>Context</dt>
-                    <dd>The original concept that preceded FlashFX, an AI-powered animation editor
-                        built in January 2024. Crashed after a file restructuring error wiped the codebase.
-                    </dd>
-                    <dt>Legacy</dt>
-                    <dd>The failure that forced the pivot to TypeScript and real engineering fundamentals.</dd>
-                </dl>
-                <p class="project-desc">
-                    The first attempt at a browser-based animation tool, built entirely through vibe coding
-                    with Claude in January 2024. Never shipped. Its landing page and the lessons from its
-                    collapse became the direct foundation for FlashFX.
-                </p>
-                <div class="carousel" aria-label="FlashFX Roadmap screenshot gallery">
-                    <Image src={flashfxRoadmap} alt="FlashFX Roadmap page" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                </div>
-            </article>
-
-            <article class="project-card project-side" aria-label="Video editing portfolio project">
-                <header class="project-header">
-                    <div class="project-logo-placeholder" aria-hidden="true">GB</div>
-                    <div>
-                        <h3 class="project-name">Video editing portfolio</h3>
-                        <span class="project-status status-live">Live</span>
-                    </div>
-                </header>
-                <dl class="project-meta">
-                    <dt>Industry</dt>
-                    <dd>Personal Branding / Web Development</dd>
-                    <dt>Stack</dt>
-                    <dd>Vanilla HTML, CSS, and JavaScript. No frameworks. Fully hand-coded with a luxury
-                        editorial aesthetic built around custom CSS variables and typography.
-                    </dd>
-                    <dt>Purpose</dt>
-                    <dd>Founder visibility, YC application support, investor outreach.</dd>
-                </dl>
-                <p class="project-desc">
-                    A fully custom personal site with editorial typography, a full story section, project
-                    carousels, and a timeline of milestones. Designed and coded from scratch as both a
-                    portfolio and a proof of craft.
-                </p>
-                <div class="carousel" aria-label="Video editing portfolio screenshot gallery">
-                    <Image src={portfolioSite} alt="Video editing portfolio site" class="carousel-img" loading="lazy" widths={[480, 960, 1440]} sizes="(max-width: 860px) 100vw, 660px" decoding="async" />
-                </div>
-            </article>
-
+        {/* Four cards from PROJECTS in src/data/projects.ts. This section used
+            to be 211 lines of hand-written markup with a six-image carousel in
+            the first card, and it had drifted: one card was headed "FlashFX
+            blog", labelled "MLed project" for screen readers, and described a
+            machine-learning course in its body. */}
+        <div class="project-grid">
+            {PROJECTS.map((project, i) => <ProjectCard project={project} index={i} />)}
         </div>
     </section>
 
-    <div class="rule"></div>
-
-    <!-- ─── 4. STORY ─── -->
     <section class="section" id="story" aria-labelledby="story-heading">
         <h2 id="story-heading" class="section-label">Story</h2>
         <p class="section-intro">Six years. Four rebuilds. One product.</p>

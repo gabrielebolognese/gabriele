@@ -20,21 +20,9 @@
 import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
 import { absoluteUrl } from './identity';
+import { PROJECTS } from './projects';
 
 import portrait from '../assets/gabriele-bolognese-portrait.png';
-import animatorTimeline from '../assets/flashfx-animator-timeline-canvas.png';
-import animatorKeyframes from '../assets/flashfx-animator-keyframe-controls.png';
-import animatorLayers from '../assets/flashfx-animator-layer-panel-effects.png';
-import animator3d from '../assets/flashfx-animator-3d-objects-browser.png';
-import animatorAi from '../assets/flashfx-animator-ai-animation-tools.png';
-import animatorDashboard from '../assets/flashfx-animator-dashboard-projects.png';
-import editorTimeline from '../assets/flashfx-editor-timeline-multitrack.png';
-import editor3d from '../assets/flashfx-editor-3d-compositing.png';
-import editorColor from '../assets/flashfx-editor-color-grading.png';
-import mledApp from '../assets/mled-machine-learning-app-interface.png';
-import flashfxDocs from '../assets/flashfx-documentation-site.png';
-import flashfxRoadmap from '../assets/flashfx-roadmap-page.png';
-import portfolioSite from '../assets/video-editing-portfolio-site.png';
 import visionAiDemo from '../assets/vision-ai-demo-video-editor-2024.png';
 import earlyMotionDesign from '../assets/flashfx-early-motion-design-interface-2024.png';
 import boltPrototype from '../assets/flashfx-bolt-hackathon-prototype.png';
@@ -47,7 +35,7 @@ export interface IndexedImage {
 
 /** Widest rendered width per context, kept as names so a change to a page's
  *  `widths` array has one obvious place to land here. */
-export const CAROUSEL = 1440; // index.astro project carousels
+export const PROJECT = 840; // index.astro project cards, widest of widths={[420, 840]}
 const FIGURE = 960; // about.astro bio figures
 export const PORTRAIT = 640; // LifeSection portrait
 const AWARD = 560; // index.astro award banner logo
@@ -63,19 +51,14 @@ export const PAGE_IMAGES: Record<string, IndexedImage[]> = {
   '/': [
     PORTRAIT_ENTRY,
     { src: gni, width: AWARD },
-    { src: animatorTimeline, width: CAROUSEL },
-    { src: animatorKeyframes, width: CAROUSEL },
-    { src: animatorLayers, width: CAROUSEL },
-    { src: animator3d, width: CAROUSEL },
-    { src: animatorAi, width: CAROUSEL },
-    { src: animatorDashboard, width: CAROUSEL },
-    { src: editorTimeline, width: CAROUSEL },
-    { src: editor3d, width: CAROUSEL },
-    { src: editorColor, width: CAROUSEL },
-    { src: mledApp, width: CAROUSEL },
-    { src: flashfxDocs, width: CAROUSEL },
-    { src: flashfxRoadmap, width: CAROUSEL },
-    { src: portfolioSite, width: CAROUSEL },
+    /* Derived from PROJECTS rather than listed, so a project swapping its
+       screenshot cannot leave this file pointing at an image no page renders.
+       That is exactly what happened to the twelve carousel entries this
+       replaced: the carousels were deleted and the manifest kept declaring
+       them. Deduped on the image itself, since two projects are allowed to
+       share a placeholder while the real ones are being made. */
+    ...[...new Set(PROJECTS.map((project) => project.image))]
+      .map((src) => ({ src, width: PROJECT })),
   ],
   '/about': [
     PORTRAIT_ENTRY,

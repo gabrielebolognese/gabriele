@@ -68,8 +68,8 @@ SYSTEM" in `Style.css`, which is written **twice**, once to hide and once inside
 
 The countdown reads `data-deadline` off `.cd-section` and only ticks while the section is on screen and
 the tab is visible, its digit animation forces a synchronous reflow, so running it unconditionally
-costs INP. Carousels derive their image count from the DOM; the `1 / 6` in the markup is a placeholder
-that gets overwritten. `initAge()` and `initLifeGrid()` only reconcile drift since the last deploy.
+costs INP. `initAge()` and `initLifeGrid()` only reconcile drift since the last deploy. `initCarousels()`
+was deleted on 21 August 2026 with the last carousel; nothing on the site renders one now.
 
 **The life section is shared, and deliberately cheap.** `LifeSection.astro` (age count-up, portrait,
 About copy, life-in-weeks grid) renders on both `index.astro` and `about.astro`, extracted so the two
@@ -97,10 +97,8 @@ an event in one and you must do it in the other, or the grid highlights the wron
 would delete ~280 lines from `index.astro` and is worth doing.
 
 **Images go through `astro:assets`.** They live in `src/assets/` (not `public/`) and are imported and
-rendered with `<Image>`, which emits WebP plus a `srcset`. Use `<Image>` rather than `<Picture>` inside
-carousels, `.carousel-track` is a flexbox and `.carousel-img` must remain its direct flex child, which
-a `<picture>` wrapper would break. Article covers go through `image()` in the content schema, so
-frontmatter paths are relative, not `/assets/...`.
+rendered with `<Image>`, which emits WebP plus a `srcset`. Article covers go through `image()` in the
+content schema, so frontmatter paths are relative, not `/assets/...`.
 
 **Asset filenames are load-bearing.** Astro emits `<source-basename>.<hash>.webp`, so the filename you
 choose in `src/assets/` is the filename Google sees, the only keyword signal an image carries besides
@@ -139,6 +137,21 @@ flashfx.app), `newsletter/index.astro` (the archive), `404.astro`, `license.astr
 `image-sitemap.xml.ts`. The nav is `src/components/Nav.astro`, used by every page; it used to be
 hand-copied into seven files and had already drifted (Story and Timeline existed on the homepage and
 nowhere else) before it was extracted. The footer is still duplicated.
+
+**The four projects are data, not markup.** `src/data/projects.ts` holds them and
+`ProjectCard.astro` renders each one, because the hand-written version drifted exactly as you would
+expect: 211 lines of near-duplicate JSX in which one card was headed "FlashFX blog", carried
+`aria-label="MLed project"`, and described a machine-learning course in its body. Nobody finds that
+by reading; in a data file it is one obviously wrong line.
+
+**Only FlashFX is written from fact.** The other three carry `summary: null`, which renders a
+visibly provisional line rather than an invented description of a real product, and their images
+are deliberately old FlashFX screenshots standing in until the real ones exist. Every unverified
+field is marked `TODO:`.
+
+The homepage's entry in `images.ts` is **derived** from `PROJECTS` rather than listed, since the
+twelve carousel entries it replaced had gone stale the moment the carousels were deleted and were
+still declaring images no page rendered.
 
 **One card component, two places.** `newsletter/IssueCard.astro` renders both the archive and the
 homepage newsletter section, so the two cannot drift. It takes no image; the homepage passes

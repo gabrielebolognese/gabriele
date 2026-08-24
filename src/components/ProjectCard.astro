@@ -1,0 +1,74 @@
+---
+/* One project. Rendered four times from PROJECTS in src/data/projects.ts, so
+ * the four cannot drift the way the hand-written ones did.
+ *
+ * The whole card is the hit area when the project has a URL, stretched from
+ * the one link inside it the same way the contact cards do it: no second <a>
+ * wrapping the card (a link inside a link is invalid and gets announced
+ * twice), and no click handler (not keyboard reachable, no URL on hover, and
+ * dead under the CSP).
+ */
+import { Image } from 'astro:assets';
+import { STATUS_LABEL, type Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+  /** 01, 02, 03, 04. Passed in rather than derived, because the card should
+   *  not need to know where it sits in the list. */
+  index: number;
+}
+
+const { project, index } = Astro.props;
+const n = String(index + 1).padStart(2, '0');
+---
+
+<article class={`project-card${project.href ? ' is-linked' : ''}`}>
+  <figure class="project-shot">
+    <Image
+      src={project.image}
+      alt={project.imageAlt}
+      widths={[420, 840]}
+      sizes="(max-width: 860px) 100vw, 480px"
+      loading="lazy"
+      decoding="async"
+    />
+  </figure>
+
+  <div class="project-body">
+    <p class="project-rail">
+      <span class="project-index">{n}</span>
+      <span class="project-status" data-status={project.status}>{STATUS_LABEL[project.status]}</span>
+      <span class="project-since">Since {project.since}</span>
+    </p>
+
+    <h3 class="project-name">{project.name}</h3>
+
+    {project.summary
+      ? <p class="project-summary">{project.summary}</p>
+      : (
+        /* Deliberately visible. Three of these four have no description yet,
+           and a blank card reads as a layout bug while an invented one reads
+           as fact. This reads as what it is. */
+        <p class="project-summary is-placeholder">One line about this project, once you write it.</p>
+      )}
+
+    {project.stack.length > 0 && (
+      <ul class="project-stack">
+        {project.stack.map((tool) => <li>{tool}</li>)}
+      </ul>
+    )}
+
+    {project.href && (
+      <a class="project-link" href={project.href} target="_blank" rel="noopener noreferrer">
+        {project.hrefLabel ?? project.href}
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true" focusable="false">
+          <path d="M18 13.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5.5" />
+          <path d="M10.5 13.5 21 3" />
+          <path d="M15 3h6v6" />
+        </svg>
+      </a>
+    )}
+  </div>
+</article>

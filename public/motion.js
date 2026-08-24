@@ -131,74 +131,6 @@
         update();
     }
 
-    /* ── Carousels ───────────────────────────────────────────────────────── */
-    function initCarousels() {
-        var roots = document.querySelectorAll('.carousel');
-
-        for (var i = 0; i < roots.length; i++) {
-            (function (root) {
-                var track = root.querySelector('.carousel-track');
-                if (!track) return;                       // single-image gallery
-
-                var imgs = track.querySelectorAll('.carousel-img');
-                var total = imgs.length;
-                if (!total) return;
-
-                var btns = root.querySelectorAll('.carousel-btn');
-                var counter = root.querySelector('.carousel-counter');
-                var current = null;
-
-                // The count is derived from the markup, never hardcoded.
-                if (counter) {
-                    counter.textContent = '';
-                    current = document.createElement('span');
-                    current.textContent = '1';
-                    counter.appendChild(current);
-                    counter.appendChild(document.createTextNode(' / ' + total));
-                }
-
-                var index = 0;
-                track.classList.add('is-ready');
-
-                function show(next) {
-                    index = (next + total) % total;
-                    track.style.transform = 'translate3d(-' + (index * 100) + '%, 0, 0)';
-
-                    for (var n = 0; n < total; n++) {
-                        if (n === index) imgs[n].classList.add('is-active');
-                        else imgs[n].classList.remove('is-active');
-                    }
-
-                    if (current) {
-                        current.textContent = String(index + 1);
-                        if (!reduced) retick(current);
-                    }
-                }
-
-                if (btns[0]) btns[0].addEventListener('click', function () { show(index - 1); });
-                if (btns[1]) btns[1].addEventListener('click', function () { show(index + 1); });
-
-                root.addEventListener('keydown', function (e) {
-                    if (e.key === 'ArrowLeft') { show(index - 1); e.preventDefault(); }
-                    else if (e.key === 'ArrowRight') { show(index + 1); e.preventDefault(); }
-                });
-
-                // Swipe
-                var startX = 0;
-                track.addEventListener('touchstart', function (e) {
-                    startX = e.touches[0].clientX;
-                }, { passive: true });
-
-                track.addEventListener('touchend', function (e) {
-                    var dx = e.changedTouches[0].clientX - startX;
-                    if (Math.abs(dx) > 44) show(dx < 0 ? index + 1 : index - 1);
-                }, { passive: true });
-
-                show(0);
-            })(roots[i]);
-        }
-    }
-
     /* ── Countdown ───────────────────────────────────────────────────────── */
     function retick(el) {
         el.classList.remove('is-tick');
@@ -506,7 +438,6 @@
         initReveal();
         initNav();
         initProgress();
-        initCarousels();
         initSkipJumps();
         initCountdown();
         initAgeCount();

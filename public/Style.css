@@ -12,7 +12,7 @@
    07. Hero
    08. About / intro
    09. Countdown
-   10. Projects & carousel
+   10. Projects
    11. Story: chapters
    12. Story: long-form entries
    13. Timeline
@@ -1025,232 +1025,181 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 }
 
 
-/* ── 10. PROJECTS & CAROUSEL ─────────────────────────────────────────────── */
-.section-projects {
-    max-width: 100%;
-    padding-left: 0;
-    padding-right: 0;
-}
+/* ── 10. PROJECTS ────────────────────────────────────────────────────────────
+   Four cards, two up. This replaced a section of hand-written cards at two
+   different sizes with a six-image carousel inside the first one: the featured
+   card alone ran the height of a screen and a half, and the four "cards" had
+   three different shapes between them.
 
-.section-projects .section-label { padding: 0 var(--side-pad); }
-
-.projects-grid {
+   The grid is `repeat(2, 1fr)`, not auto-fit. auto-fit would reflow to three
+   across on a wide screen and leave one card orphaned on the second row, and
+   four items read as a set only while they stay a rectangle.
+   ------------------------------------------------------------------------- */
+.project-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;                    /* the gap IS the hairline between cards */
+    margin-top: 48px;
     background: var(--gray-line);
-    border-top: 1px solid var(--gray-line);
-    border-bottom: 1px solid var(--gray-line);
+    border: 1px solid var(--gray-line);
 }
 
+/* position: relative is load-bearing: .project-link stretches its ::after to
+   these bounds to make the whole card one target. */
 .project-card {
     position: relative;
+    display: flex;
+    flex-direction: column;
     background: var(--white);
-    padding: 40px 32px;
-    transition: background var(--dur-slow) var(--ease);
+    transition: background var(--dur) var(--ease);
 }
 
-.project-card:hover { background: var(--gray-soft); }
+.project-card.is-linked:hover { background: var(--gray-soft); }
 
-.project-featured {
+.project-shot {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--gray-line);
     background: var(--gray-soft);
-    padding: 48px 36px;
 }
 
-.project-featured:hover { background: #f0f0ec; }
+/* Grayscale at rest, colour on hover, the same treatment the portrait gets.
+   It also hides that all four screenshots are currently the same product. */
+.project-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(100%);
+    transition: filter var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+}
 
-.featured-badge {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+.project-card:hover .project-shot img {
+    filter: grayscale(0%);
+    transform: scale(1.03);
+}
+
+.project-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 26px 28px 24px;
+}
+
+/* Index, status and date on one line above the name, so the name itself is
+   never competing with a badge for the same row. */
+.project-rail {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-wide);
     font-size: 9px;
-    letter-spacing: 0.2em;
+    font-weight: 300;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--gray-mid);
-    background: var(--white);
-    border: 1px solid var(--gray-line);
-    padding: 4px 10px;
-    transition:
-        color        var(--dur-slow) var(--ease),
-        border-color var(--dur-slow) var(--ease);
 }
 
-.project-card:hover .featured-badge {
-    color: var(--black);
-    border-color: var(--gray-mid);
+.project-index { color: var(--gray-line); }
+
+.project-status::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    transform: translateY(-1px);
 }
 
-.project-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--gray-line);
-}
+/* Three states, three colours, and the dot is not the only cue: the label
+   spells the state out beside it. */
+.project-status[data-status="live"]     { color: #0f7a3d; }
+.project-status[data-status="building"] { color: #c97a00; }
+.project-status[data-status="concept"]  { color: var(--gray-mid); }
 
-.project-logo-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    background: var(--white);
-    border: 1px solid var(--gray-line);
-    color: var(--black);
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    transition:
-        background   var(--dur-slow) var(--ease),
-        color        var(--dur-slow) var(--ease),
-        border-color var(--dur-slow) var(--ease),
-        transform    var(--dur-slow) var(--ease);
-}
-
-.flashfx-logo {
-    background: var(--black);
-    color: var(--white);
-    border-color: var(--black);
-}
-
-.project-card:hover .project-logo-placeholder {
-    background: var(--black);
-    color: var(--white);
-    border-color: var(--black);
-    transform: translateY(-2px);
-}
+.project-since { margin-left: auto; }
 
 .project-name {
+    margin-top: 14px;
     font-family: var(--font-display);
     font-size: var(--text-2xl);
-    font-weight: 400;
-    letter-spacing: 0.01em;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: var(--black);
 }
 
-.project-status {
-    display: inline-block;
-    font-size: 9px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    margin-top: 4px;
-}
-
-.status-live    { background: var(--black); color: var(--white); }
-.status-active,
-.status-concept { border: 1px solid var(--gray-line); color: var(--gray-mid); }
-
-.project-meta {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 6px 16px;
-    margin-bottom: 24px;
-    font-size: var(--text-xs);
-}
-
-.project-meta dt {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--gray-mid);
-    white-space: nowrap;
-    padding-top: 1px;
-}
-
-.project-meta dd {
-    color: var(--gray-dark);
-    line-height: 1.6;
-}
-
-.project-desc {
+.project-summary {
+    margin-top: 10px;
     font-size: var(--text-sm);
+    line-height: 1.8;
     color: var(--gray-dark);
-    line-height: 1.85;
-    margin-bottom: 28px;
 }
 
-.project-desc strong { color: var(--black); font-weight: 400; }
+/* Three of the four have no description yet. This is deliberately visible: a
+   blank card reads as a layout bug and an invented one reads as fact. */
+.project-summary.is-placeholder {
+    font-style: italic;
+    color: var(--gray-mid);
+}
 
-/* Carousel */
-.carousel {
-    position: relative;
-    background: var(--white);
+.project-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+    list-style: none;
+}
+
+.project-stack li {
+    padding: 4px 9px;
     border: 1px solid var(--gray-line);
-    overflow: hidden;
-    transition: border-color var(--dur-slow) var(--ease);
+    border-radius: 3px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray-dark);
 }
 
-.project-card:hover .carousel { border-color: var(--gray-mid); }
-
-.carousel-track {
-    display: flex;
-    transition: transform 780ms var(--ease-expo);
-    will-change: transform;
-}
-
-.carousel-img {
-    width: 100%;
-    flex-shrink: 0;
-    height: auto;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    object-position: top left;
-    transition: opacity 640ms var(--ease), transform 900ms var(--ease);
-}
-
-/* Off-screen frames sit back so the active one reads as the subject.
-   Gated on .is-ready (set by motion.js) so nothing dims before init. */
-.carousel-track.is-ready .carousel-img { opacity: 0.28; transform: scale(0.985); }
-.carousel-track.is-ready .carousel-img.is-active { opacity: 1; transform: none; }
-
-.carousel-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-    border-top: 1px solid var(--gray-line);
-}
-
-.carousel-btn {
+/* margin-top: auto pins this to the bottom edge whatever the summary length,
+   so the four cards line their footers up. */
+.project-link {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-width: 30px;
-    padding: 2px 8px;
-    font-size: var(--text-base);
-    line-height: 1.4;
-    color: var(--gray-mid);
-    border: 1px solid transparent;
-    transition:
-        color        var(--dur) var(--ease),
-        background   var(--dur) var(--ease),
-        border-color var(--dur) var(--ease),
-        transform    var(--dur) var(--ease);
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 20px;
+    font-family: var(--font-wide);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--black);
+    align-self: flex-start;
 }
 
-.carousel-btn:hover {
-    color: var(--white);
-    background: var(--black);
-    border-color: var(--black);
+.project-link svg { transition: transform var(--dur) var(--ease); }
+.project-card:hover .project-link svg { transform: translate3d(2px, -2px, 0); }
+
+/* The whole card is the hit area, stretched from the one link inside it. No
+   second <a> around the card, which would nest a link in a link, and no click
+   handler, which the CSP blocks and a keyboard cannot reach. */
+.project-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
 }
-
-.carousel-btn:active { transform: scale(0.94); }
-
-.carousel-counter {
-    font-size: var(--text-xs);
-    letter-spacing: 0.12em;
-    color: var(--gray-mid);
-    font-variant-numeric: tabular-nums;
-}
-
-.carousel-counter .is-tick { animation: tick-in 380ms var(--ease-expo) both; display: inline-block; }
 
 @media (max-width: 860px) {
-    .projects-grid { grid-template-columns: 1fr; }
+    .project-grid { grid-template-columns: minmax(0, 1fr); }
+    .project-body { padding: 22px 20px 20px; }
+}
+
+@media (max-width: 520px) {
+    /* The rail runs out of room for three items at this width; the date is the
+       one that can go, since the status is the thing being scanned for. */
+    .project-since { display: none; }
 }
 
 
