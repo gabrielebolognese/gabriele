@@ -74,6 +74,11 @@ export const MILESTONES: Milestone[] = [
   { month: '2026-07-11', weeks: 2, kind: 'personal', label: 'Two weeks in Dublin, first English-speaking country' },
   { month: '2026-07-25',            kind: 'setback',  label: 'Back from Dublin, the worst possible week to lose' },
   { month: '2026-08-07',            kind: 'flashfx',  label: 'Launch day, and FlashFX becomes a company' },
+  /* Anchored to 15 August, the Saturday that opens the week. Grid weeks run
+     Saturday to Friday, and in August 2026 they happen to line up with the
+     calendar weeks exactly, so 15-21 really is the third week rather than
+     approximately it. */
+  { month: '2026-08-15',            kind: 'flashfx',  label: 'First 100,000 views on X, inside one week' },
 ];
 
 /** Splits either granularity. `d` is null for a month-only entry. */
