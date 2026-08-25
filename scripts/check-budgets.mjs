@@ -33,13 +33,11 @@ const DIST = 'dist';
 
 /** Set just above the measured value on 2026-08-18. See PERFORMANCE-PLAN.md. */
 const BUDGETS = {
-  /* 7,744 measured. Raised from 7,500 on 2026-08-25 for a REQUESTED feature,
-     a second year of contribution squares, which is 371 more cells: the guard
-     caught it and this is the deliberate answer, not the number being nudged
-     until it stopped complaining. Do not raise it again without a reason worth
-     writing down here. Phase 2 of PERFORMANCE-PLAN.md should bring it far
-     below this; the life grid is still 4,680 of the total. */
-  homepageDomElements: 7800,
+  /* Went to 7,800 for a second year of contribution squares, which was then
+     reverted: one rolling chart again, so the 371 cells came back off. Back to
+     7,500. Phase 2 of PERFORMANCE-PLAN.md should bring this far below it; the
+     life grid is still 4,680 of the total. */
+  homepageDomElements: 7500,
   homepageHtmlBrotliKb: 60,    // measured 50.7
   aboutDomElements: 5400,      // measured 5,159
   /* 7.47 MB measured, down from 8.55 because the project carousels went and

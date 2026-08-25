@@ -326,53 +326,40 @@ const FLAME_CORE =
         <figcaption class="contrib-heading">
             <h3 class="stat-subheading">Contribution history</h3>
             <p class="stat-note">
-                The last two calendar years. {nf.format(stats.activeDays)} days with at least one
-                contribution since the account opened.
+                The last 12 months. {nf.format(stats.activeDays)} days with at least one
+                contribution since the account opened. The year-by-year split is in the
+                breakdown above.
             </p>
         </figcaption>
 
-        {/* One grid per calendar year, stacked. Not one 106-week strip: the
-            grid carries a 740px min-width for 53 columns, so two years in a
-            row would be ~1,480px and would scroll sideways on every screen,
-            hiding the recent end, which is the end anyone looks at.
+        {/* One <div> per week, seven cells each, so the year is 53 columns and
+            the layout needs no per-cell positioning. Only days that happened
+            get a cell; the rest are holes, not empty days.
 
-            Inside each, one <div> per week of seven cells, so a year is 53 or
-            54 columns and the layout needs no per-cell positioning. Days
-            outside the year, and days that have not happened, are holes rather
-            than empty squares. */}
-        {stats.calendars.map((calendar) => (
-            <div class="contrib-year">
-                <p class="contrib-year-head">
-                    <span class="contrib-year-label">{calendar.year}</span>
-                    <span class="stat-note">
-                        {nf.format(calendar.total)} contributions across
-                        {' '}{nf.format(calendar.activeDays)} days
-                    </span>
-                </p>
-
-                <div class="contrib-plot">
-                    <div class="contrib-months" aria-hidden="true">
-                        {calendar.months.map((m) => (
-                            <span class="contrib-month" style={`--col:${m.column + 1}`}>{m.label}</span>
-                        ))}
-                    </div>
-
-                    <div class="contrib-grid" role="img"
-                         aria-label={`Contribution activity in ${calendar.year}: ${nf.format(calendar.total)} contributions across ${nf.format(calendar.activeDays)} days.`}>
-                        {calendar.weeks.map((week) => (
-                            <div class="contrib-week">
-                                {week.map((day) => (
-                                    day === null
-                                        ? <span class="contrib-day is-empty"></span>
-                                        : <span class="contrib-day" data-level={day.level}
-                                                title={`${day.count === 0 ? 'No' : nf.format(day.count)} contribution${day.count === 1 ? '' : 's'} on ${longDate(day.date)}`}></span>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+            One rolling year, not a grid per calendar year: two walls of
+            squares said no more than one plus the per-year totals already
+            under "Total contributions" do. */}
+        <div class="contrib-plot">
+            <div class="contrib-months" aria-hidden="true">
+                {stats.months.map((m) => (
+                    <span class="contrib-month" style={`--col:${m.column + 1}`}>{m.label}</span>
+                ))}
             </div>
-        ))}
+
+            <div class="contrib-grid" role="img"
+                 aria-label={`Contribution activity for the last 12 months. ${nf.format(stats.totalContributions)} contributions in total, currently a ${stats.currentStreak.days} day streak.`}>
+                {stats.weeks.map((week) => (
+                    <div class="contrib-week">
+                        {week.map((day) => (
+                            day === null
+                                ? <span class="contrib-day is-empty"></span>
+                                : <span class="contrib-day" data-level={day.level}
+                                        title={`${day.count === 0 ? 'No' : nf.format(day.count)} contribution${day.count === 1 ? '' : 's'} on ${longDate(day.date)}`}></span>
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </div>
 
         <div class="contrib-foot">
             <p class="stat-note">

@@ -58,18 +58,11 @@ export interface GithubStats {
   activeDays: number;
   /** Per calendar year, oldest first, empty years dropped. */
   years: { year: number; total: number }[];
-  /** One entry per calendar year, oldest first. Two of them: the previous year
-   *  and this one. Each is 53 or 54 columns of 7, and `null` is a day outside
-   *  that year or still in the future, drawn as a hole rather than as an empty
-   *  day. `total` and `activeDays` are of THAT grid, so the number printed
-   *  beside a year cannot disagree with the squares under it. */
-  calendars: {
-    year: number;
-    weeks: (ContributionDay | null)[][];
-    months: { column: number; label: string }[];
-    total: number;
-    activeDays: number;
-  }[];
+  /** 53 columns of 7, ending on the week containing today. `null` is a day
+   *  outside the account's life or in the future, drawn as a hole rather than
+   *  as an empty day. */
+  weeks: (ContributionDay | null)[][];
+  months: { column: number; label: string }[];
   pinned: PinnedRepo[];
   /** True when the numbers came off the network this build. */
   live: boolean;
