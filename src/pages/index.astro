@@ -232,6 +232,76 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         </div>
     </section>
 
+    <div class="rule"></div>
+
+    {/* Directly under the projects: someone who has just read what was built
+        is the likeliest person to want to follow the person building it, and
+        the ask costs nothing at that moment. Same SOCIALS list as the hero
+        row, so a profile can never appear in one and be missing from the
+        other. */}
+    <section class="section" id="follow" aria-labelledby="follow-heading">
+        <h2 id="follow-heading" class="section-label">Where to find me</h2>
+        <p class="section-intro">Six places, six different reasons. Pick whichever one you actually use.</p>
+
+        {/* The whole card is the hit area, stretched from the button's own
+            link (see .contact-card-btn::after). Not a second <a> wrapped round
+            the card, which nests a link inside a link, and not a click handler,
+            which is not keyboard reachable and shows no URL on hover. One link
+            per card, card-sized target, button still visible. */}
+        <div class="contact-grid">
+            {SOCIALS.map(social => (
+                <article class="contact-card" style={`--brand:${social.brand}`} data-ink={social.brandInk}>
+                    <div class="contact-card-head">
+                        <SocialIcon name={social.key} size={22} />
+                        <h3 class="contact-card-name">{social.name}</h3>
+                    </div>
+
+                    <p class="contact-card-desc">{social.description}</p>
+
+                    <a
+                            class="contact-card-btn"
+                            href={social.url}
+                            target="_blank"
+                            rel={social.key === 'flashfx' ? 'noopener noreferrer' : 'noopener noreferrer me'}
+                    >
+                        {social.cta}
+                        <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
+                    </a>
+                </article>
+            ))}
+        </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="section" id="newsletter" aria-labelledby="newsletter-heading">
+        <h2 id="newsletter-heading" class="section-label">Newsletter</h2>
+        <p class="section-intro">What I am building, what broke, and what it cost. Sent when there is something worth saying.</p>
+        {/* The same IssueCard the archive uses, so the two sections cannot
+            drift apart the way the nav once did. Exactly two, which is one
+            row: the homepage is a summary of the publication, and the archive
+            is the publication. The one link out sits under both cards rather
+            than being repeated inside each of them. */}
+        <div class="issue-grid">
+            {latest.map(article => (
+                    <IssueCard
+                            issue={article.data.issue}
+                            title={article.data.title}
+                            body={article.body ?? ''}
+                            slug={article.id}
+                            date={article.data.date}
+                    />
+            ))}
+        </div>
+
+        <a class="issue-grid-btn" href="/newsletter/">
+            View full newsletter
+            <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
+        </a>
+    </section>
+
+    <div class="rule"></div>
+
     <section class="section" id="story" aria-labelledby="story-heading">
         <h2 id="story-heading" class="section-label">Story</h2>
         <p class="section-intro">Six years. Four rebuilds. One product.</p>
@@ -1202,10 +1272,12 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
     <div class="rule"></div>
 
 
-    {/* The devlog sits above the newsletter deliberately: it is the section
-        that changes most often, and the homepage is the highest-authority page
-        on the site. Fresh content here is the cheapest possible proof that any
-        of this is still being worked on. */}
+    {/* Last of the three "what I make" sections, and the only one that changes
+        daily. It used to sit directly above the newsletter on the argument
+        that fresh content high on the highest-authority page is the cheapest
+        proof the work is ongoing; the newsletter has since moved up under the
+        projects, so this now closes the run rather than opening it. The
+        argument still holds, it just applies to a different neighbour. */}
     <section class="section" id="devlog" aria-labelledby="home-devlog-heading">
         <h2 id="home-devlog-heading" class="section-label">Devlog</h2>
         <p class="section-intro">{DEVLOG.description}</p>
@@ -1220,33 +1292,8 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         </a>
     </section>
 
+
     <div class="rule"></div>
-
-    <section class="section" id="newsletter" aria-labelledby="newsletter-heading">
-        <h2 id="newsletter-heading" class="section-label">Newsletter</h2>
-        <p class="section-intro">What I am building, what broke, and what it cost. Sent when there is something worth saying.</p>
-        {/* The same IssueCard the archive uses, so the two sections cannot
-            drift apart the way the nav once did. Exactly two, which is one
-            row: the homepage is a summary of the publication, and the archive
-            is the publication. The one link out sits under both cards rather
-            than being repeated inside each of them. */}
-        <div class="issue-grid">
-            {latest.map(article => (
-                    <IssueCard
-                            issue={article.data.issue}
-                            title={article.data.title}
-                            body={article.body ?? ''}
-                            slug={article.id}
-                            date={article.data.date}
-                    />
-            ))}
-        </div>
-
-        <a class="issue-grid-btn" href="/newsletter/">
-            View full newsletter
-            <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
-        </a>
-    </section>
 
     <!-- ─── 6. NEXT STEPS ─── -->
     <section class="section section-next" id="contact" aria-labelledby="next-heading">
@@ -1273,43 +1320,6 @@ const title = `${PERSON.name} | Founder of ${ORGANIZATION.name}, Developer & Vid
         </a>
     </section>
 
-    <div class="rule"></div>
-
-    {/* Sits before the FAQ deliberately: the FAQ is the last thing on the page
-        and answers questions, so the thing that lets someone act on the answer
-        has to come first. Same SOCIALS list as the hero row. */}
-    <section class="section" id="follow" aria-labelledby="follow-heading">
-        <h2 id="follow-heading" class="section-label">Where to find me</h2>
-        <p class="section-intro">Six places, six different reasons. Pick whichever one you actually use.</p>
-
-        {/* The whole card is the hit area, stretched from the button's own
-            link (see .contact-card-btn::after). Not a second <a> wrapped round
-            the card, which nests a link inside a link, and not a click handler,
-            which is not keyboard reachable and shows no URL on hover. One link
-            per card, card-sized target, button still visible. */}
-        <div class="contact-grid">
-            {SOCIALS.map(social => (
-                <article class="contact-card" style={`--brand:${social.brand}`} data-ink={social.brandInk}>
-                    <div class="contact-card-head">
-                        <SocialIcon name={social.key} size={22} />
-                        <h3 class="contact-card-name">{social.name}</h3>
-                    </div>
-
-                    <p class="contact-card-desc">{social.description}</p>
-
-                    <a
-                            class="contact-card-btn"
-                            href={social.url}
-                            target="_blank"
-                            rel={social.key === 'flashfx' ? 'noopener noreferrer' : 'noopener noreferrer me'}
-                    >
-                        {social.cta}
-                        <span class="issue-card-arrow" aria-hidden="true">&#8594;</span>
-                    </a>
-                </article>
-            ))}
-        </div>
-    </section>
 
     <div class="rule"></div>
 
