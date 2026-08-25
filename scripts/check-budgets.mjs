@@ -40,11 +40,17 @@ const BUDGETS = {
   homepageDomElements: 7500,
   homepageHtmlBrotliKb: 60,    // measured 50.7
   aboutDomElements: 5400,      // measured 5,159
-  /* 7.47 MB measured, down from 8.55 because the project carousels went and
-     took their 1440px variants with them. Lowered to lock that in. What is
-     left is 5 MB of webp plus og:image cards, which are correctly PNG because
-     Open Graph consumers do not reliably render webp. */
-  totalImagesMb: 8,
+  /* 9.03 MB measured. Raised from 8 on 2026-08-26 for the real project
+     screenshots: 18 of them replacing 8 placeholders, which is 1.77 MB of new
+     webp. Checked first that nothing emitted is unreferenced (it is not, all
+     165 files are used), so this is weight the pages actually serve rather
+     than build output nobody asked for.
+
+     The obvious next cut is NOT here: 3 MB of it is three Dublin photographs
+     in one newsletter issue, emitted at the 2,080px cover width and at the
+     default quality. Photographs do not need what a screenshot full of 10px
+     text needs. That is PERFORMANCE-PLAN.md 4.2. */
+  totalImagesMb: 9.5,
   renderBlockingRequests: 2,   // was 3 with a third-party Google Fonts sheet.
                                // Now 2, both same-origin: Style.css and one
                                // scoped component sheet.

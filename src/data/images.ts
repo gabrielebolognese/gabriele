@@ -52,12 +52,12 @@ export const PAGE_IMAGES: Record<string, IndexedImage[]> = {
     PORTRAIT_ENTRY,
     { src: gni, width: AWARD },
     /* Derived from PROJECTS rather than listed, so a project swapping its
-       screenshot cannot leave this file pointing at an image no page renders.
+       screenshots cannot leave this file pointing at an image no page renders.
        That is exactly what happened to the twelve carousel entries this
        replaced: the carousels were deleted and the manifest kept declaring
-       them. Deduped on the image itself, since two projects are allowed to
-       share a placeholder while the real ones are being made. */
-    ...[...new Set(PROJECTS.map((project) => project.image))]
+       them. Flattened, because a project now carries a set of shots, and
+       deduped in case two ever share one. */
+    ...[...new Set(PROJECTS.flatMap((project) => project.images))]
       .map((src) => ({ src, width: PROJECT })),
   ],
   '/about': [

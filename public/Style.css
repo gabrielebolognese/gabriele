@@ -1064,15 +1064,20 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     box-shadow: 0 10px 30px rgba(10, 10, 10, 0.07);
 }
 
+/* 2 / 1, not 16 / 9. Every screenshot in these folders is about 1870x950,
+   which is 1.96: at 16/9 the browser would crop 10% off the top and bottom of
+   every one of them to fill a shape none of them are. */
 .project-shot {
-    aspect-ratio: 16 / 9;
+    position: relative;
+    aspect-ratio: 2 / 1;
     overflow: hidden;
     border-bottom: 1px solid var(--gray-line);
     background: var(--gray-soft);
 }
 
 /* Full saturation, always. The portrait and the story imagery are grayscale by
-   design; product screenshots are not, because the colour IS the product. */
+   design; a product screenshot should not be, because the colour is the
+   product. */
 .project-shot img {
     width: 100%;
     height: 100%;
@@ -1080,7 +1085,92 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
     transition: transform var(--dur-slow) var(--ease);
 }
 
-.project-card:hover .project-shot img { transform: scale(1.04); }
+.project-card:hover .project-shot:not(.has-slides) img { transform: scale(1.04); }
+
+/* ── The CSS-only slideshow ──────────────────────────────────────────────────
+   Radios drive it, so there is no JavaScript, nothing for the CSP to allow,
+   and a keyboard already knows how to work a radio group. The inputs are
+   visually hidden but NOT display:none, which would take them out of the tab
+   order and make the whole thing mouse-only.
+   ------------------------------------------------------------------------- */
+.project-slide-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.project-slides {
+    display: flex;
+    height: 100%;
+    transition: transform var(--dur-slow) var(--ease);
+}
+
+.project-slides img { flex: 0 0 100%; }
+
+/* nth-of-type on the inputs rather than an id per slide: the rules then work
+   for any card without knowing its name, and adding a fifth shot is one more
+   pair here. */
+.project-shot input:nth-of-type(1):checked ~ .project-slides { transform: translateX(0); }
+.project-shot input:nth-of-type(2):checked ~ .project-slides { transform: translateX(-100%); }
+.project-shot input:nth-of-type(3):checked ~ .project-slides { transform: translateX(-200%); }
+.project-shot input:nth-of-type(4):checked ~ .project-slides { transform: translateX(-300%); }
+
+.project-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+}
+
+/* Sits on a screenshot whose colour is unknown, so it carries its own ground
+   rather than trusting contrast against whatever is behind it. */
+.project-dot {
+    width: 22px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 1px 3px rgba(10, 10, 10, 0.4);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease);
+}
+
+.project-dot:hover { background: rgba(255, 255, 255, 0.75); }
+
+.project-shot input:nth-of-type(1):checked ~ .project-dots .project-dot:nth-child(1),
+.project-shot input:nth-of-type(2):checked ~ .project-dots .project-dot:nth-child(2),
+.project-shot input:nth-of-type(3):checked ~ .project-dots .project-dot:nth-child(3),
+.project-shot input:nth-of-type(4):checked ~ .project-dots .project-dot:nth-child(4) {
+    background: var(--white);
+}
+
+/* The input is invisible, so its focus ring has to be drawn on the dot the
+   label points at, or tabbing through the gallery shows nothing at all. */
+.project-shot input:nth-of-type(1):focus-visible ~ .project-dots .project-dot:nth-child(1),
+.project-shot input:nth-of-type(2):focus-visible ~ .project-dots .project-dot:nth-child(2),
+.project-shot input:nth-of-type(3):focus-visible ~ .project-dots .project-dot:nth-child(3),
+.project-shot input:nth-of-type(4):focus-visible ~ .project-dots .project-dot:nth-child(4) {
+    outline: 2px solid var(--white);
+    outline-offset: 3px;
+}
+
+/* Nothing to show yet. Says so, rather than borrowing another product's
+   screenshot, which is what these two cards used to do. */
+.project-shot.is-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-wide);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+}
 
 /* Roughly 15% up on the previous card: 26/28 padding became 30/32, and the
    name, summary and buttons moved up a step with it. */

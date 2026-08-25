@@ -27,14 +27,28 @@
 
 import type { ImageMetadata } from 'astro';
 
-import animatorTimeline from '../assets/flashfx-animator-timeline-canvas.png';
+/* Screenshots live in a folder per product, numbered in the order they should
+   be shown. Imported explicitly rather than with import.meta.glob: glob order
+   is filesystem order, which is not the numbering, and a silently reordered
+   gallery is the kind of bug nobody reports. */
+import ffx0 from '../assets/FFX/FFX0.png';
+import ffx1 from '../assets/FFX/FFX1.png';
+import ffx2 from '../assets/FFX/FFX2.png';
+import ffx3 from '../assets/FFX/FFX3.png';
+import fcc0 from '../assets/FCC/FCC0.png';
+import fcc1 from '../assets/FCC/FCC1.png';
+import fcc2 from '../assets/FCC/FCC2.png';
+import fcc3 from '../assets/FCC/FCC3.png';
+import fdoc0 from '../assets/Fdoc/Fdoc0.png';
+import fdoc1 from '../assets/Fdoc/Fdoc1.png';
+import fdoc2 from '../assets/Fdoc/Fdoc2.png';
+import fdoc3 from '../assets/Fdoc/Fdoc3.png';
+import fland1 from '../assets/Fland/Fland1.png';
+import fland2 from '../assets/Fland/Fland2.png';
+import fland3 from '../assets/Fland/Fland3.png';
+import fland4 from '../assets/Fland/Fland4.png';
+import bb from '../assets/BB/BB.png';
 import flashfxRoadmap from '../assets/flashfx-roadmap-page.png';
-import flashfxDocs from '../assets/flashfx-documentation-site.png';
-import editorTimeline from '../assets/flashfx-editor-timeline-multitrack.png';
-import animator3d from '../assets/flashfx-animator-3d-objects-browser.png';
-import editorColor from '../assets/flashfx-editor-color-grading.png';
-import animatorLayers from '../assets/flashfx-animator-layer-panel-effects.png';
-import mledApp from '../assets/mled-machine-learning-app-interface.png';
 
 /** Drives the badge. Kept to three, because a status nobody can define is a
  *  status nobody reads. */
@@ -64,7 +78,12 @@ export interface Project {
    *  missing button just looks like an oversight. */
   site?: string;
   repo?: string;
-  image: ImageMetadata;
+  /** In display order. One entry renders a plain shot, more than one renders
+   *  the slideshow. Empty means there is nothing to show yet. */
+  images: ImageMetadata[];
+  /** Describes the PRODUCT, not the individual frame. Each slide's alt is this
+   *  plus its position, which is honest for a set of views of one interface
+   *  and avoids four near-identical sentences. */
   imageAlt: string;
 }
 
@@ -82,8 +101,8 @@ export const PROJECTS: Project[] = [
        "FlashFX - WebGPU Motion Graphics & Video Editor". */
     site: 'https://editor.flashfx.app',
     repo: 'https://github.com/gabrielebolognese/FlashFX-v2',
-    image: animatorTimeline,
-    imageAlt: 'The FlashFX Animator, timeline and canvas view',
+    images: [ffx0, ffx1, ffx2, ffx3],
+    imageAlt: 'The FlashFX editor: animation library, canvas and multi-track timeline',
   },
   {
     name: 'FlashFX Roadmap',
@@ -96,7 +115,7 @@ export const PROJECTS: Project[] = [
     stack: [],            // GitHub reports no language on the repo.
     site: 'https://roadmap.flashfx.app',
     repo: 'https://github.com/gabrielebolognese/FFXroadmap',
-    image: flashfxRoadmap,
+    images: [flashfxRoadmap],
     imageAlt: 'The FlashFX roadmap page',
   },
   {
@@ -110,8 +129,8 @@ export const PROJECTS: Project[] = [
     stack: ['TypeScript'],
     site: 'https://flashfx.app',
     repo: 'https://github.com/gabrielebolognese/FlashFX-landing-page',
-    image: editorTimeline,  // TODO: placeholder, wants a shot of flashfx.app itself.
-    imageAlt: 'Placeholder screenshot, to be replaced with the FlashFX landing page',
+    images: [fland1, fland2, fland3, fland4],
+    imageAlt: 'The FlashFX landing page',
   },
   {
     name: 'FlashFX documentation',
@@ -124,7 +143,7 @@ export const PROJECTS: Project[] = [
     stack: ['TypeScript'],
     site: 'https://documentation.flashfx.app',
     repo: 'https://github.com/gabrielebolognese/FFXdocumentation',
-    image: flashfxDocs,
+    images: [fdoc0, fdoc1, fdoc2, fdoc3],
     imageAlt: 'The FlashFX documentation site',
   },
   {
@@ -138,8 +157,8 @@ export const PROJECTS: Project[] = [
     stack: ['TypeScript'],
     // TODO: no homepage is set on the repo, so the site button is disabled.
     repo: 'https://github.com/gabrielebolognese/FlashCC',
-    image: editorColor,   // TODO: placeholder, a FlashFX screenshot.
-    imageAlt: 'Placeholder screenshot, to be replaced with FlashCC',
+    images: [fcc0, fcc1, fcc2, fcc3],
+    imageAlt: 'FlashCC, the carousel editor: slide list, canvas and slide settings',
   },
   {
     name: 'BrandBoard',
@@ -153,8 +172,11 @@ export const PROJECTS: Project[] = [
     stack: ['TypeScript'],
     // TODO: no homepage is set on the repo, so the site button is disabled.
     repo: 'https://github.com/gabrielebolognese/BrandBoard',
-    image: animatorLayers, // TODO: placeholder, a FlashFX screenshot.
-    imageAlt: 'Placeholder screenshot, to be replaced with BrandBoard',
+    /* BB2.png is also in the folder but this is the one card image: the brief
+       said BrandBoard is a single image. Note the product is branded
+       "FlashBrand" in the screenshot itself, not BrandBoard. */
+    images: [bb],
+    imageAlt: 'The BrandBoard grid, with featured tiles and their countdowns down the left',
   },
   {
     name: 'Threshold',
@@ -171,8 +193,10 @@ export const PROJECTS: Project[] = [
     // TODO: no homepage is set on the repo, so the site button is disabled.
     // Note the repository is spelled "threashold"; the product is "Threshold".
     repo: 'https://github.com/gabrielebolognese/threashold',
-    image: mledApp,       // TODO: placeholder, an old MLed screenshot.
-    imageAlt: 'Placeholder screenshot, to be replaced with Threshold',
+    // TODO: no screenshots yet. The card renders an empty panel rather than
+    // borrowing an unrelated one, which is what it used to do.
+    images: [],
+    imageAlt: 'Threshold',
   },
   {
     name: 'Flash3D',
@@ -187,7 +211,8 @@ export const PROJECTS: Project[] = [
     summary: 'FlashFX aimed at 3D motion graphics rather than 2D, with depth as a first-class axis instead of a 2.5D camera bolted on.',
     stack: [],
     // TODO: no repository and no site yet, so both buttons render disabled.
-    image: animator3d,    // TODO: placeholder, a FlashFX screenshot.
-    imageAlt: 'Placeholder screenshot, to be replaced with Flash3D',
+    // TODO: nothing built, so nothing to screenshot.
+    images: [],
+    imageAlt: 'Flash3D',
   },
 ];

@@ -19,19 +19,62 @@ interface Props {
 
 const { project, index } = Astro.props;
 const n = String(index + 1).padStart(2, '0');
+/** Scopes the radio group and the label `for`s to this card. */
+const slug = project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 ---
 
 <article class="project-card">
-  <figure class="project-shot">
-    <Image
-      src={project.image}
-      alt={project.imageAlt}
-      widths={[420, 840]}
-      sizes="(max-width: 860px) 100vw, 480px"
-      loading="lazy"
-      decoding="async"
-    />
-  </figure>
+  {/* One shot renders a plain image. Several render a CSS-only slideshow:
+      radio inputs, one per slide, and the labels beside them are the dots. No
+      JavaScript, so it works under a strict script-src and without motion.js,
+      and it is keyboard-operable for free because a radio group already is.
+
+      `name` is scoped to the project so two galleries on one page do not fight
+      over the same group. */}
+  {project.images.length > 0 ? (
+    <figure class={`project-shot${project.images.length > 1 ? ' has-slides' : ''}`}>
+      {project.images.length > 1 && project.images.map((_, i) => (
+        <input
+          class="project-slide-input"
+          type="radio"
+          name={`shot-${slug}`}
+          id={`shot-${slug}-${i}`}
+          checked={i === 0}
+        />
+      ))}
+
+      <div class="project-slides" role="group" aria-label={project.imageAlt}>
+        {project.images.map((image, i) => (
+          <Image
+            src={image}
+            alt={project.images.length > 1
+              ? `${project.imageAlt}, view ${i + 1} of ${project.images.length}`
+              : project.imageAlt}
+            widths={[480, 960]}
+            sizes="(max-width: 860px) 100vw, 520px"
+            loading="lazy"
+            decoding="async"
+          />
+        ))}
+      </div>
+
+      {project.images.length > 1 && (
+        <div class="project-dots">
+          {project.images.map((_, i) => (
+            <label class="project-dot" for={`shot-${slug}-${i}`}>
+              <span class="visually-hidden">Show view {i + 1} of {project.images.length}</span>
+            </label>
+          ))}
+        </div>
+      )}
+    </figure>
+  ) : (
+    /* No screenshot yet. An empty panel rather than an unrelated product's
+       screenshot, which is what these cards used to borrow. */
+    <div class="project-shot is-empty">
+      <span>No screenshot yet</span>
+    </div>
+  )}
 
   <div class="project-body">
     <p class="project-rail">
