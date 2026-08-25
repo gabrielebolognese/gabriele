@@ -3281,6 +3281,28 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .contrib { margin-top: 56px; }
 
 .contrib-heading { margin-bottom: 20px; }
+
+/* One block per calendar year, stacked. The year and its own total sit above
+   each grid so the number beside a year is a total OF that year, never of the
+   pair. */
+.contrib-year + .contrib-year { margin-top: 26px; }
+
+.contrib-year-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.contrib-year-head .stat-note { margin-top: 0; }
+
+.contrib-year-label {
+    font-family: var(--font-wide);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    color: var(--black);
+}
 .contrib-heading .stat-note { max-width: 560px; }
 
 /* Scrolls rather than shrinks. A 53-week year squeezed into a phone gives 4px

@@ -195,24 +195,50 @@ export function computeStats(days, todayIso) {
   };
 }
 
-/* ── The grid ────────────────────────────────────────────────────────────────
-   Columns of seven, Sunday first, ending on the column that contains today.
-   Cells before the first contribution and after today come back as null so the
-   renderer can leave a hole rather than draw a fake empty day.
+/* ── The grids ───────────────────────────────────────────────────────────────
+   Columns of seven, Sunday first. Cells outside the requested span, and any
+   day that has not happened yet, come back as null so the renderer can leave a
+   hole rather than draw a fake empty day.
+
+   Two shapes are built from the same function. A CALENDAR YEAR grid runs
+   1 January to 31 December, which is how GitHub presents its own and what a
+   year label can honestly sit above. A rolling grid ends on today. Two years
+   are shown, and they are stacked rather than joined into one 106-week strip:
+   the grid carries a 740px min-width for 53 weeks, so a single two-year row
+   would be ~1,480px and would scroll sideways on every screen, hiding the
+   recent end, which is the end anyone looks at.
    ------------------------------------------------------------------------- */
 export function buildCalendar(days, todayIso, weekCount = 53) {
-  const byDate = new Map(days.map((d) => [d.date, d]));
-
   const today = fromIso(todayIso);
   const endOfWeek = today + (6 - new Date(today).getUTCDay()) * DAY_MS;
-  const start = endOfWeek - (weekCount * 7 - 1) * DAY_MS;
+  return buildSpan(days, endOfWeek - (weekCount * 7 - 1) * DAY_MS, endOfWeek, todayIso);
+}
 
+/**
+ * One calendar year, padded out to whole weeks at both ends so every column is
+ * seven cells tall. The padding days belong to the neighbouring year and are
+ * returned as null: showing them would put late December in the 2025 grid and
+ * again in the 2026 one, and the same day twice is worse than a gap.
+ */
+export function buildYear(days, year, todayIso) {
+  const jan1 = Date.UTC(year, 0, 1);
+  const dec31 = Date.UTC(year, 11, 31);
+  const start = jan1 - new Date(jan1).getUTCDay() * DAY_MS;
+  const end = dec31 + (6 - new Date(dec31).getUTCDay()) * DAY_MS;
+  return buildSpan(days, start, end, todayIso, year);
+}
+
+function buildSpan(days, startMs, endMs, todayIso, limitYear) {
+  const byDate = new Map(days.map((d) => [d.date, d]));
   const weeks = [];
-  for (let w = 0; w < weekCount; w++) {
+  const columns = Math.round((endMs - startMs) / (7 * DAY_MS)) + 1;
+
+  for (let w = 0; w < columns; w++) {
     const column = [];
     for (let d = 0; d < 7; d++) {
-      const iso = toIso(start + (w * 7 + d) * DAY_MS);
-      if (iso > todayIso) { column.push(null); continue; }
+      const iso = toIso(startMs + (w * 7 + d) * DAY_MS);
+      const outsideYear = limitYear !== undefined && Number(iso.slice(0, 4)) !== limitYear;
+      if (iso > todayIso || outsideYear) { column.push(null); continue; }
       const hit = byDate.get(iso);
       column.push({ date: iso, count: hit?.count ?? 0, level: hit?.level ?? 0 });
     }

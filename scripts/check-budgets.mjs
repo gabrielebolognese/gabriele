@@ -33,14 +33,20 @@ const DIST = 'dist';
 
 /** Set just above the measured value on 2026-08-18. See PERFORMANCE-PLAN.md. */
 const BUDGETS = {
-  homepageDomElements: 7500,   // measured 7,270. Phase 2 should bring this far down.
+  /* 7,744 measured. Raised from 7,500 on 2026-08-25 for a REQUESTED feature,
+     a second year of contribution squares, which is 371 more cells: the guard
+     caught it and this is the deliberate answer, not the number being nudged
+     until it stopped complaining. Do not raise it again without a reason worth
+     writing down here. Phase 2 of PERFORMANCE-PLAN.md should bring it far
+     below this; the life grid is still 4,680 of the total. */
+  homepageDomElements: 7800,
   homepageHtmlBrotliKb: 60,    // measured 50.7
   aboutDomElements: 5400,      // measured 5,159
-  totalImagesMb: 9,            // measured 8.55: 5.99 MB webp + 2.56 MB of
-                               // originals, ALL of them og:image cards. Open
-                               // Graph consumers do not reliably render webp,
-                               // so those nine are correct. Phase 4.2 is what
-                               // brings this down next.
+  /* 7.47 MB measured, down from 8.55 because the project carousels went and
+     took their 1440px variants with them. Lowered to lock that in. What is
+     left is 5 MB of webp plus og:image cards, which are correctly PNG because
+     Open Graph consumers do not reliably render webp. */
+  totalImagesMb: 8,
   renderBlockingRequests: 2,   // was 3 with a third-party Google Fonts sheet.
                                // Now 2, both same-origin: Style.css and one
                                // scoped component sheet.

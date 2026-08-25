@@ -10,7 +10,7 @@ import {
   parseContributionDays,
   parsePinnedRepos,
   computeStats,
-  buildCalendar,
+  buildYear,
   monthLabels,
 } from './github-parse.mjs';
 
@@ -58,7 +58,25 @@ export async function fetchGithubStats(login, startYear) {
   const stats = computeStats(days, today);
   if (stats.totalContributions <= 0) throw new Error('parsed zero contributions');
 
-  const weeks = buildCalendar(days, today);
+  /* Two calendar years, oldest first, each as its own grid. Calendar years
+     rather than a rolling 24 months because a year label can then sit above a
+     grid and be true; "the 12 months to August" needs a sentence. Stacked
+     rather than joined, because 106 weeks in one row is ~1,480px against a
+     740px min-width and would scroll sideways on every screen, hiding the
+     recent end. */
+  const calendars = [thisYear - 1, thisYear].map((year) => {
+    const weeks = buildYear(days, year, today);
+    return {
+      year,
+      weeks,
+      months: monthLabels(weeks),
+      /* Recomputed from the grid rather than read off `years`, so the number
+         printed beside a grid is a total OF that grid and cannot disagree with
+         the squares under it. */
+      total: weeks.flat().reduce((n, day) => n + (day?.count ?? 0), 0),
+      activeDays: weeks.flat().filter((day) => day && day.count > 0).length,
+    };
+  });
 
   return {
     capturedAt: new Date().toISOString(),
@@ -68,8 +86,7 @@ export async function fetchGithubStats(login, startYear) {
     /* Only the rendered window is stored. Keeping every day since 2024 would
        triple the file for rows no page draws; the totals above are already
        computed over the full history. */
-    weeks,
-    months: monthLabels(weeks),
+    calendars,
     pinned,
   };
 }
