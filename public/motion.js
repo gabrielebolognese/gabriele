@@ -398,6 +398,191 @@
         return halt;
     }
 
+    /* ── Project gallery and the full-screen viewer ──────────────────────────
+       Two behaviours over markup that already works without either.
+
+       The card slideshow is radios and labels, so the dots work with no
+       JavaScript at all. This adds the arrows, which are in the markup but
+       hidden and tabindex="-1" until it runs, because three controls that do
+       nothing are worse than three controls that are not there.
+
+       The viewer is one <dialog>, built once on first open. <dialog> rather
+       than a div: showModal() gives a focus trap, Escape, inertness of the
+       page behind it and a ::backdrop, all of which would otherwise be a
+       few hundred lines of getting it subtly wrong.
+
+       The slide list is FLAT across every project, so the arrows keep going
+       past the end of one project into the next and the title changes with
+       them. That is what "scroll to other projects too" means, and it is why
+       the list is built once from the whole page rather than per card.
+
+       Everything is read out of the DOM the cards already render. No data is
+       duplicated into a script tag, which also means nothing to keep in sync
+       and nothing new for the CSP to allow. */
+    function initProjectGallery() {
+        var shots = document.querySelectorAll('.project-shot');
+        if (!shots.length) return;
+
+        /* Flat, in page order: [{ project, src, alt }, ...]. Card index is
+           recorded so opening from a card lands on the right slide. */
+        var slides = [];
+        var cardStart = [];
+
+        for (var s = 0; s < shots.length; s++) {
+            var shot = shots[s];
+            var imgs = shot.querySelectorAll('.project-slides img');
+            if (!imgs.length) continue;
+
+            var card = shot.closest('.project-card');
+            var name = card ? (card.querySelector('.project-name') || {}).textContent : '';
+            cardStart.push({ shot: shot, from: slides.length });
+
+            for (var i = 0; i < imgs.length; i++) {
+                slides.push({
+                    project: (name || '').trim(),
+                    // The 1600px variant the card put on the element. Falls
+                    // back to what is displayed if it is ever missing.
+                    src: imgs[i].getAttribute('data-full') || imgs[i].currentSrc || imgs[i].src,
+                    alt: imgs[i].getAttribute('alt') || ''
+                });
+            }
+        }
+        if (!slides.length) return;
+
+        /* ── Card arrows ─────────────────────────────────────────────────── */
+        for (var c = 0; c < cardStart.length; c++) {
+            (function (shot) {
+                var inputs = shot.querySelectorAll('.project-slide-input');
+                if (inputs.length < 2) return;
+
+                var arrows = shot.querySelector('.project-arrows');
+                if (arrows) {
+                    arrows.removeAttribute('aria-hidden');
+                    var btns = arrows.querySelectorAll('.project-arrow');
+                    for (var b = 0; b < btns.length; b++) {
+                        btns[b].removeAttribute('tabindex');
+                        (function (btn) {
+                            btn.addEventListener('click', function () {
+                                var at = 0;
+                                for (var k = 0; k < inputs.length; k++) if (inputs[k].checked) at = k;
+                                // Wraps, so the arrows never dead-end on a
+                                // four-slide gallery.
+                                var next = (at + Number(btn.getAttribute('data-dir')) + inputs.length)
+                                    % inputs.length;
+                                inputs[next].checked = true;
+                            });
+                        })(btns[b]);
+                    }
+                }
+            })(cardStart[c].shot);
+        }
+
+        /* ── The viewer ──────────────────────────────────────────────────── */
+        var dialog = null;
+        var imgEl = null;
+        var titleEl = null;
+        var countEl = null;
+        var at = 0;
+
+        function render() {
+            var slide = slides[at];
+            imgEl.src = slide.src;
+            imgEl.alt = slide.alt;
+            titleEl.textContent = slide.project;
+            countEl.textContent = (at + 1) + ' / ' + slides.length;
+        }
+
+        function move(step) {
+            at = (at + step + slides.length) % slides.length;
+            render();
+        }
+
+        function build() {
+            dialog = document.createElement('dialog');
+            dialog.className = 'shot-viewer';
+
+            dialog.innerHTML =
+                '<div class="shot-viewer-bar">'
+                + '<p class="shot-viewer-title"></p>'
+                + '<p class="shot-viewer-count"></p>'
+                + '<button class="shot-viewer-close" type="button" aria-label="Close">'
+                + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+                + ' stroke-width="2" stroke-linecap="round" aria-hidden="true">'
+                + '<path d="M5 5l14 14M19 5L5 19"/></svg></button>'
+                + '</div>'
+                + '<div class="shot-viewer-stage">'
+                + '<button class="shot-viewer-arrow is-prev" type="button" aria-label="Previous screenshot">'
+                + '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+                + ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+                + '<path d="M15 5 8 12l7 7"/></svg></button>'
+                + '<img class="shot-viewer-img" alt="">'
+                + '<button class="shot-viewer-arrow is-next" type="button" aria-label="Next screenshot">'
+                + '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+                + ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+                + '<path d="M9 5l7 7-7 7"/></svg></button>'
+                + '</div>';
+
+            document.body.appendChild(dialog);
+            imgEl = dialog.querySelector('.shot-viewer-img');
+            titleEl = dialog.querySelector('.shot-viewer-title');
+            countEl = dialog.querySelector('.shot-viewer-count');
+
+            dialog.querySelector('.is-prev').addEventListener('click', function () { move(-1); });
+            dialog.querySelector('.is-next').addEventListener('click', function () { move(1); });
+            dialog.querySelector('.shot-viewer-close').addEventListener('click', function () {
+                dialog.close();
+            });
+
+            dialog.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowRight') { move(1); e.preventDefault(); }
+                else if (e.key === 'ArrowLeft') { move(-1); e.preventDefault(); }
+            });
+
+            /* Clicking the backdrop closes. The <dialog> element IS the
+               backdrop as far as the event target goes, so a click that lands
+               on the dialog itself rather than on any child is a backdrop
+               click. */
+            dialog.addEventListener('click', function (e) {
+                if (e.target === dialog) dialog.close();
+            });
+        }
+
+        function open(index) {
+            if (!dialog) build();
+            at = index;
+            render();
+            dialog.showModal();
+        }
+
+        /* Opening: the expand button, and a click anywhere on the picture. The
+           button is what makes it reachable by keyboard; the picture click is
+           the thing everyone tries first. */
+        for (var e2 = 0; e2 < cardStart.length; e2++) {
+            (function (entry) {
+                var shot = entry.shot;
+                var inputs = shot.querySelectorAll('.project-slide-input');
+
+                function currentIndex() {
+                    var offset = 0;
+                    for (var k = 0; k < inputs.length; k++) if (inputs[k].checked) offset = k;
+                    return entry.from + offset;
+                }
+
+                var expand = shot.querySelector('.project-expand');
+                if (expand) {
+                    expand.classList.add('is-ready');
+                    expand.addEventListener('click', function () { open(currentIndex()); });
+                }
+
+                var stage = shot.querySelector('.project-slides');
+                if (stage) {
+                    stage.addEventListener('click', function () { open(currentIndex()); });
+                    stage.classList.add('is-zoomable');
+                }
+            })(cardStart[e2]);
+        }
+    }
+
     /* ── Skip controls ──────────────────────────────────────────────────────
        The story and the timeline are the two long sections on the page, so
        each gets a way out. One implementation, driven by data-skip-watch on
@@ -438,6 +623,7 @@
         initReveal();
         initNav();
         initProgress();
+        initProjectGallery();
         initSkipJumps();
         initCountdown();
         initAgeCount();

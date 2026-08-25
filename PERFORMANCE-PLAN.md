@@ -76,7 +76,7 @@ it says so.
 | 3.2 | ~~Four font families, 58 `@font-face` blocks~~ | **Done** | |
 | 3.3 | LCP image is not preloaded | Medium | Low |
 | 4.1 | 920 KB of images, carousels may defeat lazy-loading | Medium | Medium |
-| 4.2 | One emitted image is 832 KB | Medium | Low |
+| 4.2 | One emitted image is 832 KB | **Medium, now blocking** | Low |
 | 4.3 | ~~JSON-LD cites 1.19 MB originals when WebP exists~~ | **Done** | |
 | 5.1 | ~~No Content-Security-Policy~~ | **Report-only, shipped** | |
 | 5.2 | ~~No `X-Frame-Options` / `frame-ancestors`~~ | **Done** | |
@@ -435,7 +435,16 @@ off-screen, or swap `src` on slide change from a `data-src`.
 
 ---
 
-### 4.2 One emitted image is 832 KB (Medium)
+### 4.2 One emitted image is 832 KB (Medium, and now the blocking one)
+
+**Update, 26 August 2026.** The images budget has been raised three times since
+this was written, to 10.5 MB, each time for a real feature. It is now the only
+budget with no comfortable headroom, and this item is what would give it back:
+roughly 3 MB of the total is three photographs in one newsletter issue emitted
+at Astro's default quality, which is tuned for screenshots full of 10px text
+and is about twice what a photograph needs. `Pair`'s widths were checked and
+are correct ([520, 780, 1040] for a ~520px slot), so this is quality, not
+dimensions. Do this before raising the budget again.
 
 **Evidence.** From `dist/_astro`:
 

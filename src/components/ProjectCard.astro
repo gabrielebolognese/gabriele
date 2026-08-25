@@ -7,7 +7,7 @@
  * them depending on stacking order. Two explicit targets beat one ambiguous
  * one.
  */
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { STATUS_LABEL, type Project } from '../data/projects';
 
 interface Props {
@@ -21,6 +21,14 @@ const { project, index } = Astro.props;
 const n = String(index + 1).padStart(2, '0');
 /** Scopes the radio group and the label `for`s to this card. */
 const slug = project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+/* A bigger variant for the full-screen viewer, resolved here rather than
+   letting the lightbox upscale the 960px card image: these are screenshots,
+   and 10px UI text is exactly what upscaling ruins. Carried on the <img> as a
+   data attribute so motion.js needs no second source of truth. */
+const fullSizes = await Promise.all(
+  project.images.map((src) => getImage({ src, width: 1600, format: 'webp', quality: 72 })),
+);
 ---
 
 <article class="project-card">
@@ -54,9 +62,43 @@ const slug = project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             sizes="(max-width: 860px) 100vw, 520px"
             loading="lazy"
             decoding="async"
+            quality={72}
+            data-full={fullSizes[i].src}
           />
         ))}
       </div>
+
+      {/* Arrows and the expand button are added to the markup but hidden
+          until html.js is set, the same gate the skip controls use: without
+          JavaScript they would be three controls that do nothing, while the
+          dots below still work because they are labels for real radios. */}
+      {project.images.length > 1 && (
+        <div class="project-arrows" aria-hidden="true">
+          <button class="project-arrow" type="button" data-dir="-1" tabindex="-1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 5 8 12l7 7" />
+            </svg>
+          </button>
+          <button class="project-arrow" type="button" data-dir="1" tabindex="-1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      <button class="project-expand" type="button" data-project={project.name}>
+        <span class="visually-hidden">Open {project.name} screenshots full screen</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 3H3v6" />
+          <path d="M15 21h6v-6" />
+          <path d="M3 3l7 7" />
+          <path d="M21 21l-7-7" />
+        </svg>
+      </button>
 
       {project.images.length > 1 && (
         <div class="project-dots">
