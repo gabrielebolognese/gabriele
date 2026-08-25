@@ -118,6 +118,7 @@ export const SAME_AS: string[] = [
   'https://www.producthunt.com/@gabrielebolognese',
   'https://peerlist.io/gabrielebologne',
   'https://www.connectively.us/p/gabriele-bolognese',
+  'https://www.reddit.com/user/No_Birthday8126/',
 
   // Deliberately absent:
   //   x.com/FlashFXeditor       , company account, lives on ORGANIZATION.sameAs
@@ -145,7 +146,9 @@ export const SAME_AS: string[] = [
    The lookup throws rather than falling back. A missing profile should stop
    the build, not quietly render a card with no href.
    ------------------------------------------------------------------------- */
-export type SocialKey = 'linkedin' | 'x' | 'github' | 'youtube' | 'instagram' | 'flashfx';
+export type SocialKey =
+  | 'linkedin' | 'x' | 'github' | 'youtube' | 'instagram' | 'flashfx'
+  | 'peerlist' | 'connectively' | 'reddit';
 
 export interface Social {
   key: SocialKey;
@@ -176,7 +179,7 @@ export const SOCIALS: Social[] = [
     key: 'linkedin',
     name: 'LinkedIn',
     url: fromSameAs('linkedin.com'),
-    // TODO: these six descriptions are a first draft. They describe what each
+    // TODO: these nine descriptions are a first draft. They describe what each
     // account is for, which only you can confirm.
     description:
       'Build updates and the reasoning behind product decisions. The fastest growing of my accounts.',
@@ -215,6 +218,43 @@ export const SOCIALS: Social[] = [
       'The daily side of it: training, studying, and the parts of building that do not screenshot well.',
     cta: 'Follow the logs',
     brand: '#e4405f',
+  },
+  {
+    key: 'peerlist',
+    name: 'Peerlist',
+    /* peerlist.io/gabrielebologne, NOT peerlist.io/scroll. /scroll is
+       Peerlist's own discovery feed: its og:title is "Scroll | Discover and
+       connect with professionals", so it is a page about everyone rather than
+       a profile. The profile's og:title is "Gabriele Bolognese, Peerlist".
+       Linking /scroll from sameAs would have pointed the schema at a page that
+       is not about this person, which is the one thing sameAs must never do. */
+    url: fromSameAs('peerlist.io'),
+    description:
+      'The developer profile: work history, stack and projects, in the format other developers read.',
+    cta: 'See the profile',
+    brand: '#00aa45',
+  },
+  {
+    key: 'connectively',
+    /* Named for the domain it actually is. The brief called it featured.com,
+       but the URL is connectively.us and the site's own label is Connectively;
+       a card titled Featured pointing at connectively.us reads as a mistake. */
+    name: 'Connectively',
+    url: fromSameAs('connectively.us'),
+    description:
+      'A source profile, for journalists looking for someone to quote on browser-based tooling.',
+    cta: 'Quote me',
+    // TODO: Connectively's real brand hex. This is a placeholder; their site
+    // returns 429 to anything that is not a browser, so it could not be read.
+    brand: '#0f766e',
+  },
+  {
+    key: 'reddit',
+    name: 'Reddit',
+    url: fromSameAs('reddit.com'),
+    description: 'Where I read far more than I post, mostly about graphics programming.',
+    cta: 'Find me there',
+    brand: '#ff4500',
   },
   {
     key: 'flashfx',

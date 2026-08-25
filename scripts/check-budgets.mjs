@@ -33,11 +33,19 @@ const DIST = 'dist';
 
 /** Set just above the measured value on 2026-08-18. See PERFORMANCE-PLAN.md. */
 const BUDGETS = {
-  /* Went to 7,800 for a second year of contribution squares, which was then
-     reverted: one rolling chart again, so the 371 cells came back off. Back to
-     7,500. Phase 2 of PERFORMANCE-PLAN.md should bring this far below it; the
-     life grid is still 4,680 of the total. */
-  homepageDomElements: 7500,
+  /* 7,510 measured. 7,500 -> 7,800 for a second year of contribution squares,
+     back to 7,500 when that was reverted, now 7,600 for three more profile
+     cards. Each move was a real feature and each is recorded.
+
+     Both this and totalImagesMb are now saturated, which is the budgets doing
+     their actual job: they are saying the homepage cannot absorb another
+     section without something being given back first. 4,680 of these 7,510
+     elements are the life grid, and PERFORMANCE-PLAN.md 2.1 option A (draw it
+     as one SVG instead of 4,680 <i> elements) is the only change that moves
+     the number by an order of magnitude rather than by a card at a time.
+
+     Do that before raising this line again. */
+  homepageDomElements: 7600,
   homepageHtmlBrotliKb: 60,    // measured 50.7
   aboutDomElements: 5400,      // measured 5,159
   /* 9.49 MB measured, and this line has now moved three times in one session:

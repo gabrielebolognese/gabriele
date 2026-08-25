@@ -71,7 +71,7 @@ it says so.
 | :-- | :--- | :--- | :--- |
 | 1.1 | Every internal route 301-redirects | High | Low |
 | 1.2 | `Style.css` and `motion.js` are served uncacheable | High | Low |
-| 2.1 | 7,270 DOM elements (Lighthouse errors above 1,400) | High | Medium |
+| 2.1 | 7,510 DOM elements (Lighthouse errors above 1,400) | **High, now blocking** | Medium |
 | 3.1 | ~~Google Fonts is a render-blocking third-party request~~ | **Done** | |
 | 3.2 | ~~Four font families, 58 `@font-face` blocks~~ | **Done** | |
 | 3.3 | LCP image is not preloaded | Medium | Low |
@@ -180,7 +180,13 @@ visible CSS change and confirm it appears immediately, because the hash moved.
 
 ## Phase 2: DOM size
 
-### 2.1 The homepage serves 7,270 DOM elements (High)
+### 2.1 The homepage serves 7,510 DOM elements (High, and now the blocking one)
+
+**Update, 26 August 2026.** Both the DOM and the images budget are now saturated: each has been
+raised for a real feature and each is within a few units of its ceiling. The homepage cannot absorb
+another section without something being given back. 4,680 of the 7,510 elements are the life grid,
+so option A below is the only change that moves this by an order of magnitude rather than by a card
+at a time.
 
 **Evidence.** Parsed from the served HTML:
 
