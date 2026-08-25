@@ -29,6 +29,8 @@ import type { ImageMetadata } from 'astro';
 
 import animatorTimeline from '../assets/flashfx-animator-timeline-canvas.png';
 import flashfxRoadmap from '../assets/flashfx-roadmap-page.png';
+import flashfxDocs from '../assets/flashfx-documentation-site.png';
+import editorTimeline from '../assets/flashfx-editor-timeline-multitrack.png';
 import animator3d from '../assets/flashfx-animator-3d-objects-browser.png';
 import editorColor from '../assets/flashfx-editor-color-grading.png';
 import animatorLayers from '../assets/flashfx-animator-layer-panel-effects.png';
@@ -74,7 +76,11 @@ export const PROJECTS: Project[] = [
     summary:
       'A browser-native motion graphics and video editor. The After Effects workflow, with nothing to install and no licence.',
     stack: ['TypeScript', 'WebGPU', 'WebCodecs'],
-    site: 'https://flashfx.app',
+    /* editor.flashfx.app, not flashfx.app. They are two different sites and
+       the landing page is now its own card below; pointing both at the same
+       URL would have made one of the two cards a lie. This one is the product:
+       "FlashFX - WebGPU Motion Graphics & Video Editor". */
+    site: 'https://editor.flashfx.app',
     repo: 'https://github.com/gabrielebolognese/FlashFX-v2',
     image: animatorTimeline,
     imageAlt: 'The FlashFX Animator, timeline and canvas view',
@@ -92,6 +98,34 @@ export const PROJECTS: Project[] = [
     repo: 'https://github.com/gabrielebolognese/FFXroadmap',
     image: flashfxRoadmap,
     imageAlt: 'The FlashFX roadmap page',
+  },
+  {
+    name: 'FlashFX landing page',
+    status: 'live',
+    since: '2026',        // repo created 2026-08-04
+    /* Its own meta description reads "FlashFX is a free motion graphics and
+       video editor that runs in your browser", which describes the product
+       rather than the page, so the line here describes the page's job. */
+    summary: 'The front door for FlashFX. What it is, who it is for, and the argument for using it instead of the desktop tools.',
+    stack: ['TypeScript'],
+    site: 'https://flashfx.app',
+    repo: 'https://github.com/gabrielebolognese/FlashFX-landing-page',
+    image: editorTimeline,  // TODO: placeholder, wants a shot of flashfx.app itself.
+    imageAlt: 'Placeholder screenshot, to be replaced with the FlashFX landing page',
+  },
+  {
+    name: 'FlashFX documentation',
+    status: 'live',
+    since: '2026',        // repo created 2026-06-29
+    /* The site describes itself as "FlashFX Official Product Documentation,
+       Alpha Release", and the alpha part is worth keeping: it sets the
+       expectation that it is incomplete. */
+    summary: 'The official product documentation for FlashFX. Still in alpha, and filling in as fast as the editor itself does.',
+    stack: ['TypeScript'],
+    site: 'https://documentation.flashfx.app',
+    repo: 'https://github.com/gabrielebolognese/FFXdocumentation',
+    image: flashfxDocs,
+    imageAlt: 'The FlashFX documentation site',
   },
   {
     name: 'FlashCC',
