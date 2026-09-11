@@ -79,6 +79,11 @@ export const MILESTONES: Milestone[] = [
      calendar weeks exactly, so 15-21 really is the third week rather than
      approximately it. */
   { month: '2026-08-15',            kind: 'flashfx',  label: 'First 100,000 views on X, inside one week' },
+  /* Anchored to Saturday 5 September, the start of grid week 926 (5-11
+     September), the week being lived when it was added. Until the 12th it sits
+     on the current square, so for those days it takes the place of the "this
+     week" ring; from the 12th that ring moves on and the setback stays put. */
+  { month: '2026-09-05',            kind: 'setback',  label: 'The marketing mess, four platforms taken on at once' },
 ];
 
 /** Splits either granularity. `d` is null for a month-only entry. */
