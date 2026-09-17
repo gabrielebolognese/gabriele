@@ -18,11 +18,10 @@
    concept. The status badge then agrees with the reading order instead of
    fighting it, and 01 is always something that exists.
 
-   ⚠️  The IMAGES are placeholders on four of the six: old FlashFX screenshots
-   standing in for products that look nothing like it. FlashFX and FlashFX
-   Roadmap use their own. `site` is unset wherever the repository declares no
-   homepage, so that button renders disabled rather than pointing somewhere
-   wrong.
+   Every image is now the product's own screenshot. Flash3D is the only card
+   without one, because nothing is built yet. `site` is unset wherever the
+   repository declares no homepage, so that button renders disabled rather
+   than pointing somewhere wrong.
    ========================================================================= */
 
 import type { ImageMetadata } from 'astro';
@@ -48,6 +47,9 @@ import fland2 from '../assets/Fland/Fland2.png';
 import fland3 from '../assets/Fland/Fland3.png';
 import fland4 from '../assets/Fland/Fland4.png';
 import bb from '../assets/BB/BB.png';
+import trh0 from '../assets/TRH/TRH0.png';
+import trh1 from '../assets/TRH/TRH1.png';
+import trh2 from '../assets/TRH/TRH2.png';
 import flashfxRoadmap from '../assets/flashfx-roadmap-page.png';
 
 /** Drives the badge. Kept to three, because a status nobody can define is a
@@ -193,10 +195,11 @@ export const PROJECTS: Project[] = [
     // TODO: no homepage is set on the repo, so the site button is disabled.
     // Note the repository is spelled "threashold"; the product is "Threshold".
     repo: 'https://github.com/gabrielebolognese/threashold',
-    // TODO: no screenshots yet. The card renders an empty panel rather than
-    // borrowing an unrelated one, which is what it used to do.
-    images: [],
-    imageAlt: 'Threshold',
+    /* Led by the tutorial rather than the calendar, although the calendar was
+       captured first: the monetization thresholds are what the product is
+       named after, and the calendar shot is an empty week. */
+    images: [trh0, trh1, trh2],
+    imageAlt: 'Threshold: monetization thresholds for each platform, view-count goals and a weekly posting calendar',
   },
   {
     name: 'Flash3D',

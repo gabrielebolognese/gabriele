@@ -144,10 +144,12 @@ expect: 211 lines of near-duplicate JSX in which one card was headed "FlashFX bl
 `aria-label="MLed project"`, and described a machine-learning course in its body. Nobody finds that
 by reading; in a data file it is one obviously wrong line.
 
-**Only FlashFX is written from fact.** The other three carry `summary: null`, which renders a
-visibly provisional line rather than an invented description of a real product, and their images
-are deliberately old FlashFX screenshots standing in until the real ones exist. Every unverified
-field is marked `TODO:`.
+**Every card is written from fact.** Summaries come from the site owner's own description of each
+product; `summary: null` still renders a visibly provisional line rather than an invented one if a
+new card arrives without one. Screenshots live in one folder per product under `src/assets/`
+(`FFX`, `FCC`, `Fdoc`, `Fland`, `BB`, `TRH`), numbered in display order and imported
+explicitly, since glob order is filesystem order. Flash3D has no images because nothing is built.
+Every unverified field is marked `TODO:`.
 
 The homepage's entry in `images.ts` is **derived** from `PROJECTS` rather than listed, since the
 twelve carousel entries it replaced had gone stale the moment the carousels were deleted and were
