@@ -84,6 +84,11 @@ export const MILESTONES: Milestone[] = [
      on the current square, so for those days it takes the place of the "this
      week" ring; from the 12th that ring moves on and the setback stays put. */
   { month: '2026-09-05',            kind: 'setback',  label: 'The marketing mess, four platforms taken on at once' },
+  /* The very next square: Saturday 12 September opens grid week 927 (12-18
+     September), the week being lived when it was added. Filed as personal
+     rather than flashfx because one of the three Instagram accounts is the
+     personal log, not the company's. */
+  { month: '2026-09-12',            kind: 'personal', label: 'Comeback: TikTok running, three Instagram accounts steady, no YouTube yet' },
 ];
 
 /** Splits either granularity. `d` is null for a month-only entry. */
