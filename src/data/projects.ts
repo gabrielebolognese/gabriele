@@ -1,5 +1,5 @@
 /* ============================================================================
-   projects.ts: the four things worth showing, as data.
+   projects.ts: the things worth showing, as data.
 
    The section used to be 211 lines of hand-written markup per card, with a
    six-image carousel inside the first one. Four cards written out four times
@@ -18,8 +18,8 @@
    concept. The status badge then agrees with the reading order instead of
    fighting it, and 01 is always something that exists.
 
-   Every image is now the product's own screenshot. Flash3D is the only card
-   without one, because nothing is built yet. `site` is unset wherever the
+   Every image is now the product's own screenshot. Flash3D, Knowledge Tree
+   and GDiary have none, because there is nothing built to photograph yet. `site` is unset wherever the
    repository declares no homepage, so that button renders disabled rather
    than pointing somewhere wrong.
    ========================================================================= */
@@ -200,6 +200,41 @@ export const PROJECTS: Project[] = [
        named after, and the calendar shot is an empty week. */
     images: [trh0, trh1, trh2],
     imageAlt: 'Threshold: monetization thresholds for each platform, view-count goals and a weekly posting calendar',
+  },
+  {
+    name: 'Knowledge Tree',
+    status: 'building',
+    since: '2026',        // TODO: confirm, nothing to derive it from yet.
+    /* Full version: what helps me study. A tree I can add knowledge nodes to,
+       showing how deeply a branch goes, what is already studied and how things
+       connect. Built for the site owner's own studying rather than as a
+       product, which the summary says outright: a personal tool described in
+       product language reads as vapourware. */
+    summary:
+      'A study tool shaped like a tree. Every topic is a node, so how deep a branch runs, what is already covered and how it all connects stay visible.',
+    stack: [],            // TODO: no repository found yet, so nothing to read a language from.
+    // TODO: no repository and no site yet, so both buttons render disabled.
+    // TODO: no screenshots yet. The card renders an empty panel rather than
+    // borrowing an unrelated one.
+    images: [],
+    imageAlt: 'Knowledge Tree',
+  },
+  {
+    name: 'GDiary',
+    status: 'building',
+    since: '2026',        // TODO: confirm, nothing to derive it from yet.
+    /* Full version: a daily log kept to keep track of what I do. Deliberately
+       not described as a journalling app for other people: it is a log the
+       site owner keeps, and that is the whole claim. Distinct from /devlog,
+       which is public and about the work; this is the private record. */
+    summary:
+      'A daily log of what actually got done. One entry a day, kept so a week is a record rather than something to reconstruct afterwards.',
+    stack: [],            // TODO: no repository found yet, so nothing to read a language from.
+    // TODO: no repository and no site yet, so both buttons render disabled.
+    // TODO: no screenshots yet. The card renders an empty panel rather than
+    // borrowing an unrelated one.
+    images: [],
+    imageAlt: 'GDiary',
   },
   {
     name: 'Flash3D',

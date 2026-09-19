@@ -231,7 +231,10 @@ remaining problem is the node count itself, which none of them address.
 **Options, cheapest first:**
 
 - **A. Render the grid as one SVG or a single `<canvas>`.** 4,680 cells become one element. This
-  is the only change that actually solves it. The event handling in `initGridTitles()` is already a
+  is the only change that actually solves it. Note what "one element" has to mean: an `<svg>`
+  containing 4,680 `<rect>` elements is still 4,680 DOM nodes and gains nothing at all. The cells
+  must collapse into a handful of `<path>` elements grouped by state (lived before 13, lived after,
+  future, and one per event kind), or be painted into a `<canvas>`. The event handling in `initGridTitles()` is already a
   single delegated listener, so it would move to hit-testing coordinates instead of reading a
   `title` off a target. Highest effort, highest payoff, and it must preserve the `role="img"` plus
   the visible `<details>` event list that currently carries the meaning for assistive tech and
