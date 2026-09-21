@@ -18,8 +18,8 @@
    concept. The status badge then agrees with the reading order instead of
    fighting it, and 01 is always something that exists.
 
-   Every image is now the product's own screenshot. Flash3D, Knowledge Tree
-   and GDiary have none, because there is nothing built to photograph yet. `site` is unset wherever the
+   Every image is now the product's own screenshot. Knowledge Tree, GDiary
+   and MarsTest have none, because there is nothing built to photograph yet. `site` is unset wherever the
    repository declares no homepage, so that button renders disabled rather
    than pointing somewhere wrong.
    ========================================================================= */
@@ -237,20 +237,21 @@ export const PROJECTS: Project[] = [
     imageAlt: 'GDiary',
   },
   {
-    name: 'Flash3D',
-    /* 'concept', not 'building': there is no repository on the account and no
-       site, so there is nothing to point either button at. The badge says that
-       rather than the two dead buttons having to imply it. */
+    name: 'MarsTest',
+    /* 'concept', not 'building': no repository on the account and no site, so
+       there is nothing to point either button at. The badge says that rather
+       than the two dead buttons having to imply it. */
     status: 'concept',
     since: '2026',        // TODO: confirm, nothing to derive it from yet.
-    /* Stated as intent, not as features. Nothing is built, so "the same
-       timeline and compositing stack" would be describing software that does
-       not exist. The 2.5D camera it contrasts with is real and in the devlog. */
-    summary: 'FlashFX aimed at 3D motion graphics rather than 2D, with depth as a first-class axis instead of a 2.5D camera bolted on.',
-    stack: [],
+    /* Full version: a web 3D game, to test game development capabilities.
+       Kept as the test it is rather than dressed up as a game with a plan
+       behind it, and the line does not say whose capabilities are being
+       tested, the browser's or the author's, because the brief did not. */
+    summary: 'A 3D game running in the browser, built to find out what game development on the web actually takes.',
+    stack: [],            // TODO: no repository found yet, so nothing to read a language from.
     // TODO: no repository and no site yet, so both buttons render disabled.
     // TODO: nothing built, so nothing to screenshot.
     images: [],
-    imageAlt: 'Flash3D',
+    imageAlt: 'MarsTest',
   },
 ];

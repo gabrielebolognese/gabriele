@@ -148,8 +148,8 @@ by reading; in a data file it is one obviously wrong line.
 product; `summary: null` still renders a visibly provisional line rather than an invented one if a
 new card arrives without one. Screenshots live in one folder per product under `src/assets/`
 (`FFX`, `FCC`, `Fdoc`, `Fland`, `BB`, `TRH`), numbered in display order and imported
-explicitly, since glob order is filesystem order. Flash3D has no images because nothing is built.
-Every unverified field is marked `TODO:`.
+explicitly, since glob order is filesystem order. Knowledge Tree, GDiary and MarsTest have no
+images, because nothing is built to photograph. Every unverified field is marked `TODO:`.
 
 The homepage's entry in `images.ts` is **derived** from `PROJECTS` rather than listed, since the
 twelve carousel entries it replaced had gone stale the moment the carousels were deleted and were
