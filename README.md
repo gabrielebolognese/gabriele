@@ -26,7 +26,8 @@ Live at **[gabrielebolognese.blog](https://gabrielebolognese.blog)**.
 
 - Devlog entries live in one file, `src/content/devlog.yaml`, loaded with Astro's `file()` loader
   and a custom `js-yaml` parser keyed by date. Publishing is adding a block at the top and
-  committing. Unknown project keys and images without alt text fail the build.
+  committing. An entry with an image but no alt text fails the build; a `detail` key that is not
+  a known project is dropped by the schema, so that column does not render.
 - Newsletter issues are a content collection over `src/content/newsletter/**/*.{md,mdx}` with an
   explicit `issue` number, `draft` (excluded from pages, archive, sitemap and feed) and `noindex`
   flags. The `<Figure>` and `<Pair>` components place images at column, wide or full width.
@@ -51,8 +52,8 @@ Live at **[gabrielebolognese.blog](https://gabrielebolognese.blog)**.
 **Performance and security guards**
 
 - `scripts/check-budgets.mjs` runs after every build and fails it if the homepage or `/about` DOM
-  element counts, homepage Brotli size, total emitted image weight or render-blocking request count
-  exceed their budgets.
+  element counts, homepage Brotli size, total emitted image weight or render-blocking stylesheet
+  count exceed their budgets.
 - `scripts/check-csp.mjs` runs after every build and fails it if the inline-script hash in the
   Content-Security-Policy in `netlify.toml` no longer matches the script in the built pages.
 - Images go through `astro:assets` (WebP with `srcset`); fonts are self-hosted variable `.woff2`
@@ -61,8 +62,9 @@ Live at **[gabrielebolognese.blog](https://gabrielebolognese.blog)**.
 
 **Motion layer**
 
-- `public/motion.js` handles scroll reveals, the countdown, the age counter and the life grid
-  labels. Reveal rules are gated on an `html.js` class set before first paint, so the site is fully
+- `public/motion.js` handles scroll reveals, the nav that condenses and retracts on scroll, the
+  reading-progress line, the project gallery with its full-screen viewer, the skip controls, the
+  countdown, the age counter and the life grid labels. Reveal rules are gated on an `html.js` class set before first paint, so the site is fully
   visible without JavaScript, and reduced-motion preferences are respected.
 
 ## Getting started
@@ -98,7 +100,7 @@ The newsletter signup form posts to Buttondown once `NEWSLETTER.buttondownUser` 
 npm run dev
 ```
 
-The dev server runs at `http://localhost:4321`.
+Astro prints the local URL when the server starts (port 4321 by default; the repo does not override it).
 
 ## Build and deploy
 
@@ -182,5 +184,3 @@ A personal site, live and actively maintained. The Content-Security-Policy is st
 the newsletter signup is not yet connected to Buttondown, and several entries in
 `src/data/identity.ts` are marked `TODO`. The repository has no licence file; the `/license/` page
 covers only how the images on the site may be used.
-
-There are no em dashes anywhere in this repo, on purpose.
