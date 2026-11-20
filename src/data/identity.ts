@@ -339,6 +339,27 @@ export const DEVLOG = {
   homepageLimit: 3,
 } as const;
 
+/* ── The editing portfolio ───────────────────────────────────────────────────
+   /editing, the video work. Same domain on purpose, for the reason the
+   newsletter is not on Substack: a separate portfolio site ranks for the name
+   and competes with this one, while a page here adds to the entity that
+   already exists. The pieces themselves are data in src/data/editing.ts.
+
+   Both years come from /about: the Minecraft channel started in the 2020
+   lockdowns, and the first freelance client (Emerals, via Fiverr) in 2022.
+   ------------------------------------------------------------------------- */
+export const EDITING = {
+  name: 'Editing',
+  /** The <title>. Longer than `name` because it is what the search result
+   *  shows, and "video editing portfolio" is what someone would search. */
+  title: 'Video editing portfolio',
+  /** Meta description and the intro line on the page. First person. */
+  description:
+    'My video editing portfolio: short-form edits and motion graphics explainers, cut for retention. Editing since 2020, freelancing since 2022.',
+  since: 2020,
+  freelanceSince: 2022,
+} as const;
+
 /* ── Image licensing ─────────────────────────────────────────────────────────
    Google's licensable-images feature attaches a "Licensable" badge and a link
    in Google Images, and it needs two properties on every ImageObject: `license`

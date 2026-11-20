@@ -1,0 +1,62 @@
+{
+  "audience-is-the-real-money": {
+    "width": 720,
+    "height": 1280,
+    "duration": 17.8,
+    "fps": 30,
+    "audio": false,
+    "h264": {
+      "bytes": 1860476,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 1133410,
+      "codecs": "av01.0.05M.08"
+    }
+  },
+  "coffee-chain-lifestyle": {
+    "width": 720,
+    "height": 1280,
+    "duration": 12.05,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 1452235,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 564100,
+      "codecs": "av01.0.05M.08"
+    }
+  },
+  "if-someone-offered-you": {
+    "width": 720,
+    "height": 1280,
+    "duration": 21.25,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 2744970,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 1329264,
+      "codecs": "av01.0.05M.08"
+    }
+  },
+  "we-dont-start-with-ads": {
+    "width": 720,
+    "height": 1280,
+    "duration": 33.5,
+    "fps": 60,
+    "audio": false,
+    "h264": {
+      "bytes": 1467086,
+      "codecs": "avc1.640020"
+    },
+    "av1": {
+      "bytes": 1313489,
+      "codecs": "av01.0.08M.08"
+    }
+  }
+}

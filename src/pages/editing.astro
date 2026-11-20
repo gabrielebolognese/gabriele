@@ -1,0 +1,173 @@
+---
+/* /editing: the video editing portfolio.
+
+   The pieces are data (src/data/editing.ts), the files come from
+   scripts/encode-editing.mjs, and this page only lays them out. Grid and card
+   styles are "26. EDITING PORTFOLIO" in Style.css; playback behaviour is
+   initReels() in motion.js.
+
+   How the videos load, which is most of what this page is about:
+
+   - Nothing downloads until someone shows intent. preload="none", so the
+     first paint costs four small WebP posters and zero video bytes.
+   - Intent warms the buffer. Hovering a card for a moment, or focusing it,
+     flips preload to "auto" (initReels), so by the time the click lands the
+     first seconds are already local and playback starts at once.
+   - The browser picks the cheapest file it can decode. AV1 is offered first
+     with an exact codecs string, H.264 second, and a browser without AV1
+     rejects that source from the type alone, without fetching it.
+   - Same origin, no player library, no iframe. Nothing new for the CSP to
+     allow: media-src falls back to default-src 'self'.
+   - Native controls, so it all still works with JavaScript off. */
+import { getImage } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import { PERSON, EDITING, absoluteUrl } from '../data/identity';
+import { PORTRAIT, POSTER, schemaImageUrl } from '../data/images';
+import { editingSchema } from '../data/schema';
+import { resolveReels, clock, isoDuration } from '../data/editing';
+import portrait from '../assets/gabriele-bolognese-portrait.png';
+
+const reels = await Promise.all(
+  resolveReels().map(async (reel) => ({
+    ...reel,
+    posterUrl: (await getImage({ src: reel.poster, width: POSTER, format: 'webp' })).src,
+    landscape: reel.width > reel.height,
+  })),
+);
+
+const runtime = reels.reduce((total, reel) => total + reel.duration, 0);
+
+const schema = editingSchema({
+  path: Astro.url.pathname,
+  portraitUrl: await schemaImageUrl(portrait, PORTRAIT, Astro.site),
+  videos: reels.map((reel) => ({
+    slug: reel.slug,
+    name: reel.title,
+    description: reel.summary ?? `${reel.kind}, edited by ${PERSON.name}.`,
+    thumbnailUrl: absoluteUrl(reel.posterUrl, Astro.site),
+    // The H.264 file, not the AV1 one: contentUrl is fetched by crawlers
+    // that may not decode AV1, and it is the one every browser can play.
+    contentUrl: absoluteUrl(reel.sources[reel.sources.length - 1].src, Astro.site),
+    uploadDate: reel.date,
+    duration: isoDuration(reel.duration),
+    width: reel.width,
+    height: reel.height,
+  })),
+});
+
+const mailto = `mailto:${PERSON.email}?subject=${encodeURIComponent('Editing enquiry')}`;
+---
+<Layout title={`${EDITING.title}, ${PERSON.name}`} description={EDITING.description} schema={schema}>
+
+<Nav />
+
+<main id="main">
+    <section class="section" aria-labelledby="editing-heading">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li aria-current="page">{EDITING.name}</li>
+            </ol>
+        </nav>
+
+        <h1 id="editing-heading" class="editing-h1">{EDITING.name}</h1>
+        <p class="editing-intro">{EDITING.description}</p>
+
+        <p class="editing-stat">
+            <strong>{reels.length}</strong> {reels.length === 1 ? 'edit' : 'edits'}
+            <span class="dot">·</span>
+            <strong>{clock(runtime)}</strong> of runtime
+            <span class="dot">·</span>
+            editing since <strong>{EDITING.since}</strong>
+        </p>
+
+        <ul class="reel-grid">
+            {reels.map((reel) => (
+                <li class:list={['reel', { 'is-landscape': reel.landscape }]} id={reel.slug}>
+                    <video
+                        class="reel-video"
+                        controls
+                        playsinline
+                        preload="none"
+                        poster={reel.posterUrl}
+                        width={reel.width}
+                        height={reel.height}
+                        style={`aspect-ratio: ${reel.width} / ${reel.height}`}
+                        aria-label={reel.title}
+                    >
+                        {reel.sources.map((source) => (
+                            <source src={source.src} type={source.type} />
+                        ))}
+                        <a href={reel.sources[reel.sources.length - 1].src}>Download “{reel.title}”</a>
+                    </video>
+
+                    <h2 class="reel-title">{reel.title}</h2>
+                    {/* Kind on its own line: it is the long one, and inline it
+                        wrapped and pushed a separator to the start of a line. */}
+                    <p class="reel-kind">{reel.kind}</p>
+                    <p class="reel-meta">
+                        <span>{clock(reel.duration)}</span>
+                        {!reel.audio && <span>No sound</span>}
+                        {reel.client && <span>For {reel.client}</span>}
+                        {reel.date && <span>{reel.date.slice(0, 4)}</span>}
+                    </p>
+                    {reel.summary && <p class="reel-summary">{reel.summary}</p>}
+                    {reel.tools.length > 0 && (
+                        <p class="reel-tools">{reel.tools.join(' · ')}</p>
+                    )}
+                </li>
+            ))}
+        </ul>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="section editing-cta" aria-labelledby="editing-cta-heading">
+        <h2 id="editing-cta-heading" class="section-label">Work with me</h2>
+        <p class="editing-cta-text">
+            Freelancing since {EDITING.freelanceSince}. If you have footage that needs cutting, or an
+            idea that needs motion graphics, send me a message.
+        </p>
+        <a class="next-btn" href={mailto}>Email me about a project</a>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <span>© 2026 Gabriele Bolognese</span>
+        <span class="dot">·</span>
+        <a href="/license/">Image licence</a>
+        <span class="dot">·</span>
+        <a href="/about/">About</a>
+        <span class="dot">·</span>
+        <a href="/newsletter/">Newsletter</a>
+        <span class="dot">·</span>
+        <a href="https://flashfx.app" target="_blank" rel="noopener noreferrer">flashfx.app</a>
+    </div>
+</footer>
+
+</Layout>
+
+<style>
+    .breadcrumb ol {
+        display: flex;
+        gap: 10px;
+        list-style: none;
+        margin: 0 0 32px;
+        padding: 0;
+        font-size: var(--text-xs);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gray-mid);
+    }
+
+    .breadcrumb li + li::before {
+        content: '/';
+        margin-right: 10px;
+        color: var(--gray-line);
+    }
+
+    .breadcrumb a { color: var(--gray-dark); }
+    .breadcrumb a:hover { color: var(--black); }
+</style>

@@ -31,6 +31,7 @@
         '.age', '.bio-panel',
         '.issue-masthead', '.issue-cover', '.issue-figure', '.issue-card', '.subscribe',
         '.devlog-entry',
+        '.reel',
         '.rule'
     ].join(',');
 
@@ -619,6 +620,60 @@
         }
     }
 
+    /* ── Editing reels ─────────────────────────────────────────────────────
+       /editing renders native <video controls preload="none">, which already
+       works with this file absent. Three things are layered on top:
+
+       1. Warm on intent. preload="none" means a click has to wait for the
+          first bytes. Resting the pointer on a clip for WARM_MS, or focusing
+          it from the keyboard, flips it to preload="auto" so the opening
+          seconds are buffered before the click arrives. The delay is there so
+          a cursor crossing the grid on its way to the nav does not quietly
+          download every clip it passes over.
+       2. One at a time. Starting a clip pauses whichever one was playing;
+          four soundtracks at once is never what anyone meant.
+       3. Pause off-screen. A clip scrolled out of view stops decoding and
+          stops downloading. */
+    var WARM_MS = 150;
+
+    function initReels() {
+        var videos = document.querySelectorAll('.reel-video');
+        if (!videos.length) return;
+
+        function warm(video) {
+            if (video.preload !== 'auto') video.preload = 'auto';
+        }
+
+        function onPlay(e) {
+            for (var i = 0; i < videos.length; i++) {
+                if (videos[i] !== e.target && !videos[i].paused) videos[i].pause();
+            }
+        }
+
+        var io = 'IntersectionObserver' in window
+            ? new IntersectionObserver(function (entries) {
+                for (var j = 0; j < entries.length; j++) {
+                    var v = entries[j].target;
+                    if (!entries[j].isIntersecting && !v.paused) v.pause();
+                }
+            }, { threshold: 0 })
+            : null;
+
+        for (var k = 0; k < videos.length; k++) {
+            (function (video) {
+                var timer = 0;
+                video.addEventListener('pointerenter', function (e) {
+                    if (e.pointerType !== 'mouse') return;
+                    timer = setTimeout(function () { warm(video); }, WARM_MS);
+                });
+                video.addEventListener('pointerleave', function () { clearTimeout(timer); });
+                video.addEventListener('focus', function () { warm(video); });
+                video.addEventListener('play', onPlay);
+                if (io) io.observe(video);
+            })(videos[k]);
+        }
+    }
+
     function start() {
         initReveal();
         initNav();
@@ -628,6 +683,7 @@
         initCountdown();
         initAgeCount();
         initLifeGrid();
+        initReels();
     }
 
     if (document.readyState === 'loading') {

@@ -76,6 +76,13 @@ const BUDGETS = {
      10px text and is roughly twice what a photograph needs. Do that before
      touching this line again. */
   totalImagesMb: 10.5,
+  /* /editing ships its clips as files in _astro. 11.3 MB measured on
+     2026-11-20 for four reels in H.264 plus AV1. This one is EXPECTED to
+     move every time a piece is added, which is fine; what it exists to catch
+     is a master landing in src/assets/editing un-encoded, which is hundreds
+     of megabytes in one file. Past ~60 MB the clips belong on a video host or
+     object storage rather than in git (see scripts/encode-editing.mjs). */
+  totalVideosMb: 13,
   renderBlockingRequests: 2,   // was 3 with a third-party Google Fonts sheet.
                                // Now 2, both same-origin: Style.css and one
                                // scoped component sheet.
@@ -106,6 +113,11 @@ const imageBytes = assets
   .reduce((n, f) => n + statSync(join(DIST, '_astro', f)).size, 0);
 check('images emitted', +(imageBytes / 1024 / 1024).toFixed(2), BUDGETS.totalImagesMb, ' MB',
   `${assets.length} files in _astro`);
+
+const videoFiles = assets.filter((f) => /\.(mp4|webm|mov|m4v)$/i.test(f));
+const videoBytes = videoFiles.reduce((n, f) => n + statSync(join(DIST, '_astro', f)).size, 0);
+check('videos emitted', +(videoBytes / 1024 / 1024).toFixed(2), BUDGETS.totalVideosMb, ' MB',
+  `${videoFiles.length} files`);
 
 /* Stylesheets in the head with no media attribute block the first paint. A
    cross-origin one blocks it behind a DNS lookup and a TLS handshake too. */

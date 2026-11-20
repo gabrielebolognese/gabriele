@@ -20,6 +20,7 @@ import {
   IMAGE_LICENSE,
   NEWSLETTER,
   DEVLOG,
+  EDITING,
   absoluteUrl,
 } from './identity';
 
@@ -375,6 +376,76 @@ export function devlogSchema(opts: {
     breadcrumbNode(url, [
       { name: 'Home', item: SITE.url },
       { name: DEVLOG.name, item: url },
+    ]),
+  ]);
+}
+
+/** The editing portfolio: a CollectionPage whose ItemList is the videos.
+ *
+ *  Only pieces with a confirmed date become VideoObjects. Google's video
+ *  result requires name, thumbnailUrl and uploadDate, and a VideoObject
+ *  missing one is reported as an error in Search Console rather than quietly
+ *  ignored, so an undated piece is left out until its date is real. The page
+ *  still renders it; only the markup waits. */
+export function editingSchema(opts: {
+  path: string;
+  portraitUrl: string;
+  videos: Array<{
+    slug: string;
+    name: string;
+    description: string;
+    thumbnailUrl: string;
+    contentUrl: string;
+    uploadDate: string | null;
+    duration: string;
+    width: number;
+    height: number;
+  }>;
+}) {
+  const url = absoluteUrl(opts.path);
+  const dated = opts.videos.filter((video) => video.uploadDate);
+  return graph([
+    personNode(opts.portraitUrl),
+    websiteNode(),
+    {
+      '@type': 'CollectionPage',
+      '@id': `${url}#webpage`,
+      url,
+      name: `${EDITING.name}, ${PERSON.name}`,
+      description: EDITING.description,
+      isPartOf: { '@id': ID.website },
+      about: { '@id': ID.person },
+      author: { '@id': ID.person },
+      inLanguage: 'en',
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+      ...(dated.length
+        ? {
+            mainEntity: {
+              '@type': 'ItemList',
+              itemListElement: dated.map((video, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                item: {
+                  '@type': 'VideoObject',
+                  '@id': `${url}#${video.slug}`,
+                  name: video.name,
+                  description: video.description,
+                  thumbnailUrl: video.thumbnailUrl,
+                  contentUrl: video.contentUrl,
+                  uploadDate: video.uploadDate,
+                  duration: video.duration,
+                  width: video.width,
+                  height: video.height,
+                  creator: { '@id': ID.person },
+                },
+              })),
+            },
+          }
+        : {}),
+    },
+    breadcrumbNode(url, [
+      { name: 'Home', item: SITE.url },
+      { name: EDITING.name, item: url },
     ]),
   ]);
 }

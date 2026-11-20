@@ -21,6 +21,7 @@ import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
 import { absoluteUrl } from './identity';
 import { PROJECTS } from './projects';
+import { resolveReels } from './editing';
 
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 import visionAiDemo from '../assets/vision-ai-demo-video-editor-2024.png';
@@ -42,6 +43,10 @@ const AWARD = 560; // index.astro award banner logo
 // No card width of any kind: both the archive and the homepage newsletter
 // section render IssueCard, which carries no image (see IssueCard.astro).
 export const COVER = 2080; // IssueLayout hero cover
+/** editing.astro video posters. Not a srcset: `poster` takes one URL, so this
+ *  is the only width that exists. 480 covers the widest card (~270 CSS px) at
+ *  a 2x screen with room to spare. */
+export const POSTER = 480;
 
 /** The portrait renders on both routes through LifeSection. Declared on each,
  *  because <image:image> is scoped to the page it sits under. */
@@ -66,6 +71,9 @@ export const PAGE_IMAGES: Record<string, IndexedImage[]> = {
     { src: earlyMotionDesign, width: FIGURE },
     { src: boltPrototype, width: FIGURE },
   ],
+  /* Derived from the reels, like the homepage projects, so a piece added to
+     or dropped from editing.ts cannot leave this out of step. */
+  '/editing': resolveReels().map((reel) => ({ src: reel.poster, width: POSTER })),
 };
 
 

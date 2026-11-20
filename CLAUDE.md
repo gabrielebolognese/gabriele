@@ -263,6 +263,27 @@ package). The headline is what makes a hundred entries scannable; the detail is 
 indexing, and it ships in the HTML inside a `<details>`, collapsed content is still indexed, same
 trade as `.life-events` on `/about`.
 
+**The editing portfolio is `/editing`, and its videos are encoded locally, never at build.**
+Masters live in `blogSite/editing-sources/`, outside the repo (OneDrive is the backup; git would keep
+every master forever). `node scripts/encode-editing.mjs` turns each into `src/assets/editing/<slug>.mp4`
+(H.264), `<slug>.av1.mp4` (AV1, about 40% smaller) and `<slug>.jpg` (poster), and rebuilds
+`src/data/editing-media.json` by probing the outputs. Netlify has no ffmpeg, so the outputs are committed.
+The master's filename becomes the slug and the published filename, same rule as images.
+
+A piece renders only once it has a block in `REELS` in `src/data/editing.ts`, whose order is the page
+order; the files are found by `import.meta.glob` keyed by slug, and `resolveReels()` **fails the build**
+if a listed slug has no files, because a dead `<video>` renders fine and plays nothing. Titles are the
+on-screen hooks; client, date and summary are `null` + `TODO:` until confirmed, and only dated pieces
+become `VideoObject`s, since Google errors on one without `uploadDate`.
+
+Playback is native `<video controls preload="none">` with a poster, so first paint costs ~55 KB of WebP
+and zero video bytes and it all works without JS. AV1 is the first `<source>` with an exact `codecs`
+string (from the manifest), so non-AV1 browsers skip it without fetching. `initReels()` in `motion.js`
+warms a clip to `preload="auto"` after a 150 ms hover or on focus, pauses the others when one plays, and
+pauses clips scrolled off-screen. Clips sit in `src/assets`, not `public/`, so they get fingerprinted
+`/_astro` URLs and the existing immutable cache header. `check-budgets.mjs` caps total video at
+`totalVideosMb`; past ~60 MB the clips belong on a video host or object storage, not in git.
+
 **The newsletter is the only long-form writing surface.** `/articles` was folded into it, on the reasoning that
 two thin sections compete for one entity exactly as `story.html` competed with the homepage.
 `public/_redirects` 301s both `/articles` and `/articles/*` across; `NEWSLETTER` in `identity.ts` owns
