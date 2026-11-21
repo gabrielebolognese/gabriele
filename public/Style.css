@@ -4315,16 +4315,16 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
    /editing. The heading trio mirrors /devlog's so the two index pages read as
    one family.
 
-   Short form is one row per category, five vertical clips across. Five, not
-   four, because the gaming row has five pieces and a 4 + 1 wrap reads as a
-   row with a stray card under it; the four-piece rows simply leave a slot
-   empty. Three across on a tablet and two on a phone: two, not one, because a
-   single 9:16 column on a phone is a ~580px-tall card per clip and the page
-   stops being a portfolio you can take in and becomes a feed you scroll.
+   Short form is one row per category, four vertical clips across, and every
+   category holds exactly four, so no row ever wraps a stray card under
+   itself. Still four on a tablet, where a card is ~190px wide, because three
+   would turn every row into 3 + 1. Two on a phone: two, not one, because a
+   single 9:16 column there is a ~580px-tall card per clip and the page stops
+   being a portfolio you can take in and becomes a feed you scroll.
 
    Long form is its own two-column grid of 16:9 cards. A landscape piece that
    lands in a short-form row spans two columns instead, so it sits at a
-   usable size rather than as a letterbox a fifth of the row wide.
+   usable size rather than as a letterbox a quarter of the row wide.
    align-items: start keeps shorter cards from stretching to their row.
    ------------------------------------------------------------------------- */
 .editing-h1 {
@@ -4391,7 +4391,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 
 .reel-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 40px 20px;
     align-items: start;
     margin-top: 28px;
@@ -4536,10 +4536,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
 .editing-cta .next-btn { margin-top: 32px; }
 
 @media (max-width: 860px) {
-    .reel-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 36px 16px;
-    }
+    .reel-grid { gap: 36px 14px; }
 
     .reel-grid--long { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 

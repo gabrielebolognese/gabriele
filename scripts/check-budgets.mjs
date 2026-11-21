@@ -84,14 +84,16 @@ const BUDGETS = {
      11.3 MB on 2026-11-20 for four reels, then 165.6 MB on 2026-11-21 for
      fifteen: five gaming shorts, four animations and two long-form excerpts,
      each in H.264 plus AV1. Gameplay is the expensive part, about 1.5 MB per
-     second of 720p across both codecs even at the raised CRFs.
+     second of 720p across both codecs even at the raised CRFs. 157.1 MB the
+     same day, after one gaming short was cut to keep every row at four, and
+     the line came down with it.
 
      That is past the ~60 MB at which these stop belonging in git. Every byte
      here is in history forever, and every re-encode adds another copy. The
      next step is moving the files to object storage (Cloudflare R2 has no
      egress fees) and pointing editing.ts at that origin, after which this
      budget measures nothing and can go. Do that before raising it again. */
-  totalVideosMb: 175,
+  totalVideosMb: 160,
   renderBlockingRequests: 2,   // was 3 with a third-party Google Fonts sheet.
                                // Now 2, both same-origin: Style.css and one
                                // scoped component sheet.

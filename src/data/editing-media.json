@@ -159,26 +159,6 @@
       "poster": "76541793bc23"
     }
   },
-  "gta-6-short-furries-are-loaded": {
-    "width": 720,
-    "height": 1280,
-    "duration": 45.8,
-    "sourceDuration": 45.8,
-    "fps": 30,
-    "audio": true,
-    "h264": {
-      "bytes": 5164903,
-      "codecs": "avc1.64001f"
-    },
-    "av1": {
-      "bytes": 3743102,
-      "codecs": "av01.0.05M.08"
-    },
-    "recipe": {
-      "video": "39f40c9d5906",
-      "poster": "0520be696cfd"
-    }
-  },
   "scenarios-until-sunday": {
     "width": 720,
     "height": 1280,

@@ -94,7 +94,9 @@ export const REELS: Reel[] = [
 
   /* ── Short form: gaming ─────────────────────────────────────────────────
      Stream clips: facecam over GTA 6 gameplay, captioned word by word. The
-     masters are ch5-*, so all five are from the same channel. */
+     masters are ch5-*, so all four are from the same channel. A fifth,
+     "Furries are loaded" (ch5-98), was cut on 2026-11-21 to keep every row
+     at four; its master is untouched if it ever comes back. */
   {
     slug: 'gta-6-short-chat-roasted-his-aim',
     title: 'Chat roasted his aim',
@@ -116,12 +118,6 @@ export const REELS: Reel[] = [
   {
     slug: 'gta-6-short-chat-will-never-forgive-him',
     title: 'Chat will never forgive him',
-    format: 'short', category: 'gaming', kind: 'Stream clip',
-    channel: null, note: null, ...UNCONFIRMED,
-  },
-  {
-    slug: 'gta-6-short-furries-are-loaded',
-    title: 'Furries are loaded',
     format: 'short', category: 'gaming', kind: 'Stream clip',
     channel: null, note: null, ...UNCONFIRMED,
   },

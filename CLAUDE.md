@@ -279,9 +279,9 @@ says so from `sourceDuration` in the manifest. The full length is a video host's
 
 A piece renders only once it has a block in `REELS` in `src/data/editing.ts`, with a `format` (short or
 long) and a `category`. Short form renders one row per `SHORT_CATEGORIES` entry (motion graphics,
-gaming, animations), five across; long form is a two-column grid; every card is `ReelCard.astro`. The
-files are found by `import.meta.glob` keyed by slug, and `resolveReels()` **fails the build** if a listed
-slug has no files, because a dead `<video>` renders fine and plays nothing. Titles are the on-screen
+gaming, animations), four across, and every category holds exactly four so no row wraps; long form
+is a two-column grid; every card is `ReelCard.astro`. The files are found by `import.meta.glob` keyed
+by slug, and `resolveReels()` **fails the build** if a listed slug has no files, because a dead `<video>` renders fine and plays nothing. Titles are the on-screen
 hooks or title cards, and no streamer is named even where captions do; client, date and summary are
 `null` + `TODO:` until confirmed, and only dated pieces become `VideoObject`s, since Google errors on
 one without `uploadDate`. Under the videos sit the experience copy (years derived from
@@ -294,7 +294,7 @@ string (from the manifest), so non-AV1 browsers skip it without fetching. `initR
 warms a clip to `preload="auto"` after a 150 ms hover or on focus, pauses the others when one plays, and
 pauses clips scrolled off-screen. Clips sit in `src/assets`, not `public/`, so they get fingerprinted
 `/_astro` URLs and the existing immutable cache header. `check-budgets.mjs` caps total video at
-`totalVideosMb`. It is 165.6 MB as of 2026-11-21, which is past the ~60 MB where clips stop belonging
+`totalVideosMb`. It is 157.1 MB as of 2026-11-21, which is past the ~60 MB where clips stop belonging
 in git: the next step is object storage (R2 or Bunny) with `editing.ts` pointing at it, not a raise.
 
 **The newsletter is the only long-form writing surface.** `/articles` was folded into it, on the reasoning that
