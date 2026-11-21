@@ -1,0 +1,66 @@
+---
+/* One piece on /editing: the player and the lines under it.
+
+   Used by every row on the page, short form and long form alike, so a change
+   to how a card loads or what it says lands everywhere at once. No scoped
+   <style>, on purpose: styles live under "26. EDITING PORTFOLIO" in Style.css
+   with the grid that lays the cards out.
+
+   The <video> is native, with controls, preload="none" and a poster, so it
+   costs one small WebP until someone shows intent, and it works without
+   JavaScript. initReels() in motion.js layers the warm-up, the one-at-a-time
+   rule and the off-screen pause on top. */
+import type { ResolvedReel } from '../data/editing';
+import { clock, isExcerpt } from '../data/editing';
+
+interface Props {
+  reel: ResolvedReel & { posterUrl: string };
+  /** The card title's heading level, one below the heading it sits under. */
+  level: 3 | 4;
+}
+
+const { reel, level } = Astro.props;
+const Heading = `h${level}` as 'h3' | 'h4';
+
+/** The H.264 file: the one every browser can play, so it is the download. */
+const fallback = reel.sources[reel.sources.length - 1].src;
+
+const full = clock(reel.sourceDuration);
+const note = reel.note
+  ?? (isExcerpt(reel)
+    ? `The opening ${clock(reel.duration)} of ${/^(8|11|18)\b/.test(full) ? 'an' : 'a'} ${full} video.`
+    : null);
+---
+<li class:list={['reel', { 'is-landscape': reel.landscape }]} id={reel.slug}>
+    <video
+        class="reel-video"
+        controls
+        playsinline
+        preload="none"
+        poster={reel.posterUrl}
+        width={reel.width}
+        height={reel.height}
+        style={`aspect-ratio: ${reel.width} / ${reel.height}`}
+        aria-label={reel.title}
+    >
+        {reel.sources.map((source) => (
+            <source src={source.src} type={source.type} />
+        ))}
+        <a href={fallback}>Download “{reel.title}”</a>
+    </video>
+
+    <Heading class="reel-title">{reel.title}</Heading>
+    {/* Kind on its own line: it is the long one, and inline it wrapped and
+        pushed a separator to the start of a line. */}
+    <p class="reel-kind">{reel.kind}</p>
+    <p class="reel-meta">
+        <span>{clock(reel.duration)}</span>
+        {!reel.audio && <span>No sound</span>}
+        {reel.channel && <span>{reel.channel} channel</span>}
+        {reel.client && <span>For {reel.client}</span>}
+        {reel.date && <span>{reel.date.slice(0, 4)}</span>}
+    </p>
+    {note && <p class="reel-note">{note}</p>}
+    {reel.summary && <p class="reel-summary">{reel.summary}</p>}
+    {reel.tools.length > 0 && <p class="reel-tools">{reel.tools.join(' · ')}</p>}
+</li>

@@ -3,6 +3,7 @@
     "width": 720,
     "height": 1280,
     "duration": 17.8,
+    "sourceDuration": 17.8,
     "fps": 30,
     "audio": false,
     "h264": {
@@ -12,27 +13,17 @@
     "av1": {
       "bytes": 1133410,
       "codecs": "av01.0.05M.08"
-    }
-  },
-  "coffee-chain-lifestyle": {
-    "width": 720,
-    "height": 1280,
-    "duration": 12.05,
-    "fps": 30,
-    "audio": true,
-    "h264": {
-      "bytes": 1452235,
-      "codecs": "avc1.64001f"
     },
-    "av1": {
-      "bytes": 564100,
-      "codecs": "av01.0.05M.08"
+    "recipe": {
+      "video": "646732ceba47",
+      "poster": "23f2687e1495"
     }
   },
   "if-someone-offered-you": {
     "width": 720,
     "height": 1280,
     "duration": 21.25,
+    "sourceDuration": 21.25,
     "fps": 30,
     "audio": true,
     "h264": {
@@ -42,12 +33,37 @@
     "av1": {
       "bytes": 1329264,
       "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "b4f6bd07f7d9",
+      "poster": "aead9e9595b9"
+    }
+  },
+  "coffee-chain-lifestyle": {
+    "width": 720,
+    "height": 1280,
+    "duration": 12.05,
+    "sourceDuration": 12.05,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 1452235,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 564100,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "60b5935008bf",
+      "poster": "a64cbccbad60"
     }
   },
   "we-dont-start-with-ads": {
     "width": 720,
     "height": 1280,
     "duration": 33.5,
+    "sourceDuration": 33.5,
     "fps": 60,
     "audio": false,
     "h264": {
@@ -57,6 +73,230 @@
     "av1": {
       "bytes": 1313489,
       "codecs": "av01.0.08M.08"
+    },
+    "recipe": {
+      "video": "f2688f480d3a",
+      "poster": "0850a6ef3fac"
+    }
+  },
+  "gta-6-short-chat-roasted-his-aim": {
+    "width": 720,
+    "height": 1280,
+    "duration": 52.4,
+    "sourceDuration": 52.4,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 11601958,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 8270264,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "60f90e507f9e",
+      "poster": "3a75c9ad9d8a"
+    }
+  },
+  "gta-6-short-he-came-to-fix-the-alarm": {
+    "width": 720,
+    "height": 1280,
+    "duration": 45.6,
+    "sourceDuration": 45.6,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 9203901,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 7471685,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "057d7fb673e5",
+      "poster": "536fca4ef86c"
+    }
+  },
+  "gta-6-short-she-called-for-help": {
+    "width": 720,
+    "height": 1280,
+    "duration": 56.77,
+    "sourceDuration": 56.77,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 10070942,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 7146698,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "135d0a4cb9dc",
+      "poster": "ac8a50419ea6"
+    }
+  },
+  "gta-6-short-chat-will-never-forgive-him": {
+    "width": 720,
+    "height": 1280,
+    "duration": 47.9,
+    "sourceDuration": 47.9,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 7647136,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 5529118,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "8bfebadeed79",
+      "poster": "76541793bc23"
+    }
+  },
+  "gta-6-short-furries-are-loaded": {
+    "width": 720,
+    "height": 1280,
+    "duration": 45.8,
+    "sourceDuration": 45.8,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 5164903,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 3743102,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "39f40c9d5906",
+      "poster": "0520be696cfd"
+    }
+  },
+  "scenarios-until-sunday": {
+    "width": 720,
+    "height": 1280,
+    "duration": 99.87,
+    "sourceDuration": 99.87,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 7120146,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 4624043,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "689d9ad25db8",
+      "poster": "0f3c540060cc"
+    }
+  },
+  "scenarios-30-dollars-for-a-63-dollar-job": {
+    "width": 720,
+    "height": 1280,
+    "duration": 110.07,
+    "sourceDuration": 110.07,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 8120752,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 5348626,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "cd52d78d8c7a",
+      "poster": "9ddc3b9647de"
+    }
+  },
+  "scenarios-no-car-14-orders": {
+    "width": 720,
+    "height": 1280,
+    "duration": 100.33,
+    "sourceDuration": 100.33,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 7043532,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 4585574,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "c867d170dc02",
+      "poster": "2bea60f1197f"
+    }
+  },
+  "scenarios-a-warning-dated-tomorrow": {
+    "width": 720,
+    "height": 1280,
+    "duration": 105.47,
+    "sourceDuration": 105.47,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 7080305,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 4892925,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "35adf0f3a644",
+      "poster": "6fc29d905b93"
+    }
+  },
+  "gta-6-launch-business-video-hook": {
+    "width": 1280,
+    "height": 720,
+    "duration": 15,
+    "sourceDuration": 15,
+    "fps": 30,
+    "audio": false,
+    "h264": {
+      "bytes": 651167,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 535084,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "e9a753e5f2ff",
+      "poster": "cc8582298c4e"
+    }
+  },
+  "gta-6-stream-highlights-long-form": {
+    "width": 1280,
+    "height": 720,
+    "duration": 60,
+    "sourceDuration": 521.5,
+    "fps": 30,
+    "audio": true,
+    "h264": {
+      "bytes": 20077378,
+      "codecs": "avc1.64001f"
+    },
+    "av1": {
+      "bytes": 15869207,
+      "codecs": "av01.0.05M.08"
+    },
+    "recipe": {
+      "video": "78579914ccbd",
+      "poster": "3bd258092518"
     }
   }
 }

@@ -44,9 +44,13 @@ const AWARD = 560; // index.astro award banner logo
 // section render IssueCard, which carries no image (see IssueCard.astro).
 export const COVER = 2080; // IssueLayout hero cover
 /** editing.astro video posters. Not a srcset: `poster` takes one URL, so this
- *  is the only width that exists. 480 covers the widest card (~270 CSS px) at
- *  a 2x screen with room to spare. */
+ *  is the only width that exists. 480 covers the widest vertical card (~200
+ *  CSS px) at a 2x screen with room to spare. Landscape posters belong to the
+ *  long-form cards, which render about 480 CSS px wide, so they take double. */
 export const POSTER = 480;
+export const POSTER_WIDE = 960;
+export const posterWidth = (size: { width: number; height: number }) =>
+  size.width > size.height ? POSTER_WIDE : POSTER;
 
 /** The portrait renders on both routes through LifeSection. Declared on each,
  *  because <image:image> is scoped to the page it sits under. */
@@ -73,7 +77,7 @@ export const PAGE_IMAGES: Record<string, IndexedImage[]> = {
   ],
   /* Derived from the reels, like the homepage projects, so a piece added to
      or dropped from editing.ts cannot leave this out of step. */
-  '/editing': resolveReels().map((reel) => ({ src: reel.poster, width: POSTER })),
+  '/editing': resolveReels().map((reel) => ({ src: reel.poster, width: posterWidth(reel) })),
 };
 
 

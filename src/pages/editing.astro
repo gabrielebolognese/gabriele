@@ -2,14 +2,15 @@
 /* /editing: the video editing portfolio.
 
    The pieces are data (src/data/editing.ts), the files come from
-   scripts/encode-editing.mjs, and this page only lays them out. Grid and card
-   styles are "26. EDITING PORTFOLIO" in Style.css; playback behaviour is
-   initReels() in motion.js.
+   scripts/encode-editing.mjs, each card is ReelCard.astro, and this page only
+   orders them: short form in one row per category, then long form, then the
+   experience, the process and the offer. Grid and card styles are
+   "26. EDITING PORTFOLIO" in Style.css; playback is initReels() in motion.js.
 
    How the videos load, which is most of what this page is about:
 
    - Nothing downloads until someone shows intent. preload="none", so the
-     first paint costs four small WebP posters and zero video bytes.
+     first paint costs one small WebP poster per card and zero video bytes.
    - Intent warms the buffer. Hovering a card for a moment, or focusing it,
      flips preload to "auto" (initReels), so by the time the click lands the
      first seconds are already local and playback starts at once.
@@ -22,21 +23,42 @@
 import { getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
+import ReelCard from '../components/ReelCard.astro';
 import { PERSON, EDITING, absoluteUrl } from '../data/identity';
-import { PORTRAIT, POSTER, schemaImageUrl } from '../data/images';
+import { PORTRAIT, posterWidth, schemaImageUrl } from '../data/images';
 import { editingSchema } from '../data/schema';
-import { resolveReels, clock, isoDuration } from '../data/editing';
+import {
+  resolveReels,
+  clock,
+  isoDuration,
+  CATEGORY_LABEL,
+  SHORT_CATEGORIES,
+  PROCESS,
+} from '../data/editing';
 import portrait from '../assets/gabriele-bolognese-portrait.png';
 
 const reels = await Promise.all(
   resolveReels().map(async (reel) => ({
     ...reel,
-    posterUrl: (await getImage({ src: reel.poster, width: POSTER, format: 'webp' })).src,
-    landscape: reel.width > reel.height,
+    posterUrl: (await getImage({ src: reel.poster, width: posterWidth(reel), format: 'webp' })).src,
   })),
 );
 
-const runtime = reels.reduce((total, reel) => total + reel.duration, 0);
+const shortRows = SHORT_CATEGORIES
+  .map((category) => ({
+    category,
+    label: CATEGORY_LABEL[category],
+    reels: reels.filter((reel) => reel.format === 'short' && reel.category === category),
+  }))
+  .filter((row) => row.reels.length > 0);
+const longForm = reels.filter((reel) => reel.format === 'long');
+
+/** Length of the work, not of what is published: an excerpt counts in full. */
+const runtime = reels.reduce((total, reel) => total + reel.sourceDuration, 0);
+
+/** Derived at build time, so the line is still true next year. */
+const years = new Date().getFullYear() - EDITING.freelanceSince;
+const adsFor = new Intl.ListFormat('en', { type: 'conjunction' }).format(EDITING.adsFor);
 
 const schema = editingSchema({
   path: Astro.url.pathname,
@@ -56,7 +78,7 @@ const schema = editingSchema({
   })),
 });
 
-const mailto = `mailto:${PERSON.email}?subject=${encodeURIComponent('Editing enquiry')}`;
+const mailto = `mailto:${PERSON.email}?subject=${encodeURIComponent('Free test video')}`;
 ---
 <Layout title={`${EDITING.title}, ${PERSON.name}`} description={EDITING.description} schema={schema}>
 
@@ -82,54 +104,71 @@ const mailto = `mailto:${PERSON.email}?subject=${encodeURIComponent('Editing enq
             editing since <strong>{EDITING.since}</strong>
         </p>
 
-        <ul class="reel-grid">
-            {reels.map((reel) => (
-                <li class:list={['reel', { 'is-landscape': reel.landscape }]} id={reel.slug}>
-                    <video
-                        class="reel-video"
-                        controls
-                        playsinline
-                        preload="none"
-                        poster={reel.posterUrl}
-                        width={reel.width}
-                        height={reel.height}
-                        style={`aspect-ratio: ${reel.width} / ${reel.height}`}
-                        aria-label={reel.title}
-                    >
-                        {reel.sources.map((source) => (
-                            <source src={source.src} type={source.type} />
-                        ))}
-                        <a href={reel.sources[reel.sources.length - 1].src}>Download “{reel.title}”</a>
-                    </video>
+        <h2 id="short-form" class="section-label editing-h2">Short form</h2>
+        {shortRows.map((row) => (
+            <div class="reel-row" aria-labelledby={`row-${row.category}`}>
+                <h3 id={`row-${row.category}`} class="reel-row-title">
+                    {row.label} <span>{row.reels.length}</span>
+                </h3>
+                <ul class="reel-grid">
+                    {row.reels.map((reel) => <ReelCard reel={reel} level={4} />)}
+                </ul>
+            </div>
+        ))}
 
-                    <h2 class="reel-title">{reel.title}</h2>
-                    {/* Kind on its own line: it is the long one, and inline it
-                        wrapped and pushed a separator to the start of a line. */}
-                    <p class="reel-kind">{reel.kind}</p>
-                    <p class="reel-meta">
-                        <span>{clock(reel.duration)}</span>
-                        {!reel.audio && <span>No sound</span>}
-                        {reel.client && <span>For {reel.client}</span>}
-                        {reel.date && <span>{reel.date.slice(0, 4)}</span>}
-                    </p>
-                    {reel.summary && <p class="reel-summary">{reel.summary}</p>}
-                    {reel.tools.length > 0 && (
-                        <p class="reel-tools">{reel.tools.join(' · ')}</p>
-                    )}
+        {longForm.length > 0 && (
+            <>
+                <h2 id="long-form" class="section-label editing-h2">Long form</h2>
+                <ul class="reel-grid reel-grid--long">
+                    {longForm.map((reel) => <ReelCard reel={reel} level={3} />)}
+                </ul>
+            </>
+        )}
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="section" aria-labelledby="experience-heading">
+        <h2 id="experience-heading" class="section-label">Experience</h2>
+        <div class="editing-prose">
+            <p>
+                I have spent <strong>{years} years</strong> editing for multiple channels, both
+                clients’ and my own, and along the way built an extensive knowledge of many styles.
+            </p>
+            <p>
+                I have also managed ads for {adsFor}.
+            </p>
+        </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="section" aria-labelledby="process-heading">
+        <h2 id="process-heading" class="section-label">Process</h2>
+        <p class="section-intro">How a video goes from the first message to the final export.</p>
+        <ol class="process">
+            {PROCESS.map((step, i) => (
+                <li class="process-step">
+                    <span class="process-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                    <h3 class="process-title">{step.title}</h3>
+                    <p class="process-text">{step.text}</p>
                 </li>
             ))}
-        </ul>
+        </ol>
     </section>
 
     <div class="rule"></div>
 
     <section class="section editing-cta" aria-labelledby="editing-cta-heading">
         <h2 id="editing-cta-heading" class="section-label">Work with me</h2>
-        <p class="editing-cta-text">
-            Freelancing since {EDITING.freelanceSince}. If you have footage that needs cutting, or an
-            idea that needs motion graphics, send me a message.
-        </p>
-        <a class="next-btn" href={mailto}>Email me about a project</a>
+        <div class="editing-prose">
+            <p>
+                These are not the only styles I can do. If the one you need is not on this page, I
+                will make you a video in it for free, so you can test my skills on your own kind of
+                content first.
+            </p>
+        </div>
+        <a class="next-btn" href={mailto}>Ask for a free test video</a>
     </section>
 </main>
 

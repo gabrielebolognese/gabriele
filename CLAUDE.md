@@ -264,17 +264,29 @@ indexing, and it ships in the HTML inside a `<details>`, collapsed content is st
 trade as `.life-events` on `/about`.
 
 **The editing portfolio is `/editing`, and its videos are encoded locally, never at build.**
-Masters live in `blogSite/editing-sources/`, outside the repo (OneDrive is the backup; git would keep
-every master forever). `node scripts/encode-editing.mjs` turns each into `src/assets/editing/<slug>.mp4`
-(H.264), `<slug>.av1.mp4` (AV1, about 40% smaller) and `<slug>.jpg` (poster), and rebuilds
-`src/data/editing-media.json` by probing the outputs. Netlify has no ffmpeg, so the outputs are committed.
-The master's filename becomes the slug and the published filename, same rule as images.
+Masters live outside the repo, in `blogSite/` and `blogSite/editing-sources/` (OneDrive is the backup;
+git would keep every master forever), under whatever names the site owner gave them: `ch5-75.mp4` is
+channel 5, video 75, and that numbering is kept. `scripts/editing-clips.json` maps each master to a
+descriptive **slug**, which is the published filename (same rule as images), plus optional `posterAt`,
+`start`/`duration` (publish an excerpt, faded out), `shortSide`, `maxFps` and per-clip CRFs; gameplay
+runs at CRF 26/38 instead of 23/34 because fast motion hides it. `node scripts/encode-editing.mjs`
+writes `src/assets/editing/<slug>.mp4` (H.264), `<slug>.av1.mp4` (AV1) and `<slug>.jpg` (poster), and
+`src/data/editing-media.json`, which records a recipe hash per clip so reruns only touch what changed
+(`--only a,b`, `--force`, `--no-av1`). Netlify has no ffmpeg, so the outputs are committed.
 
-A piece renders only once it has a block in `REELS` in `src/data/editing.ts`, whose order is the page
-order; the files are found by `import.meta.glob` keyed by slug, and `resolveReels()` **fails the build**
-if a listed slug has no files, because a dead `<video>` renders fine and plays nothing. Titles are the
-on-screen hooks; client, date and summary are `null` + `TODO:` until confirmed, and only dated pieces
-become `VideoObject`s, since Google errors on one without `uploadDate`.
+Long-form pieces ship as excerpts: the 8:41 gaming video is its first minute at 30 fps, and the card
+says so from `sourceDuration` in the manifest. The full length is a video host's job, not git's.
+
+A piece renders only once it has a block in `REELS` in `src/data/editing.ts`, with a `format` (short or
+long) and a `category`. Short form renders one row per `SHORT_CATEGORIES` entry (motion graphics,
+gaming, animations), five across; long form is a two-column grid; every card is `ReelCard.astro`. The
+files are found by `import.meta.glob` keyed by slug, and `resolveReels()` **fails the build** if a listed
+slug has no files, because a dead `<video>` renders fine and plays nothing. Titles are the on-screen
+hooks or title cards, and no streamer is named even where captions do; client, date and summary are
+`null` + `TODO:` until confirmed, and only dated pieces become `VideoObject`s, since Google errors on
+one without `uploadDate`. Under the videos sit the experience copy (years derived from
+`EDITING.freelanceSince`, ad clients from `EDITING.adsFor`), `PROCESS` (the owner's seven steps) and
+the free test video offer.
 
 Playback is native `<video controls preload="none">` with a poster, so first paint costs ~55 KB of WebP
 and zero video bytes and it all works without JS. AV1 is the first `<source>` with an exact `codecs`
@@ -282,7 +294,8 @@ string (from the manifest), so non-AV1 browsers skip it without fetching. `initR
 warms a clip to `preload="auto"` after a 150 ms hover or on focus, pauses the others when one plays, and
 pauses clips scrolled off-screen. Clips sit in `src/assets`, not `public/`, so they get fingerprinted
 `/_astro` URLs and the existing immutable cache header. `check-budgets.mjs` caps total video at
-`totalVideosMb`; past ~60 MB the clips belong on a video host or object storage, not in git.
+`totalVideosMb`. It is 165.6 MB as of 2026-11-21, which is past the ~60 MB where clips stop belonging
+in git: the next step is object storage (R2 or Bunny) with `editing.ts` pointing at it, not a raise.
 
 **The newsletter is the only long-form writing surface.** `/articles` was folded into it, on the reasoning that
 two thin sections compete for one entity exactly as `story.html` competed with the homepage.

@@ -18,6 +18,10 @@ Live at **[gabrielebolognese.blog](https://gabrielebolognese.blog)**.
   the homepage through one component.
 - `/devlog/`: every devlog entry on a single page, one entry per day, with one column per project
   (FlashFX editor, landing page, this site).
+- `/editing/`: the video editing portfolio. Short form in rows (motion graphics, gaming,
+  animations), long-form excerpts, experience, process and a free test video offer. Clips are
+  encoded locally with `node scripts/encode-editing.mjs` from the list in
+  `scripts/editing-clips.json`, and committed.
 - `/newsletter/` and `/newsletter/<slug>/`: the archive and one page per issue, written in MDX.
 - `/license/`: the image licence page that the structured data points at.
 - `/404`, `/rss.xml` (newsletter feed), `/image-sitemap.xml` and the generated `sitemap-index.xml`.
@@ -146,10 +150,10 @@ read from there.
 
 | Path | What it holds |
 | :--- | :--- |
-| `src/pages/` | Routes: homepage, about, devlog, newsletter archive and issues, licence, 404, RSS and image sitemap. |
+| `src/pages/` | Routes: homepage, about, devlog, editing portfolio, newsletter archive and issues, licence, 404, RSS and image sitemap. |
 | `src/layouts/` | `Layout.astro` (every page) and `IssueLayout.astro` (newsletter issues). |
-| `src/components/` | Nav, SEO head, project cards, statistics, life section and grid, devlog timeline, FAQ, subscribe form, newsletter figures. |
-| `src/data/` | Source of truth: identity, schema.org builders, projects, milestones, FAQ, stack, image manifest, and the GitHub, LeetCode and YouTube fetchers with their JSON snapshots. |
+| `src/components/` | Nav, SEO head, project cards, editing reel cards, statistics, life section and grid, devlog timeline, FAQ, subscribe form, newsletter figures. |
+| `src/data/` | Source of truth: identity, schema.org builders, projects, editing reels and process, milestones, FAQ, stack, image manifest, and the GitHub, LeetCode and YouTube fetchers with their JSON snapshots. |
 | `src/content/devlog.yaml` | Every devlog entry, in one file. |
 | `src/content/newsletter/` | One `.mdx` file per issue. |
 | `src/content.config.ts` | Content collection schemas for the newsletter and the devlog. |

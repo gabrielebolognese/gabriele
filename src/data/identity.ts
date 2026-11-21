@@ -355,9 +355,14 @@ export const EDITING = {
   title: 'Video editing portfolio',
   /** Meta description and the intro line on the page. First person. */
   description:
-    'My video editing portfolio: short-form edits and motion graphics explainers, cut for retention. Editing since 2020, freelancing since 2022.',
+    'My video editing portfolio: motion graphics, gaming clips, animated stories and long-form videos, cut for retention. Editing since 2020, freelancing since 2022.',
   since: 2020,
+  /** Also where the experience line counts from: four years of channel work
+   *  in 2026, for clients and for my own channels. The page derives the
+   *  number at build time, so it cannot go stale the way a typed "4" would. */
   freelanceSince: 2022,
+  /** Who I have run ads for. From the site owner, 2026-11-21. */
+  adsFor: ['brands', 'local businesses', 'personal creators'],
 } as const;
 
 /* ── Image licensing ─────────────────────────────────────────────────────────

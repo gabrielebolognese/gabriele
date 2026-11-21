@@ -76,13 +76,22 @@ const BUDGETS = {
      10px text and is roughly twice what a photograph needs. Do that before
      touching this line again. */
   totalImagesMb: 10.5,
-  /* /editing ships its clips as files in _astro. 11.3 MB measured on
-     2026-11-20 for four reels in H.264 plus AV1. This one is EXPECTED to
-     move every time a piece is added, which is fine; what it exists to catch
-     is a master landing in src/assets/editing un-encoded, which is hundreds
-     of megabytes in one file. Past ~60 MB the clips belong on a video host or
-     object storage rather than in git (see scripts/encode-editing.mjs). */
-  totalVideosMb: 13,
+  /* /editing ships its clips as files in _astro. This one is EXPECTED to
+     move every time a piece is added; what it exists to catch is a master
+     landing in src/assets/editing un-encoded, which is hundreds of megabytes
+     in one file.
+
+     11.3 MB on 2026-11-20 for four reels, then 165.6 MB on 2026-11-21 for
+     fifteen: five gaming shorts, four animations and two long-form excerpts,
+     each in H.264 plus AV1. Gameplay is the expensive part, about 1.5 MB per
+     second of 720p across both codecs even at the raised CRFs.
+
+     That is past the ~60 MB at which these stop belonging in git. Every byte
+     here is in history forever, and every re-encode adds another copy. The
+     next step is moving the files to object storage (Cloudflare R2 has no
+     egress fees) and pointing editing.ts at that origin, after which this
+     budget measures nothing and can go. Do that before raising it again. */
+  totalVideosMb: 175,
   renderBlockingRequests: 2,   // was 3 with a third-party Google Fonts sheet.
                                // Now 2, both same-origin: Style.css and one
                                // scoped component sheet.

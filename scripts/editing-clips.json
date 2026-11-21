@@ -1,0 +1,23 @@
+{
+  "_readme": "Input for scripts/encode-editing.mjs. One entry per published clip. `source` is relative to the repo root and may point anywhere, so masters keep the names you gave them. `slug` is the published filename and must match a REELS entry in src/data/editing.ts. Optional per clip: posterAt (seconds, default 1), start and duration (seconds, to publish an excerpt), shortSide (px, default 720), maxFps (default 60), h264Crf (default 23) and av1Crf (default 34). Gameplay runs at h264Crf 26 / av1Crf 38: fast motion hides the difference and it cuts about a third of the bytes.",
+  "clips": [
+    { "slug": "audience-is-the-real-money", "source": "../editing-sources/audience-is-the-real-money.mp4" },
+    { "slug": "if-someone-offered-you", "source": "../editing-sources/if-someone-offered-you.mp4" },
+    { "slug": "coffee-chain-lifestyle", "source": "../editing-sources/coffee-chain-lifestyle.mp4" },
+    { "slug": "we-dont-start-with-ads", "source": "../editing-sources/we-dont-start-with-ads.mp4" },
+
+    { "slug": "gta-6-short-chat-roasted-his-aim", "source": "../ch5-75.mp4", "h264Crf": 26, "av1Crf": 38 },
+    { "slug": "gta-6-short-he-came-to-fix-the-alarm", "source": "../ch5-88.mp4", "h264Crf": 26, "av1Crf": 38 },
+    { "slug": "gta-6-short-she-called-for-help", "source": "../ch5-95.mp4", "h264Crf": 26, "av1Crf": 38 },
+    { "slug": "gta-6-short-chat-will-never-forgive-him", "source": "../ch5-96.mp4", "h264Crf": 26, "av1Crf": 38 },
+    { "slug": "gta-6-short-furries-are-loaded", "source": "../ch5-98.mp4", "h264Crf": 26, "av1Crf": 38 },
+
+    { "slug": "scenarios-until-sunday", "source": "../scenarios-1.mp4" },
+    { "slug": "scenarios-30-dollars-for-a-63-dollar-job", "source": "../scenarios-2.mp4" },
+    { "slug": "scenarios-no-car-14-orders", "source": "../scenarios-3.mp4" },
+    { "slug": "scenarios-a-warning-dated-tomorrow", "source": "../scenarios-4.mp4" },
+
+    { "slug": "gta-6-launch-business-video-hook", "source": "../ch3-sample-hook-15s-v3.mp4" },
+    { "slug": "gta-6-stream-highlights-long-form", "source": "../ch6-1.mp4", "duration": 60, "posterAt": 3, "maxFps": 30, "h264Crf": 26, "av1Crf": 38 }
+  ]
+}

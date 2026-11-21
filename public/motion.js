@@ -31,7 +31,7 @@
         '.age', '.bio-panel',
         '.issue-masthead', '.issue-cover', '.issue-figure', '.issue-card', '.subscribe',
         '.devlog-entry',
-        '.reel',
+        '.reel', '.reel-row-title', '.process-step', '.editing-prose',
         '.rule'
     ].join(',');
 
